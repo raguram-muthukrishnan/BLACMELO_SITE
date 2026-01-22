@@ -1,0 +1,112 @@
+import {NavLink} from 'react-router';
+import type {HeaderQuery} from 'storefrontapi.generated';
+import logo from '~/assets/logos/Logo.avif';
+
+type HeaderProps = {
+  header: HeaderQuery;
+  cart: Promise<any>;
+  isLoggedIn: Promise<boolean>;
+};
+
+// User Icon SVG Component
+function UserIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M3 18C3 14.134 6.13401 11 10 11C13.866 11 17 14.134 17 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// Shopping Bag Icon SVG Component
+function ShoppingBagIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M2.5 5L5 1.66667H15L17.5 5M2.5 5V16.6667C2.5 17.1087 2.67559 17.5326 2.98816 17.8452C3.30072 18.1577 3.72464 18.3333 4.16667 18.3333H15.8333C16.2754 18.3333 16.6993 18.1577 17.0118 17.8452C17.3244 17.5326 17.5 17.1087 17.5 16.6667V5M2.5 5H17.5M13.3333 8.33333C13.3333 9.21739 12.9821 10.0652 12.357 10.6904C11.7319 11.3155 10.8841 11.6667 10 11.6667C9.11595 11.6667 8.2681 11.3155 7.64298 10.6904C7.01786 10.0652 6.66667 9.21739 6.66667 8.33333" stroke="#1E1E1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+// Hamburger Menu Icon
+function MenuIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// Search Icon
+function SearchIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
+      <path d="M20 20L16 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function Header({}: HeaderProps) {
+  return (
+    <header className="blacmelo-header">
+      <div className="blacmelo-header-container">
+        {/* Left Navigation */}
+        <nav className="blacmelo-header-left">
+          {/* Mobile Menu Button */}
+          <button className="blacmelo-mobile-menu-btn" aria-label="Menu">
+            <MenuIcon />
+          </button>
+          
+          {/* Mobile Search Button */}
+          <button className="blacmelo-mobile-search-btn" aria-label="Search">
+            <SearchIcon />
+          </button>
+          
+          {/* Desktop Links */}
+          <NavLink prefetch="intent" to="/collections/men" className="blacmelo-header-link">
+            Man
+          </NavLink>
+          <NavLink prefetch="intent" to="/collections/women" className="blacmelo-header-link">
+            Women
+          </NavLink>
+          <NavLink prefetch="intent" to="/collections/blacmelo-plus" className="blacmelo-header-link">
+            Blacmelo +
+          </NavLink>
+        </nav>
+
+        {/* Center Logo */}
+        <NavLink prefetch="intent" to="/" className="blacmelo-header-logo">
+          <img 
+            src={logo} 
+            alt="BLACMELO" 
+            className="blacmelo-logo-image"
+          />
+        </NavLink>
+
+        {/* Right Navigation */}
+        <nav className="blacmelo-header-right">
+          {/* Desktop Links */}
+          <NavLink prefetch="intent" to="/about" className="blacmelo-header-link">
+            About us
+          </NavLink>
+          <NavLink prefetch="intent" to="/contact" className="blacmelo-header-link">
+            Contact us
+          </NavLink>
+          <NavLink prefetch="intent" to="/faq" className="blacmelo-header-link">
+            FAQ
+          </NavLink>
+          
+          {/* User Icon (visible on all screens) */}
+          <NavLink prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
+            <UserIcon />
+          </NavLink>
+          
+          {/* Shopping Bag Icon (visible on all screens) */}
+          <NavLink prefetch="intent" to="/cart" className="blacmelo-header-icon" aria-label="Shopping Bag">
+            <ShoppingBagIcon />
+          </NavLink>
+        </nav>
+      </div>
+    </header>
+  );
+}

@@ -1,167 +1,259 @@
-import {Await, useLoaderData, Link} from 'react-router';
+import {Link} from 'react-router';
+import {useEffect, useRef} from 'react';
 import type {Route} from './+types/_index';
-import {Suspense} from 'react';
-import {Image} from '@shopify/hydrogen';
-import type {
-  FeaturedCollectionFragment,
-  RecommendedProductsQuery,
-} from 'storefrontapi.generated';
-import {ProductItem} from '~/components/ProductItem';
+import {gsap} from 'gsap';
+import {ScrollTrigger} from 'gsap/ScrollTrigger';
+import banner1 from '~/assets/banner images/1.jpeg';
+import banner2 from '~/assets/banner images/2.jpeg';
+import banner3 from '~/assets/banner images/3.jpeg';
+import banner4 from '~/assets/banner images/4.png';
+
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [{title: 'BLACMELO | The Missing Piece of Luxury'}];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+export default function Homepage() {
+  const floatingMenuRef = useRef<HTMLElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
 
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
+  useEffect(() => {
+    if (!floatingMenuRef.current || !heroSectionRef.current) return;
 
-  return {...deferredData, ...criticalData};
-}
+    const menu = floatingMenuRef.current;
+    const heroSection = heroSectionRef.current;
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context}: Route.LoaderArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+    // Use viewport height for banner calculations
+    const bannerHeight = window.innerHeight;
 
-  return {
-    featuredCollection: collections.nodes[0],
-  };
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
-    .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
+    // Set initial position - menu starts hidden, will come with banner 2
+    gsap.set(menu, {
+      position: 'absolute',
+      left: '50%',
+      top: bannerHeight * 2, // Start at the top of banner 2
+      xPercent: -50,
+      yPercent: 0,
+      opacity: 1,
     });
 
-  return {
-    recommendedProducts,
+    // Phase 1: Menu enters WITH banner 2 from bottom (like banner movement)
+    // Menu moves from bottom of banner 2 to center as banner 2 scrolls up
+    gsap.fromTo(menu, 
+      {
+        position: 'absolute',
+        top: bannerHeight * 2 + bannerHeight, // Start at bottom of banner 2
+        yPercent: 0,
+      },
+      {
+        position: 'fixed',
+        top: '50%',
+        yPercent: -50,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroSection,
+          start: `${bannerHeight}px top`, // When banner 2 starts entering
+          end: `${bannerHeight + bannerHeight * 0.4}px top`, // 40% into banner 2
+          scrub: 1,
+        },
+      }
+    );
+
+    // Phase 2: Menu stays fixed in center while banners 2-4 scroll behind
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight + bannerHeight * 0.4}px top`,
+      end: `${bannerHeight * 4 + bannerHeight * 0.6}px top`, // Until 60% into banner 5
+      onEnter: () => {
+        gsap.set(menu, {
+          position: 'fixed',
+          top: '50%',
+          yPercent: -50,
+        });
+      },
+      onEnterBack: () => {
+        gsap.set(menu, {
+          position: 'fixed',
+          top: '50%',
+          yPercent: -50,
+        });
+      },
+    });
+
+    // Phase 3: Menu exits WITH banner 5 (goes down with the banner)
+    gsap.to(menu, {
+      position: 'absolute',
+      top: bannerHeight * 5 + bannerHeight, // Bottom of banner 6
+      yPercent: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroSection,
+        start: `${bannerHeight * 4 + bannerHeight * 0.6}px top`, // 60% into banner 5
+        end: `${bannerHeight * 5}px top`, // End of banner 5
+        scrub: 1,
+      },
+    });
+
+    // Text highlighting based on current banner
+    const collections = menu.querySelectorAll('.floating-menu-item');
+    
+    // Banner 2 highlight
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight}px top`,
+      end: `${bannerHeight * 2}px top`,
+      onEnter: () => highlightCollection(collections, 0), // Fall/Winter '25
+      onEnterBack: () => highlightCollection(collections, 0),
+    });
+
+    // Banner 3 highlight
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight * 2}px top`,
+      end: `${bannerHeight * 3}px top`,
+      onEnter: () => highlightCollection(collections, 1), // 247
+      onEnterBack: () => highlightCollection(collections, 1),
+    });
+
+    // Banner 4 highlight
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight * 3}px top`,
+      end: `${bannerHeight * 4}px top`,
+      onEnter: () => highlightCollection(collections, 2), // Initial
+      onEnterBack: () => highlightCollection(collections, 2),
+    });
+
+    // Banner 5 highlight
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight * 4}px top`,
+      end: `${bannerHeight * 5}px top`,
+      onEnter: () => highlightCollection(collections, 3), // Owners Club
+      onEnterBack: () => highlightCollection(collections, 3),
+    });
+
+    // Banner 6 highlight
+    ScrollTrigger.create({
+      trigger: heroSection,
+      start: `${bannerHeight * 5}px top`,
+      end: `${bannerHeight * 6}px top`,
+      onEnter: () => highlightCollection(collections, 4), // Woman
+      onEnterBack: () => highlightCollection(collections, 4),
+    });
+
+    // Handle window resize
+    const handleResize = () => {
+      ScrollTrigger.refresh();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      ScrollTrigger.getAll().forEach((trigger: any) => trigger.kill());
+    };
+  }, []);
+
+  // Helper function to highlight active collection
+  const highlightCollection = (collections: NodeListOf<Element>, activeIndex: number) => {
+    collections.forEach((item, index) => {
+      if (index === activeIndex) {
+        gsap.to(item, {color: 'rgba(255, 255, 255, 1)', duration: 0.3});
+      } else {
+        gsap.to(item, {color: 'rgba(255, 255, 255, 0.4)', duration: 0.3});
+      }
+    });
   };
-}
 
-export default function Homepage() {
-  const data = useLoaderData<typeof loader>();
   return (
-    <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+    <div className="homepage">
+      <HeroBanner heroSectionRef={heroSectionRef} />
+      <FloatingMenu floatingMenuRef={floatingMenuRef} />
     </div>
   );
 }
 
-function FeaturedCollection({
-  collection,
+function HeroBanner({
+  heroSectionRef,
 }: {
-  collection: FeaturedCollectionFragment;
+  heroSectionRef: React.RefObject<HTMLElement>;
 }) {
-  if (!collection) return null;
-  const image = collection?.image;
-  return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
-  );
-}
+  const banners = [
+    {id: 1, src: banner1, alt: 'Banner 1'},
+    {id: 2, src: banner2, alt: 'Banner 2'},
+    {id: 3, src: banner3, alt: 'Banner 3'},
+    {id: 4, src: banner4, alt: 'Banner 4'},
+    {id: 5, src: banner2, alt: 'Banner 5'}, // Repeat banner 2
+    {id: 6, src: banner1, alt: 'Banner 6'}, // Repeat banner 1
+  ];
 
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
   return (
-    <div className="recommended-products">
-      <h2>Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
-                : null}
+    <section className="hero-section" ref={heroSectionRef}>
+      {/* First Banner with Hero Content */}
+      <div className="hero-banner-wrapper">
+        <img
+          src={banners[0].src}
+          alt={banners[0].alt}
+          className="hero-banner-image"
+        />
+        <div className="hero-overlay">
+          <div className="hero-content">
+            <p className="hero-label">NOW LIVE</p>
+            <h1 className="hero-title">REPRESENT X PUMA HOOPS</h1>
+            <div className="hero-buttons">
+              <Link to="/shop" className="hero-button">
+                NEW ARRIVALS
+              </Link>
+              <Link to="/collections" className="hero-button">
+                VIEW LOOKBOOK
+              </Link>
             </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
-    </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Remaining Banners */}
+      {banners.slice(1).map((banner) => (
+        <div key={banner.id} className="banner-wrapper">
+          <img src={banner.src} alt={banner.alt} className="banner-image" />
+        </div>
+      ))}
+    </section>
   );
 }
 
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
-    id
-    title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-    handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...FeaturedCollection
-      }
-    }
-  }
-` as const;
+function FloatingMenu({
+  floatingMenuRef,
+}: {
+  floatingMenuRef: React.RefObject<HTMLElement>;
+}) {
+  const collections = [
+    {id: 1, name: "Fall/Winter '25", handle: 'fall-winter-25'},
+    {id: 2, name: '247', handle: '247'},
+    {id: 3, name: 'Initial', handle: 'initial'},
+    {id: 4, name: 'Owners Club', handle: 'owners-club'},
+    {id: 5, name: 'Woman', handle: 'woman'},
+  ];
 
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
-    id
-    title
-    handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    featuredImage {
-      id
-      url
-      altText
-      width
-      height
-    }
-  }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...RecommendedProduct
-      }
-    }
-  }
-` as const;
+  return (
+    <section className="floating-menu" ref={floatingMenuRef}>
+      <h2 className="floating-menu-title">EXPLORE COLLECTIONS</h2>
+      <nav className="floating-menu-nav">
+        {collections.map((collection) => (
+          <Link
+            key={collection.id}
+            to={`/collections/${collection.handle}`}
+            className="floating-menu-item"
+          >
+            {collection.name}
+          </Link>
+        ))}
+      </nav>
+      <Link to="/collections" className="floating-menu-discover">
+        → DISCOVER
+      </Link>
+    </section>
+  );
+}

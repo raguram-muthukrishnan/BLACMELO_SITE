@@ -6,8 +6,9 @@ import type {
   HeaderQuery,
 } from 'storefrontapi.generated';
 import {Aside} from '~/components/Aside';
-import {Footer} from '~/components/Footer';
-import {Header, HeaderMenu} from '~/components/Header';
+import {Footer} from '~/components/layout/Footer';
+import {Header} from '~/components/layout/Header';
+import {HeaderMenu} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
 import {
   SEARCH_ENDPOINT,
@@ -42,15 +43,14 @@ export function PageLayout({
           header={header}
           cart={cart}
           isLoggedIn={isLoggedIn}
-          publicStoreDomain={publicStoreDomain}
         />
       )}
-      <main>{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      <main style={{margin: 0, padding: 0, width: '100%'}}>{children}</main>
+      <Suspense fallback={null}>
+        <Await resolve={footer}>
+          {(footerData) => <Footer footer={footerData} />}
+        </Await>
+      </Suspense>
     </Aside.Provider>
   );
 }
