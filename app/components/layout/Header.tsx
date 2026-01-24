@@ -1,12 +1,94 @@
 import {NavLink} from 'react-router';
+import {useState, useRef, useCallback} from 'react';
 import type {HeaderQuery} from 'storefrontapi.generated';
 import logo from '~/assets/logos/Logo.avif';
+import HoverMenu from '~/components/ui/HoverMenu';
+import menuManImage from '~/assets/menu/menu_man.jpeg';
+import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 
 type HeaderProps = {
   header: HeaderQuery;
   cart: Promise<any>;
   isLoggedIn: Promise<boolean>;
 };
+
+// Menu configurations based on the reference image
+const manMenuSections = [
+  {
+    label: '', // No label - these appear bold at the top
+    link: '/collections',
+    items: [
+      {name: 'New Arrivals', link: '/collections/all'},
+      {name: 'Bestsellers', link: '/collections/all'},
+      {name: 'Restocked', link: '/collections/all'},
+      {name: 'Shop All', link: '/collections/all'}
+    ],
+    hasSubmenu: false,
+    isBold: true
+  },
+  {
+    label: 'FEATURED',
+    link: '/collections/men',
+    items: ['Fall Winter \'25', 'Owners Club', '247', 'Initial'],
+    hasSubmenu: false,
+    isBold: false
+  },
+  {
+    label: 'SHOP',
+    link: '/collections/men',
+    items: ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories', 'Gift Card', 'Outfits'],
+    hasSubmenu: true,
+    isBold: false
+  }
+];
+
+const womenMenuSections = [
+  {
+    label: '', // No label - these appear bold at the top
+    link: '/collections/women',
+    items: ['New Arrivals', 'Bestsellers', 'Restocked', 'Shop All'],
+    hasSubmenu: false,
+    isBold: true
+  },
+  {
+    label: 'FEATURED',
+    link: '/collections/women',
+    items: ['Fall Winter \'25', 'Woman', 'Unisex'],
+    hasSubmenu: false,
+    isBold: false
+  },
+  {
+    label: 'SHOP',
+    link: '/collections/women',
+    items: ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories', 'Gift Card'],
+    hasSubmenu: true,
+    isBold: false
+  }
+];
+
+const blacmeloPlusMenuSections = [
+  {
+    label: '', // No label - these appear bold at the top
+    link: '/collections/blacmelo-plus',
+    items: ['Owners Club', 'Join Now', 'Benefits'],
+    hasSubmenu: false,
+    isBold: true
+  },
+  {
+    label: 'EXCLUSIVE',
+    link: '/collections/blacmelo-plus',
+    items: ['Early Access', 'VIP Events', 'Personal Styling', 'Priority Support'],
+    hasSubmenu: false,
+    isBold: false
+  },
+  {
+    label: 'COLLECTIONS',
+    link: '/collections/blacmelo-plus',
+    items: ['Members Only', 'Limited Editions', 'Collaborations'],
+    hasSubmenu: false,
+    isBold: false
+  }
+];
 
 // User Icon SVG Component
 function UserIcon() {
@@ -47,8 +129,27 @@ function SearchIcon() {
 }
 
 export function Header({}: HeaderProps) {
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMenuEnter = useCallback((menu: string) => {
+    // Clear any pending close timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setActiveMenu(menu);
+  }, []);
+
+  const handleMenuLeave = useCallback(() => {
+    // Add a delay before closing the menu when cursor moves away
+    timeoutRef.current = setTimeout(() => {
+      setActiveMenu(null);
+    }, 300);
+  }, []);
+
   return (
-    <header className="blacmelo-header">
+    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''}`}>
       <div className="blacmelo-header-container">
         {/* Left Navigation */}
         <nav className="blacmelo-header-left">
@@ -62,16 +163,33 @@ export function Header({}: HeaderProps) {
             <SearchIcon />
           </button>
           
-          {/* Desktop Links */}
-          <NavLink prefetch="intent" to="/collections/men" className="blacmelo-header-link">
-            Man
-          </NavLink>
-          <NavLink prefetch="intent" to="/collections/women" className="blacmelo-header-link">
-            Women
-          </NavLink>
-          <NavLink prefetch="intent" to="/collections/blacmelo-plus" className="blacmelo-header-link">
-            Blacmelo +
-          </NavLink>
+          {/* Desktop Links with Hover Menus */}
+          <HoverMenu
+            title="Man"
+            sections={manMenuSections}
+            isOpen={activeMenu === 'man'}
+            onMouseEnter={() => handleMenuEnter('man')}
+            onMouseLeave={handleMenuLeave}
+            menuImage={menuManImage}
+          />
+          
+          <HoverMenu
+            title="Women"
+            sections={womenMenuSections}
+            isOpen={activeMenu === 'women'}
+            onMouseEnter={() => handleMenuEnter('women')}
+            onMouseLeave={handleMenuLeave}
+            menuImage={menuWomanImage}
+          />
+          
+          <HoverMenu
+            title="Blacmelo +"
+            sections={blacmeloPlusMenuSections}
+            isOpen={activeMenu === 'blacmelo'}
+            onMouseEnter={() => handleMenuEnter('blacmelo')}
+            onMouseLeave={handleMenuLeave}
+            menuImage={menuManImage}
+          />
         </nav>
 
         {/* Center Logo */}

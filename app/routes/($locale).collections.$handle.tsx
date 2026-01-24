@@ -3,7 +3,7 @@ import type {Route} from './+types/collections.$handle';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {ProductItem} from '~/components/ProductItem';
+import {ProductCard} from '~/components/ProductCard';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 
 export const meta: Route.MetaFunction = ({data}) => {
@@ -69,21 +69,27 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="collection-page">
+      <div className="collection-header">
+        <h1 className="collection-title">{collection.title}</h1>
+        {collection.description && (
+          <p className="collection-description">{collection.description}</p>
+        )}
+      </div>
+      
       <PaginatedResourceSection<ProductItemFragment>
         connection={collection.products}
-        resourcesClassName="products-grid"
+        resourcesClassName="product-grid"
       >
         {({node: product, index}) => (
-          <ProductItem
+          <ProductCard
             key={product.id}
             product={product}
-            loading={index < 8 ? 'eager' : undefined}
+            loading={index < 8 ? 'eager' : 'lazy'}
           />
         )}
       </PaginatedResourceSection>
+      
       <Analytics.CollectionView
         data={{
           collection: {
@@ -111,6 +117,24 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       url
       width
       height
+    }
+    images(first: 2) {
+      nodes {
+        id
+        altText
+        url
+        width
+        height
+      }
+    }
+    variants(first: 10) {
+      nodes {
+        id
+        selectedOptions {
+          name
+          value
+        }
+      }
     }
     priceRange {
       minVariantPrice {
