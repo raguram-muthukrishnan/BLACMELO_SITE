@@ -8,9 +8,7 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
+import {ProductPage} from '~/components/ProductPage';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 export const meta: Route.MetaFunction = ({data}) => {
@@ -45,22 +43,30 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
-  const [{product}] = await Promise.all([
+  const [{product}, {productRecommendations}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
-    // Add other queries here, so that they are loaded in parallel
+    storefront.query(RECOMMENDED_PRODUCTS_QUERY, {
+      variables: {productId: ''}, // Will be updated after product fetch
+    }).catch(() => ({productRecommendations: []})),
   ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
+  // Fetch recommendations with actual product ID
+  const {productRecommendations: recommendations} = await storefront.query(RECOMMENDED_PRODUCTS_QUERY, {
+    variables: {productId: product.id},
+  }).catch(() => ({productRecommendations: []}));
+
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
   return {
     product,
+    recommendations: recommendations || [],
   };
 }
 
@@ -77,7 +83,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 }
 
 export default function Product() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, recommendations} = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -95,31 +101,28 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  // Transform recommendations for ProductCard
+  const transformedRecommendations = recommendations?.map((rec: any) => ({
+    id: rec.id,
+    handle: rec.handle,
+    title: rec.title,
+    vendor: rec.vendor,
+    featuredImage: rec.featuredImage,
+    images: rec.images,
+    priceRange: rec.priceRange,
+    compareAtPriceRange: rec.compareAtPriceRange,
+    variants: rec.variants,
+    options: rec.options,
+  })) || [];
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
-      </div>
+    <>
+      <ProductPage
+        product={product}
+        selectedVariant={selectedVariant}
+        productOptions={productOptions}
+        recommendations={transformedRecommendations}
+      />
       <Analytics.ProductView
         data={{
           products: [
@@ -135,7 +138,7 @@ export default function Product() {
           ],
         }}
       />
-    </div>
+    </>
   );
 }
 
@@ -186,6 +189,15 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    images(first: 20) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
     options {
       name
       optionValues {
@@ -229,4 +241,71 @@ const PRODUCT_QUERY = `#graphql
     }
   }
   ${PRODUCT_FRAGMENT}
+` as const;
+
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  query ProductPageRecommendations(
+    $productId: ID!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    productRecommendations(productId: $productId) {
+      id
+      handle
+      title
+      vendor
+      featuredImage {
+        id
+        url
+        altText
+        width
+        height
+      }
+      images(first: 2) {
+        nodes {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      variants(first: 10) {
+        nodes {
+          id
+          availableForSale
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+      options {
+        name
+        optionValues {
+          name
+        }
+      }
+    }
+  }
 ` as const;

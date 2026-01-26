@@ -20,7 +20,7 @@ interface ProductVariant {
   }>;
 }
 
-interface ProductCardProduct {
+export interface ProductCardProduct {
   id: string;
   handle: string;
   title: string;
@@ -48,19 +48,44 @@ interface ProductCardProps {
   loading?: 'eager' | 'lazy';
 }
 
+// Plus icon for quick add
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export function ProductCard({product, loading}: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [showSizes, setShowSizes] = useState(false);
   
   // Get all product images, or use featured image as fallback
   const images = product.images?.nodes || (product.featuredImage ? [product.featuredImage] : []);
   const currentImage = images[currentImageIndex] || product.featuredImage;
   
-  // Get product variant info
+  // Get product variant info - extract color and size from options
   const firstVariant = product.variants?.nodes?.[0];
   const variantCount = product.variants?.nodes?.length || 0;
+  
+  // Get color value from first variant
+  const colorOption = firstVariant?.selectedOptions?.find(
+    (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+  );
+  const colorValue = colorOption?.value || '';
   const hasMultipleColors = variantCount > 1;
   
+  // Get available sizes from variants
+  const availableSizes = product.variants?.nodes
+    ?.map(v => v.selectedOptions?.find(
+      (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'size'
+    )?.value)
+    .filter((size, index, arr) => size && arr.indexOf(size) === index) || [];
+  
   const handleMouseEnter = () => {
+    setIsHovered(true);
     // Switch to second image on hover if available
     if (images.length > 1) {
       setCurrentImageIndex(1);
@@ -68,8 +93,29 @@ export function ProductCard({product, loading}: ProductCardProps) {
   };
   
   const handleMouseLeave = () => {
+    setIsHovered(false);
+    setShowSizes(false);
     // Return to first image
     setCurrentImageIndex(0);
+  };
+
+  const handleQuickAddClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (availableSizes.length > 0) {
+      setShowSizes(!showSizes);
+    } else {
+      // Direct add to cart if no sizes
+      console.log('Quick add:', product.handle);
+    }
+  };
+
+  const handleSizeSelect = (e: React.MouseEvent, size: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO: Add to cart with selected size
+    console.log('Add to cart:', product.handle, 'Size:', size);
+    setShowSizes(false);
   };
   
   return (
@@ -81,34 +127,71 @@ export function ProductCard({product, loading}: ProductCardProps) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="product-card-image">
-        {currentImage && (
+        {/* Primary Image (first) */}
+        {images[0] && (
           <Image
-            data={currentImage}
-            alt={currentImage.altText || product.title}
-            aspectRatio="3/4"
-            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            data={images[0]}
+            alt={images[0].altText || product.title}
+            sizes="(min-width: 1200px) 16vw, (min-width: 768px) 25vw, 50vw"
             loading={loading}
+            className={`product-card-img product-card-img-primary ${isHovered && images.length > 1 ? 'fade-out' : ''}`}
           />
         )}
+        
+        {/* Secondary Image (hover) */}
+        {images[1] && (
+          <Image
+            data={images[1]}
+            alt={images[1].altText || product.title}
+            sizes="(min-width: 1200px) 16vw, (min-width: 768px) 25vw, 50vw"
+            loading="lazy"
+            className={`product-card-img product-card-img-secondary ${isHovered ? 'fade-in' : ''}`}
+          />
+        )}
+        
+        {/* Size Selector - center bottom of card */}
+        {showSizes && availableSizes.length > 0 && (
+          <div className="product-card-sizes">
+            {availableSizes.map((size) => (
+              <button
+                key={size}
+                className="product-card-size-btn"
+                onClick={(e) => handleSizeSelect(e, size as string)}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Plus Icon - bottom right */}
+        <button 
+          className={`product-card-quick-add ${isHovered ? 'visible' : ''}`}
+          onMouseEnter={() => availableSizes.length > 0 && setShowSizes(true)}
+          onMouseLeave={() => setShowSizes(false)}
+          onClick={handleQuickAddClick}
+          aria-label="Quick add to cart"
+        >
+          <PlusIcon />
+        </button>
       </div>
       
       <div className="product-card-info">
-        <h3 className="product-card-title">{product.title}</h3>
-        
-        {firstVariant?.selectedOptions && (
-          <p className="product-card-variant">
-            {firstVariant.selectedOptions
-              .filter((option: {name: string; value: string}) => option.name !== 'Title')
-              .map((option: {name: string; value: string}) => option.value)
-              .join(' · ')}
-            {hasMultipleColors && ` · ${variantCount} Colours`}
-          </p>
-        )}
-        
-        <div className="product-card-price">
-          {product.priceRange?.minVariantPrice && (
-            <Money data={product.priceRange.minVariantPrice} />
-          )}
+        <div className="product-card-info-row">
+          <div className="product-card-info-left">
+            <h3 className="product-card-title">{product.title}</h3>
+            <p className="product-card-variant">
+              {colorValue}
+              {hasMultipleColors && <span className="product-card-colors">{variantCount} Colours</span>}
+            </p>
+          </div>
+          <div className="product-card-info-right">
+            {product.priceRange?.minVariantPrice && (
+              <span className="product-card-price">
+                <Money data={product.priceRange.minVariantPrice} />
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Link>

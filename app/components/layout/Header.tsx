@@ -13,30 +13,40 @@ type HeaderProps = {
 };
 
 // Menu configurations based on the reference image
+// Both Man and Women sections point to the same Unisex collection
 const manMenuSections = [
   {
     label: '', // No label - these appear bold at the top
-    link: '/collections',
+    link: '/collections/unisex',
     items: [
-      {name: 'New Arrivals', link: '/collections/all'},
-      {name: 'Bestsellers', link: '/collections/all'},
-      {name: 'Restocked', link: '/collections/all'},
-      {name: 'Shop All', link: '/collections/all'}
+      {name: 'New Arrivals', link: '/collections/unisex'},
+      {name: 'Bestsellers', link: '/collections/unisex'},
+      {name: 'Restocked', link: '/collections/unisex'},
+      {name: 'Shop All', link: '/collections/unisex'}
     ],
     hasSubmenu: false,
     isBold: true
   },
   {
     label: 'FEATURED',
-    link: '/collections/men',
-    items: ['Fall Winter \'25', 'Owners Club', '247', 'Initial'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Fall Winter \'25', link: '/collections/unisex'},
+      {name: 'Owners Club', link: '/collections/unisex'},
+      {name: '247', link: '/collections/unisex'},
+      {name: 'Initial', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: false
   },
   {
     label: 'SHOP',
-    link: '/collections/men',
-    items: ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories', 'Gift Card', 'Outfits'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Clothing', link: '/collections/unisex'},
+      {name: 'Footwear', link: '/collections/unisex'},
+      {name: 'Accessories', link: '/collections/unisex'}
+    ],
     hasSubmenu: true,
     isBold: false
   }
@@ -45,22 +55,35 @@ const manMenuSections = [
 const womenMenuSections = [
   {
     label: '', // No label - these appear bold at the top
-    link: '/collections/women',
-    items: ['New Arrivals', 'Bestsellers', 'Restocked', 'Shop All'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'New Arrivals', link: '/collections/unisex'},
+      {name: 'Bestsellers', link: '/collections/unisex'},
+      {name: 'Restocked', link: '/collections/unisex'},
+      {name: 'Shop All', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: true
   },
   {
     label: 'FEATURED',
-    link: '/collections/women',
-    items: ['Fall Winter \'25', 'Woman', 'Unisex'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Fall Winter \'25', link: '/collections/unisex'},
+      {name: 'Woman', link: '/collections/unisex'},
+      {name: 'Unisex', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: false
   },
   {
     label: 'SHOP',
-    link: '/collections/women',
-    items: ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories', 'Gift Card'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Clothing', link: '/collections/unisex'},
+      {name: 'Footwear', link: '/collections/unisex'},
+      {name: 'Accessories', link: '/collections/unisex'}
+    ],
     hasSubmenu: true,
     isBold: false
   }
@@ -69,22 +92,35 @@ const womenMenuSections = [
 const blacmeloPlusMenuSections = [
   {
     label: '', // No label - these appear bold at the top
-    link: '/collections/blacmelo-plus',
-    items: ['Owners Club', 'Join Now', 'Benefits'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Owners Club', link: '/collections/unisex'},
+      {name: 'Join Now', link: '/collections/unisex'},
+      {name: 'Benefits', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: true
   },
   {
     label: 'EXCLUSIVE',
-    link: '/collections/blacmelo-plus',
-    items: ['Early Access', 'VIP Events', 'Personal Styling', 'Priority Support'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Early Access', link: '/collections/unisex'},
+      {name: 'VIP Events', link: '/collections/unisex'},
+      {name: 'Personal Styling', link: '/collections/unisex'},
+      {name: 'Priority Support', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: false
   },
   {
     label: 'COLLECTIONS',
-    link: '/collections/blacmelo-plus',
-    items: ['Members Only', 'Limited Editions', 'Collaborations'],
+    link: '/collections/unisex',
+    items: [
+      {name: 'Members Only', link: '/collections/unisex'},
+      {name: 'Limited Editions', link: '/collections/unisex'},
+      {name: 'Collaborations', link: '/collections/unisex'}
+    ],
     hasSubmenu: false,
     isBold: false
   }
