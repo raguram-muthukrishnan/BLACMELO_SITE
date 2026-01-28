@@ -5,11 +5,11 @@ import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
 
 // Extended product type with images and variants
 interface ProductImage {
-  id?: string;
+  id?: string | null;
   altText?: string | null;
   url: string;
-  width?: number;
-  height?: number;
+  width?: number | null;
+  height?: number | null;
 }
 
 interface ProductVariant {

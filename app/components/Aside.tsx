@@ -52,10 +52,15 @@ export function Aside({
     return () => abortController.abort();
   }, [close, expanded]);
 
+  // Don't render anything if not expanded to avoid layout issues
+  if (!expanded) {
+    return null;
+  }
+
   return (
     <div
       aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
+      className="overlay expanded"
       role="dialog"
     >
       <button className="close-outside" onClick={close} />

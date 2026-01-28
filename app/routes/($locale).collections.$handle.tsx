@@ -12,7 +12,7 @@ export async function loader(args: LoaderFunctionArgs) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
 
-  // Await the critical data required to render initial state of the page
+  // Await the critical data required to render initial state of the page~~
   const criticalData = await loadCriticalData(args);
 
   return {...deferredData, ...criticalData};

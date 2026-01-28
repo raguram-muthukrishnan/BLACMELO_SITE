@@ -3,11 +3,12 @@ import {useEffect, useRef} from 'react';
 import type {Route} from './+types/_index';
 import {gsap} from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
+import {ParallaxImage} from '~/components/motion/ParallaxImage';
+import {Reveal} from '~/components/motion/Reveal';
 import banner1 from '~/assets/banner images/1.jpeg';
 import banner2 from '~/assets/banner images/2.jpeg';
 import banner3 from '~/assets/banner images/3.jpeg';
 import banner4 from '~/assets/banner images/4.png';
-
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,7 +21,7 @@ export default function Homepage() {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!floatingMenuRef.current || !heroSectionRef.current) return;
+    if (!heroSectionRef.current) return;
 
     const menu = floatingMenuRef.current;
     const heroSection = heroSectionRef.current;
@@ -28,76 +29,39 @@ export default function Homepage() {
     // Use viewport height for banner calculations
     const bannerHeight = window.innerHeight;
 
-    // Set initial position - menu starts hidden, will come with banner 2
-    gsap.set(menu, {
-      position: 'absolute',
-      left: '50%',
-      top: bannerHeight * 2, // Start at the top of banner 2
-      xPercent: -50,
-      yPercent: 0,
-      opacity: 1,
-    });
+    // Sticky menu visibility (matches reference: appears during collections section,
+    // then disappears as the final media finishes)
+    if (menu) {
+      gsap.set(menu, {opacity: 0});
 
-    // Phase 1: Menu enters WITH banner 2 from bottom (like banner movement)
-    // Menu moves from bottom of banner 2 to center as banner 2 scrolls up
-    gsap.fromTo(menu, 
-      {
-        position: 'absolute',
-        top: bannerHeight * 2 + bannerHeight, // Start at bottom of banner 2
-        yPercent: 0,
-      },
-      {
-        position: 'fixed',
-        top: '50%',
-        yPercent: -50,
+      gsap.to(menu, {
+        opacity: 1,
         ease: 'none',
         scrollTrigger: {
           trigger: heroSection,
-          start: `${bannerHeight}px top`, // When banner 2 starts entering
-          end: `${bannerHeight + bannerHeight * 0.4}px top`, // 40% into banner 2
+          start: `${bannerHeight * 1}px top`, // start of banner 2
+          end: `${bannerHeight * 1.2}px top`,
           scrub: 1,
         },
-      }
-    );
+      });
 
-    // Phase 2: Menu stays fixed in center while banners 2-4 scroll behind
-    ScrollTrigger.create({
-      trigger: heroSection,
-      start: `${bannerHeight + bannerHeight * 0.4}px top`,
-      end: `${bannerHeight * 4 + bannerHeight * 0.6}px top`, // Until 60% into banner 5
-      onEnter: () => {
-        gsap.set(menu, {
-          position: 'fixed',
-          top: '50%',
-          yPercent: -50,
-        });
-      },
-      onEnterBack: () => {
-        gsap.set(menu, {
-          position: 'fixed',
-          top: '50%',
-          yPercent: -50,
-        });
-      },
-    });
-
-    // Phase 3: Menu exits WITH banner 5 (goes down with the banner)
-    gsap.to(menu, {
-      position: 'absolute',
-      top: bannerHeight * 5 + bannerHeight, // Bottom of banner 6
-      yPercent: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroSection,
-        start: `${bannerHeight * 4 + bannerHeight * 0.6}px top`, // 60% into banner 5
-        end: `${bannerHeight * 5}px top`, // End of banner 5
-        scrub: 1,
-      },
-    });
+      gsap.to(menu, {
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroSection,
+          start: `${bannerHeight * 5.7}px top`, // late in banner 6
+          end: `${bannerHeight * 6}px top`,
+          scrub: 1,
+        },
+      });
+    }
 
     // Text highlighting based on current banner
-    const collections = menu.querySelectorAll('.floating-menu-item');
-    
+    const collections =
+      menu?.querySelectorAll('.floating-menu-item') ??
+      document.querySelectorAll('.floating-menu-item');
+
     // Banner 2 highlight
     ScrollTrigger.create({
       trigger: heroSection,
@@ -157,7 +121,10 @@ export default function Homepage() {
   }, []);
 
   // Helper function to highlight active collection
-  const highlightCollection = (collections: NodeListOf<Element>, activeIndex: number) => {
+  const highlightCollection = (
+    collections: NodeListOf<Element>,
+    activeIndex: number,
+  ) => {
     collections.forEach((item, index) => {
       if (index === activeIndex) {
         gsap.to(item, {color: 'rgba(255, 255, 255, 1)', duration: 0.3});
@@ -169,16 +136,20 @@ export default function Homepage() {
 
   return (
     <div className="homepage">
-      <HeroBanner heroSectionRef={heroSectionRef} />
-      <FloatingMenu floatingMenuRef={floatingMenuRef} />
+      <HeroBanner
+        heroSectionRef={heroSectionRef}
+        floatingMenuRef={floatingMenuRef}
+      />
     </div>
   );
 }
 
 function HeroBanner({
   heroSectionRef,
+  floatingMenuRef,
 }: {
   heroSectionRef: React.RefObject<HTMLElement>;
+  floatingMenuRef: React.RefObject<HTMLElement>;
 }) {
   const banners = [
     {id: 1, src: banner1, alt: 'Banner 1'},
@@ -193,13 +164,14 @@ function HeroBanner({
     <section className="hero-section" ref={heroSectionRef}>
       {/* First Banner with Hero Content */}
       <div className="hero-banner-wrapper">
-        <img
+        <ParallaxImage
           src={banners[0].src}
           alt={banners[0].alt}
-          className="hero-banner-image"
+          strength={10}
+          className="absolute inset-0 h-[120%] w-full object-cover"
         />
         <div className="hero-overlay">
-          <div className="hero-content">
+          <Reveal className="hero-content">
             <p className="hero-label">NOW LIVE</p>
             <h1 className="hero-title">REPRESENT X PUMA HOOPS</h1>
             <div className="hero-buttons">
@@ -210,14 +182,22 @@ function HeroBanner({
                 VIEW LOOKBOOK
               </Link>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
+
+      {/* Sticky overlay menu (starts with banner 2) */}
+      <FloatingMenu floatingMenuRef={floatingMenuRef} />
 
       {/* Remaining Banners */}
       {banners.slice(1).map((banner) => (
         <div key={banner.id} className="banner-wrapper">
-          <img src={banner.src} alt={banner.alt} className="banner-image" />
+          <ParallaxImage
+            src={banner.src}
+            alt={banner.alt}
+            strength={15}
+            className="absolute inset-0 h-[120%] w-full object-cover"
+          />
         </div>
       ))}
     </section>
@@ -238,22 +218,26 @@ function FloatingMenu({
   ];
 
   return (
-    <section className="floating-menu" ref={floatingMenuRef}>
-      <h2 className="floating-menu-title">EXPLORE COLLECTIONS</h2>
-      <nav className="floating-menu-nav">
-        {collections.map((collection) => (
-          <Link
-            key={collection.id}
-            to={`/collections/${collection.handle}`}
-            className="floating-menu-item"
-          >
-            {collection.name}
+    <div className="floating-menu-overlay">
+      <div className="floating-menu" ref={floatingMenuRef}>
+        <div className="floating-menu-inner">
+          <h2 className="floating-menu-title">EXPLORE COLLECTIONS</h2>
+          <nav className="floating-menu-nav">
+            {collections.map((collection) => (
+              <Link
+                key={collection.id}
+                to={`/collections/${collection.handle}`}
+                className="floating-menu-item"
+              >
+                {collection.name}
+              </Link>
+            ))}
+          </nav>
+          <Link to="/collections" className="floating-menu-discover">
+            → DISCOVER
           </Link>
-        ))}
-      </nav>
-      <Link to="/collections" className="floating-menu-discover">
-        → DISCOVER
-      </Link>
-    </section>
+        </div>
+      </div>
+    </div>
   );
 }
