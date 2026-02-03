@@ -186,175 +186,202 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
         </div>
 
         <div className="hero-right">
-          <div className="hero-header">
-            <div>
-              <h1 className="hero-title">{product.title}</h1>
-              {product.vendor && <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textTransform: 'uppercase' }}>{product.vendor}</div>}
-            </div>
-            <div className="hero-price">
-              {selectedVariant?.price && <Money data={selectedVariant.price} />}
-            </div>
-          </div>
-
-          {/* Color Selector */}
-          {colorOption && (
-            <div className="hero-colour">
-              <div className="colour-header">
-                <span>Select {colorOption.name}</span>
-                <span className="colour-name">{currentOptions[colorOption.name]}</span>
+          {openSection ? (
+            // Expanded Content View
+            <div className="hero-expanded-view">
+              <div className="hero-expanded-header">
+                <h2 className="hero-expanded-title">
+                  {openSection === 'product' ? 'Product Details' : 'Shipping & Returns'}
+                </h2>
+                <button 
+                  className="hero-expanded-close"
+                  onClick={() => setOpenSection(null)}
+                  aria-label="Close"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
               </div>
-              <div className="swatches">
-                {colorOption.optionValues.map((value) => {
-                  const isSelected = currentOptions[colorOption.name] === value.name;
-                  const swatchUrl = value.swatch?.image?.previewImage?.url;
-                  const swatchColor = value.swatch?.color;
+              <div className="hero-expanded-content">
+                {openSection === 'product' && (
+                  <>
+                    {product.descriptionHtml ? (
+                      <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+                    ) : (
+                      <p>{product.description || 'Product details will be displayed here.'}</p>
+                    )}
+                  </>
+                )}
+                {openSection === 'shipping' && (
+                  <>
+                    <p><strong>SHIPPING</strong></p>
+                    <ul>
+                      <li>Standard Shipping (3-5 Business Days)</li>
+                      <li>Express Shipping (1-2 Business Days)</li>
+                    </ul>
+                    <p style={{ marginTop: '1rem' }}><strong>RETURNS</strong></p>
+                    <p>14 day return policy for unused items with original tags.</p>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            // Normal Form View
+            <>
+              <div className="hero-header">
+                <div>
+                  <h1 className="hero-title">{product.title}</h1>
+                  {product.vendor && <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textTransform: 'uppercase' }}>{product.vendor}</div>}
+                </div>
+                <div className="hero-price">
+                  {selectedVariant?.price && <Money data={selectedVariant.price} />}
+                </div>
+              </div>
 
-                  return (
-                    <div
-                      key={value.name}
-                      className={`swatch-wrapper ${isSelected ? 'active' : ''}`}
-                      onClick={() => handleOptionChange(colorOption.name, value.name)}
-                    >
-                      {swatchUrl ? (
-                        <img src={swatchUrl} alt={value.name} className="swatch-image" />
-                      ) : swatchColor ? (
-                        <div className="swatch-image" style={{ backgroundColor: swatchColor }} />
-                      ) : (
+              {/* Color Selector */}
+              {colorOption && (
+                <div className="hero-colour">
+                  <div className="colour-header">
+                    <span>Select {colorOption.name}</span>
+                    <span className="colour-name">{currentOptions[colorOption.name]}</span>
+                  </div>
+                  <div className="swatches">
+                    {colorOption.optionValues.map((value) => {
+                      const isSelected = currentOptions[colorOption.name] === value.name;
+                      const swatchUrl = value.swatch?.image?.previewImage?.url;
+                      const swatchColor = value.swatch?.color;
+
+                      return (
+                        <div
+                          key={value.name}
+                          className={`swatch-wrapper ${isSelected ? 'active' : ''}`}
+                          onClick={() => handleOptionChange(colorOption.name, value.name)}
+                        >
+                          {swatchUrl ? (
+                            <img src={swatchUrl} alt={value.name} className="swatch-image" />
+                          ) : swatchColor ? (
+                            <div className="swatch-image" style={{ backgroundColor: swatchColor }} />
+                          ) : (
+                            <button
+                              className={`size-btn ${isSelected ? 'selected' : ''}`}
+                              style={{ width: 'auto', padding: '0 15px' }}
+                            >
+                              {value.name}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Size Selector */}
+              {sizeOption && (
+                <div style={{ marginBottom: '2rem' }}>
+                  <div className="size-header">
+                    <span>Select Size</span>
+                    <button className="size-guide-btn">Size Guide</button>
+                  </div>
+                  <div className="hero-sizes">
+                    {sizeOption.optionValues.map((value) => {
+                      const isSelected = currentOptions[sizeOption.name] === value.name;
+                      const available = isOptionAvailable(sizeOption.name, value.name);
+
+                      return (
                         <button
-                          className={`size-btn ${isSelected ? 'selected' : ''}`}
-                          style={{ width: 'auto', padding: '0 15px' }}
+                          key={value.name}
+                          className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
+                          onClick={() => available && handleOptionChange(sizeOption.name, value.name)}
+                          disabled={!available}
                         >
                           {value.name}
                         </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Size Selector */}
-          {sizeOption && (
-            <div style={{ marginBottom: '2rem' }}>
-              <div className="size-header">
-                <span>Select Size</span>
-                <button className="size-guide-btn">Size Guide</button>
-              </div>
-              <div className="hero-sizes">
-                {sizeOption.optionValues.map((value) => {
-                  const isSelected = currentOptions[sizeOption.name] === value.name;
-                  const available = isOptionAvailable(sizeOption.name, value.name);
-
-                  return (
-                    <button
-                      key={value.name}
-                      className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
-                      onClick={() => available && handleOptionChange(sizeOption.name, value.name)}
-                      disabled={!available}
-                    >
-                      {value.name}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="hero-size-note">
-                <a href="#" style={{ fontSize: '11px', textDecoration: 'underline', color: '#666' }}>Size Not In Stock?</a>
-              </div>
-            </div>
-          )}
-
-          {/* Quantity Selector */}
-          <div className="quantity-selector">
-            <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>−</button>
-            <div className="quantity-display">{quantity}</div>
-            <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)}>+</button>
-          </div>
-
-          {/* Add To Cart */}
-          <div style={{ marginTop: '1rem' }}>
-            <AddToCartButton
-              lines={selectedVariant ? [{ merchandiseId: selectedVariant.id, quantity }] : []}
-              disabled={!selectedVariant || !selectedVariant.availableForSale}
-              analytics={{
-                products: [
-                  {
-                    productGid: product.id,
-                    variantGid: selectedVariant?.id,
-                    name: product.title,
-                    variantName: selectedVariant?.title,
-                    brand: product.vendor,
-                    price: selectedVariant?.price.amount,
-                    quantity: quantity,
-                  },
-                ],
-                totalValue: parseFloat(selectedVariant?.price.amount || '0') * quantity,
-              }}
-            >
-              <div className={`hero-cta ${!selectedVariant?.availableForSale ? 'disabled' : ''}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {selectedVariant?.availableForSale ? 'ADD TO CART' : 'SOLD OUT'}
-              </div>
-            </AddToCartButton>
-          </div>
-
-          {/* Benefits */}
-          <div className="hero-benefits">
-            <div className="benefit-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-              <span>EARN POINTS</span>
-            </div>
-            <div className="benefit-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-              <span>FREE SHIPPING OVER $300</span>
-            </div>
-            <div className="benefit-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-              <span>LIMITED STOCK</span>
-            </div>
-          </div>
-
-          {/* Accordions - REPRESENT Style */}
-          <div className="hero-expandable-sections">
-            <div className="expandable-section">
-              <button 
-                className="expandable-section-header"
-                onClick={() => toggleSection('product')}
-              >
-                <span className="expandable-icon">+</span>
-                <span className="expandable-title">Product Details</span>
-              </button>
-              {openSection === 'product' && (
-                <div className="expandable-content">
-                  {product.descriptionHtml ? (
-                    <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
-                  ) : (
-                    <p>{product.description || 'Product details will be displayed here.'}</p>
-                  )}
+                      );
+                    })}
+                  </div>
+                  <div className="hero-size-note">
+                    <a href="#" style={{ fontSize: '11px', textDecoration: 'underline', color: '#666' }}>Size Not In Stock?</a>
+                  </div>
                 </div>
               )}
-            </div>
 
-            <div className="expandable-section">
-              <button 
-                className="expandable-section-header"
-                onClick={() => toggleSection('shipping')}
-              >
-                <span className="expandable-icon">+</span>
-                <span className="expandable-title">Shipping & Returns</span>
-              </button>
-              {openSection === 'shipping' && (
-                <div className="expandable-content">
-                  <p><strong>SHIPPING</strong></p>
-                  <ul>
-                    <li>Standard Shipping (3-5 Business Days)</li>
-                    <li>Express Shipping (1-2 Business Days)</li>
-                  </ul>
-                  <p style={{ marginTop: '1rem' }}><strong>RETURNS</strong></p>
-                  <p>14 day return policy for unused items with original tags.</p>
+              {/* Quantity Selector & Add To Cart - Horizontal Layout */}
+              <div className="quantity-cart-container">
+                {/* Quantity Selector */}
+                <div className="quantity-selector">
+                  <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>−</button>
+                  <div className="quantity-display">{quantity}</div>
+                  <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)}>+</button>
                 </div>
-              )}
-            </div>
-          </div>
+
+                {/* Add To Cart */}
+                <AddToCartButton
+                  lines={selectedVariant ? [{ merchandiseId: selectedVariant.id, quantity }] : []}
+                  disabled={!selectedVariant || !selectedVariant.availableForSale}
+                  analytics={{
+                    products: [
+                      {
+                        productGid: product.id,
+                        variantGid: selectedVariant?.id,
+                        name: product.title,
+                        variantName: selectedVariant?.title,
+                        brand: product.vendor,
+                        price: selectedVariant?.price.amount,
+                        quantity: quantity,
+                      },
+                    ],
+                    totalValue: parseFloat(selectedVariant?.price.amount || '0') * quantity,
+                  }}
+                >
+                  <div className={`hero-cta ${!selectedVariant?.availableForSale ? 'disabled' : ''}`}>
+                    {selectedVariant?.availableForSale ? 'ADD TO CART' : 'SOLD OUT'}
+                  </div>
+                </AddToCartButton>
+              </div>
+
+              {/* Benefits */}
+              <div className="hero-benefits">
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                  <span>EARN POINTS</span>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                  <span>FREE SHIPPING OVER $300</span>
+                </div>
+                <div className="benefit-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <span>LIMITED STOCK</span>
+                </div>
+              </div>
+
+              {/* Accordions - REPRESENT Style */}
+              <div className="hero-expandable-sections">
+                <div className="expandable-section">
+                  <button 
+                    className="expandable-section-header"
+                    onClick={() => toggleSection('product')}
+                  >
+                    <span className="expandable-icon">+</span>
+                    <span className="expandable-title">Product Details</span>
+                  </button>
+                </div>
+
+                <div className="expandable-section">
+                  <button 
+                    className="expandable-section-header"
+                    onClick={() => toggleSection('shipping')}
+                  >
+                    <span className="expandable-icon">+</span>
+                    <span className="expandable-title">Shipping & Returns</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </section>
     </>

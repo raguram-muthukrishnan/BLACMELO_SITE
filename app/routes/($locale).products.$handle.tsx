@@ -1,5 +1,6 @@
-import { redirect, useLoaderData } from 'react-router';
+import { redirect, useLoaderData, Link } from 'react-router';
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
+import { useEffect } from 'react';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -7,12 +8,17 @@ import {
   getProductOptions,
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
+  Image,
+  Money,
 } from '@shopify/hydrogen';
 import { ProductHero } from '~/components/ProductHero';
 import { SplitFeatures } from '~/components/SplitFeatures';
 import { GalleryCarousel } from '~/components/GalleryCarousel';
 import { ProductGrid } from '~/components/ProductGrid';
+import { CollectionTabs } from '~/components/CollectionTabs';
+import { RecentlyViewed } from '~/components/RecentlyViewed';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
+import { addToRecentlyViewed } from '~/lib/recentlyViewed';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -59,12 +65,29 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     variables: { productId: product.id },
   }).catch(() => ({ productRecommendations: [] }));
 
+  // Fetch specific collections for "You May Also Like" section
+  const collectionHandles = ['bestseller', 'new-in', 'bottoms', 'tops'];
+  
+  const collectionsData = await Promise.all(
+    collectionHandles.map(collectionHandle =>
+      storefront.query(COLLECTION_BY_HANDLE_QUERY, {
+        variables: { handle: collectionHandle }
+      }).catch(() => ({ collection: null }))
+    )
+  );
+
+  // Filter out null collections
+  const collections = collectionsData
+    .map(data => data.collection)
+    .filter(Boolean);
+
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
 
   return {
     product,
     recommendations: recommendations || [],
+    collections,
   };
 }
 
@@ -81,7 +104,7 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product, recommendations } = useLoaderData<typeof loader>();
+  const { product, recommendations, collections } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -98,6 +121,22 @@ export default function Product() {
     ...product,
     selectedOrFirstAvailableVariant: selectedVariant,
   });
+
+  // Track recently viewed products
+  useEffect(() => {
+    if (product && selectedVariant) {
+      addToRecentlyViewed({
+        id: product.id,
+        handle: product.handle,
+        title: product.title,
+        price: {
+          amount: selectedVariant.price.amount,
+          currencyCode: selectedVariant.price.currencyCode,
+        },
+        image: product.featuredImage || product.images?.nodes[0],
+      });
+    }
+  }, [product, selectedVariant]);
 
   // Transform recommendations for ProductCard
   const transformedRecommendations = recommendations?.map((rec: any) => ({
@@ -149,16 +188,40 @@ export default function Product() {
         products={transformedRecommendations.slice(0, 4)}
       />
 
-      <ProductGrid
-        title="YOU MAY ALSO LIKE"
-        products={transformedRecommendations}
-        tabs={['SUGGESTED', 'HOODIES', 'PANTS', 'T-SHIRTS']}
-      />
+      {/* Display each collection as a separate section */}
+      {collections && collections.map((collection) => (
+        <section key={collection.id} className="section-styled">
+          <div className="product-grid">
+            {collection.products.nodes.slice(0, 4).map((product) => {
+              const image = product.featuredImage || product.images?.nodes[0];
+              return (
+                <Link key={product.id} to={`/products/${product.handle}`} className="product-card">
+                  <div className="card-image-wrapper">
+                    {image && (
+                      <Image
+                        data={image}
+                        sizes="(min-width: 1024px) 25vw, 50vw"
+                        className="card-image"
+                      />
+                    )}
+                  </div>
+                  <div className="card-info">
+                    <h3 className="card-title">{product.title}</h3>
+                    <div className="card-price">
+                      <Money data={product.priceRange.minVariantPrice} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <Link to={`/collections/${collection.handle}`} className="load-more-btn">
+            VIEW ALL {collection.title.toUpperCase()}
+          </Link>
+        </section>
+      ))}
 
-      <ProductGrid
-        title="RECENTLY VIEWED ITEMS"
-        products={transformedRecommendations.slice(0, 4)}
-      />
+      <RecentlyViewed />
 
 
     </>
@@ -329,6 +392,49 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
           name
         }
       }
+    }
+  }
+` as const;
+
+const COLLECTION_BY_HANDLE_QUERY = `#graphql
+  fragment CollectionWithProducts on Collection {
+    id
+    title
+    handle
+    products(first: 4) {
+      nodes {
+        id
+        title
+        handle
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        images(first: 2) {
+          nodes {
+            id
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+  query CollectionByHandle($handle: String!, $country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      ...CollectionWithProducts
     }
   }
 ` as const;

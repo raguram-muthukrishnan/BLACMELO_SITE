@@ -16,14 +16,19 @@ interface MenuItem {
   isBold?: boolean;
 }
 
-interface HoverMenuProps {
-  title: string;
+interface MenuConfig {
   sections: MenuItem[];
-  isOpen: boolean;
-  onMouseEnter: () => void;
+  image: string;
+}
+
+interface UnifiedHoverMenuProps {
+  activeMenu: string | null;
+  menuConfigs: {
+    man: MenuConfig;
+    women: MenuConfig;
+    blacmelo: MenuConfig;
+  };
   onMouseLeave: () => void;
-  menuImage?: string;
-  titleLink?: string; // Custom link for the title
 }
 
 // Arrow icon for expandable items
@@ -48,19 +53,14 @@ function ChevronRight() {
   );
 }
 
-export function HoverMenu({
-  title,
-  sections,
-  isOpen,
-  onMouseEnter,
+export function UnifiedHoverMenu({
+  activeMenu,
+  menuConfigs,
   onMouseLeave,
-  menuImage,
-  titleLink,
-}: HoverMenuProps) {
+}: UnifiedHoverMenuProps) {
   const [mounted, setMounted] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -72,23 +72,21 @@ export function HoverMenu({
     };
   }, []);
 
-  // Reset expanded item when menu closes
+  // Reset expanded item when menu changes
   useEffect(() => {
-    if (!isOpen) {
+    if (!activeMenu) {
       setExpandedItem(null);
     }
-  }, [isOpen]);
+  }, [activeMenu]);
 
   const handleMouseEnter = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    onMouseEnter();
-  }, [onMouseEnter]);
+  }, []);
 
   const handleMouseLeave = useCallback(() => {
-    // Add a small delay before closing to allow moving between trigger and menu
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -110,19 +108,24 @@ export function HoverMenu({
     }
     return item.name;
   };
-  
-  const menuContent = isOpen && mounted ? (
+
+  if (!activeMenu || !mounted) return null;
+
+  const currentConfig = menuConfigs[activeMenu as keyof typeof menuConfigs];
+  if (!currentConfig) return null;
+
+  const menuContent = (
     <div 
       ref={menuRef}
-      className="hover-menu-overlay"
+      className="unified-hover-menu-overlay"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="hover-menu-dropdown">
-        <div className="hover-menu-content" key={title}>
+        <div className="hover-menu-content" key={activeMenu}>
           {/* Left side - Menu sections */}
           <div className="hover-menu-sections">
-            {sections.map((section, idx) => (
+            {currentConfig.sections.map((section, idx) => (
               <div key={idx} className={`hover-menu-section ${section.isBold ? 'bold-section' : ''}`}>
                 {section.label && (
                   <h3 className="hover-menu-section-title">{section.label}</h3>
@@ -160,30 +163,15 @@ export function HoverMenu({
           </div>
           
           {/* Right side - Image */}
-          {menuImage && (
-            <div className="hover-menu-image">
-              <img src={menuImage} alt={`${title} collection`} />
-            </div>
-          )}
+          <div className="hover-menu-image">
+            <img src={currentConfig.image} alt={`${activeMenu} collection`} />
+          </div>
         </div>
       </div>
     </div>
-  ) : null;
-
-  return (
-    <div
-      ref={triggerRef}
-      className="hover-menu-wrapper"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <NavLink prefetch="intent" to={titleLink || `/collections/${title.toLowerCase()}`} className="blacmelo-header-link">
-        {title}
-      </NavLink>
-      
-      {mounted && menuContent && createPortal(menuContent, document.body)}
-    </div>
   );
+
+  return createPortal(menuContent, document.body);
 }
 
-export default HoverMenu;
+export default UnifiedHoverMenu;

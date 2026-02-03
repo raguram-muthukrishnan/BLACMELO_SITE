@@ -11,6 +11,8 @@ import type {
   RecommendedProductsQuery,
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
+import {CollectionTabs} from '~/components/CollectionTabs';
+import {RecentlyViewed} from '~/components/RecentlyViewed';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];
@@ -31,13 +33,24 @@ export async function loader(args: Route.LoaderArgs) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
 async function loadCriticalData({context}: Route.LoaderArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+  // Fetch specific collections by handle
+  const collectionHandles = ['bestseller', 'new-in', 'bottoms', 'tops'];
+  
+  const collectionsData = await Promise.all(
+    collectionHandles.map(handle =>
+      context.storefront.query(COLLECTION_BY_HANDLE_QUERY, {
+        variables: { handle }
+      }).catch(() => ({ collection: null }))
+    )
+  );
+
+  // Filter out null collections and format the data
+  const collections = collectionsData
+    .map(data => data.collection)
+    .filter(Boolean);
 
   return {
-    featuredCollection: collections.nodes[0],
+    collections,
   };
 }
 
@@ -64,31 +77,17 @@ export default function Homepage() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
+      {/* Collections with Tabs */}
+      {data.collections && data.collections.length > 0 && (
+        <CollectionTabs collections={data.collections} />
+      )}
+      
+      {/* Recently Viewed Products */}
+      <RecentlyViewed />
+      
+      {/* Recommended Products */}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
-  );
-}
-
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
-  const image = collection?.image;
-  return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
   );
 }
 
@@ -118,25 +117,45 @@ function RecommendedProducts({
   );
 }
 
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
+const COLLECTION_BY_HANDLE_QUERY = `#graphql
+  fragment CollectionWithProducts on Collection {
     id
     title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
     handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 4) {
       nodes {
-        ...FeaturedCollection
+        id
+        title
+        handle
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        images(first: 2) {
+          nodes {
+            id
+            url
+            altText
+            width
+            height
+          }
+        }
       }
+    }
+  }
+  query CollectionByHandle($handle: String!, $country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      ...CollectionWithProducts
     }
   }
 ` as const;

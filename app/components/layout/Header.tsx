@@ -3,7 +3,7 @@ import {useState, useRef, useCallback, useEffect} from 'react';
 import type {HeaderQuery} from 'storefrontapi.generated';
 import {Menu, User} from 'lucide-react';
 import logo from '~/assets/logos/Logo.avif';
-import HoverMenu from '~/components/ui/HoverMenu';
+import {UnifiedHoverMenu} from '~/components/ui/UnifiedHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
 import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 import {useAside} from '~/components/Aside';
@@ -137,15 +137,30 @@ export function Header({}: HeaderProps) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const {open: openAside} = useAside();
 
+  // Menu configurations
+  const menuConfigs = {
+    man: {
+      sections: manMenuSections,
+      image: menuManImage,
+    },
+    women: {
+      sections: womenMenuSections,
+      image: menuWomanImage,
+    },
+    blacmelo: {
+      sections: blacmeloPlusMenuSections,
+      image: menuManImage,
+    },
+  };
+
   // Handle scroll to change header background
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 50); // Change background after 50px scroll
+      setIsScrolled(scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Check initial scroll position
     handleScroll();
 
     return () => {
@@ -154,7 +169,6 @@ export function Header({}: HeaderProps) {
   }, []);
 
   const handleMenuEnter = useCallback((menu: string) => {
-    // Clear any pending close timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -163,16 +177,21 @@ export function Header({}: HeaderProps) {
   }, []);
 
   const handleMenuLeave = useCallback(() => {
-    // Add a delay before closing the menu when cursor moves away
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     timeoutRef.current = setTimeout(() => {
       setActiveMenu(null);
-    }, 300);
+    }, 150);
   }, []);
+
+  const handleTriggerEnter = useCallback((menu: string) => {
+    handleMenuEnter(menu);
+  }, [handleMenuEnter]);
 
   const handleMobileMenuClick = () => {
     openAside('mobile');
   };
-
 
   return (
     <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''}`}>
@@ -188,33 +207,33 @@ export function Header({}: HeaderProps) {
             <Menu size={24} />
           </button>
           
-          {/* Desktop Links with Hover Menus */}
-          <HoverMenu
-            title="Man"
-            sections={manMenuSections}
-            isOpen={activeMenu === 'man'}
-            onMouseEnter={() => handleMenuEnter('man')}
-            onMouseLeave={handleMenuLeave}
-            menuImage={menuManImage}
-          />
+          {/* Desktop Links - Simple triggers */}
+          <div
+            className="hover-menu-trigger"
+            onMouseEnter={() => handleTriggerEnter('man')}
+          >
+            <NavLink prefetch="intent" to="/collections/unisex" className="blacmelo-header-link">
+              Man
+            </NavLink>
+          </div>
           
-          <HoverMenu
-            title="Women"
-            sections={womenMenuSections}
-            isOpen={activeMenu === 'women'}
-            onMouseEnter={() => handleMenuEnter('women')}
-            onMouseLeave={handleMenuLeave}
-            menuImage={menuWomanImage}
-          />
+          <div
+            className="hover-menu-trigger"
+            onMouseEnter={() => handleTriggerEnter('women')}
+          >
+            <NavLink prefetch="intent" to="/collections/unisex" className="blacmelo-header-link">
+              Women
+            </NavLink>
+          </div>
           
-          <HoverMenu
-            title="Blacmelo +"
-            sections={blacmeloPlusMenuSections}
-            isOpen={activeMenu === 'blacmelo'}
-            onMouseEnter={() => handleMenuEnter('blacmelo')}
-            onMouseLeave={handleMenuLeave}
-            menuImage={menuManImage}
-          />
+          <div
+            className="hover-menu-trigger"
+            onMouseEnter={() => handleTriggerEnter('blacmelo')}
+          >
+            <NavLink prefetch="intent" to="/collections/unisex" className="blacmelo-header-link">
+              Blacmelo +
+            </NavLink>
+          </div>
         </nav>
 
         {/* Center Logo */}
@@ -245,6 +264,13 @@ export function Header({}: HeaderProps) {
           </NavLink>
         </nav>
       </div>
+
+      {/* Unified Menu Container */}
+      <UnifiedHoverMenu
+        activeMenu={activeMenu}
+        menuConfigs={menuConfigs}
+        onMouseLeave={handleMenuLeave}
+      />
     </header>
   );
 }

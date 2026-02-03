@@ -189,69 +189,74 @@ export function ProductPage({
         <div className="product-sidebar-sticky">
           <div className="product-sidebar-content">
             
-            {/* Price */}
-            <div className="product-price">
-              {selectedVariant?.compareAtPrice && (
-                <span className="product-price-compare">
-                  <Money data={selectedVariant.compareAtPrice} />
-                </span>
-              )}
-              {selectedVariant?.price && (
-                <span className="product-price-current">
-                  <Money data={selectedVariant.price} />
-                </span>
-              )}
+            {/* Title and Price */}
+            <div className="product-header-row">
+              <h1 className="product-title-main">{product.title}</h1>
+              <div className="product-price-main">
+                {selectedVariant?.price && <Money data={selectedVariant.price} />}
+              </div>
             </div>
 
             {/* Color Selector */}
-            {currentColor && (
-              <div className="product-option-group">
-                <label className="product-color-label-inline">
-                  Select Colour <span className="product-option-count">1</span>
-                </label>
-                <div className="product-color-name">{currentColor}</div>
-                <div className="product-color-swatches">
-                  <button className="product-color-swatch active">
-                    {selectedVariant?.image && (
-                      <Image
-                        data={selectedVariant.image}
-                        alt={currentColor}
-                        width={80}
-                        height={96}
-                        className="product-swatch-img"
-                      />
-                    )}
-                  </button>
+            <div className="product-color-section">
+              <div className="product-color-header">
+                <div className="product-color-label">
+                  Select Colour <sup className="product-option-sup">2</sup>
                 </div>
+                <div className="product-color-current">{currentColor || 'Washed Black'}</div>
+                <button className="product-bookmark-btn" aria-label="Save to wishlist">
+                  <Bookmark size={20} strokeWidth={1.5} />
+                </button>
               </div>
-            )}
+              <div className="product-color-swatches-grid">
+                <button className="product-color-swatch-box active">
+                  {selectedVariant?.image && (
+                    <Image
+                      data={selectedVariant.image}
+                      alt={currentColor}
+                      width={100}
+                      height={120}
+                      className="product-swatch-image"
+                    />
+                  )}
+                </button>
+                {images[1] && (
+                  <button className="product-color-swatch-box">
+                    <Image
+                      data={images[1]}
+                      alt="Alternative color"
+                      width={100}
+                      height={120}
+                      className="product-swatch-image"
+                    />
+                  </button>
+                )}
+              </div>
+            </div>
 
-            {/* Title */}
-            <h1 className="product-title-represent">{product.title}</h1>
+            {/* Model Info and Size Guide */}
+            <div className="product-info-row">
+              <p className="product-model-text">
+                Model is 184.5cm and 72kg wearing size M
+              </p>
+              <button 
+                className="product-size-guide-link"
+                onClick={() => setIsSizeGuideOpen(true)}
+              >
+                Size & Fit Guide
+              </button>
+            </div>
 
-            {/* Model Info */}
-            <p className="product-model-info-represent">
-              Model is 184.5cm and 72kg wearing size M
-            </p>
-
-            {/* Size Guide Link */}
-            <button 
-              className="product-size-guide-link-represent"
-              onClick={() => setIsSizeGuideOpen(true)}
-            >
-              Size & Fit Guide
-            </button>
-
-            {/* Size Selector */}
+            {/* Size Selector Grid */}
             {sizes.length > 0 && (
-              <div className="product-size-group-represent">
-                <div className="product-size-buttons-represent">
+              <div className="product-size-section">
+                <div className="product-size-grid">
                   {sizes.map((size) => {
                     const available = isSizeAvailable(size.name);
                     return (
                       <button
                         key={size.name}
-                        className={`product-size-btn-represent ${selectedSize === size.name ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
+                        className={`product-size-box ${selectedSize === size.name ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
                         onClick={() => available && setSelectedSize(size.name)}
                         disabled={!available}
                       >
@@ -260,13 +265,13 @@ export function ProductPage({
                     );
                   })}
                 </div>
-                <button className="product-notify-link">
-                  Notify me when back in stock
+                <button className="product-size-notify-link">
+                  Size Not In Stock?
                 </button>
               </div>
             )}
 
-            {/* Add to Cart / Select Size Button */}
+            {/* Add to Cart Button */}
             {selectedSize ? (
               <AddToCartButton
                 lines={[
@@ -277,65 +282,61 @@ export function ProductPage({
                 ]}
                 disabled={!selectedVariant?.availableForSale}
               >
-                <button className="product-add-btn-represent">
+                <button className="product-cta-button">
                   {selectedVariant?.availableForSale ? 'SELECT A SIZE' : 'SOLD OUT'}
                 </button>
               </AddToCartButton>
             ) : (
-              <button className="product-add-btn-represent disabled" disabled>
+              <button className="product-cta-button" disabled>
                 SELECT A SIZE
               </button>
             )}
 
-            {/* Benefits */}
-            <div className="product-benefits-represent">
-              <div className="product-benefit-item">
-                <span className="benefit-icon">💎</span>
-                <span>EARN 175 PRESTIGE POINTS</span>
+            {/* Benefits List */}
+            <div className="product-benefits-list">
+              <div className="product-benefit-row">
+                <span className="benefit-icon-box">💎</span>
+                <span className="benefit-text">EARN 410 PRESTIGE POINTS</span>
               </div>
-              <div className="product-benefit-item">
-                <span className="benefit-icon">📦</span>
-                <span>FREE SHIPPING OVER $300</span>
+              <div className="product-benefit-row">
+                <span className="benefit-icon-box">📦</span>
+                <span className="benefit-text">FREE SHIPPING</span>
               </div>
-              <div className="product-benefit-item">
-                <span className="benefit-icon">⚠️</span>
-                <span>LIMITED STOCK</span>
+              <div className="product-benefit-row">
+                <span className="benefit-icon-box">✓</span>
+                <span className="benefit-text">IN STOCK</span>
               </div>
             </div>
 
-            {/* Expandable Accordions */}
-            <div className="product-accordions-represent">
+            {/* Expandable Sections */}
+            <div className="product-expandable-sections">
               {/* Product Details */}
-              <div className="product-accordion-item-represent">
+              <div className="product-expandable-item">
                 <button 
-                  className="product-accordion-btn-represent"
+                  className="product-expandable-trigger"
                   onClick={() => toggleSection('details')}
                 >
+                  <Plus size={18} strokeWidth={1.5} className={expandedSections.details ? 'rotated' : ''} />
                   <span>Product Details</span>
-                  <span className="accordion-icon">
-                    {expandedSections.details ? '−' : '+'}
-                  </span>
                 </button>
                 {expandedSections.details && (
-                  <div className="product-accordion-content-represent">
-                    <div dangerouslySetInnerHTML={{__html: product.descriptionHtml || ''}} />
+                  <div className="product-expandable-content">
+                    <div dangerouslySetInnerHTML={{__html: product.descriptionHtml || product.description || ''}} />
                   </div>
                 )}
               </div>
 
               {/* Shipping & Returns */}
-              <div className="product-accordion-item-represent">
+              <div className="product-expandable-item">
                 <button 
-                  className="product-accordion-btn-represent"
+                  className="product-expandable-trigger"
                   onClick={() => toggleSection('shipping')}
                 >
+                  <Plus size={18} strokeWidth={1.5} className={expandedSections.shipping ? 'rotated' : ''} />
                   <span>Shipping & Returns</span>
-                  <span className="accordion-icon">
-                    {expandedSections.shipping ? '−' : '+'}
-                  </span>
                 </button>
                 {expandedSections.shipping && (
-                  <div className="product-accordion-content-represent">
+                  <div className="product-expandable-content">
                     <p><strong>UK SHIPPING</strong></p>
                     <p>• Orders over £120 - FREE (2-3 Business Days)</p>
                     <p>• Orders over £200 - FREE (1-2 Business Days)</p>

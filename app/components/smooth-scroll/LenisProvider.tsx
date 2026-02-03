@@ -1,5 +1,6 @@
 import {useEffect} from 'react';
 import Lenis from 'lenis';
+import {setLenisInstance} from '~/lib/lenis';
 
 /**
  * Client-only smooth scrolling (Represent-style inertia).
@@ -8,13 +9,16 @@ import Lenis from 'lenis';
 export function LenisProvider({children}: {children: React.ReactNode}) {
   useEffect(() => {
     const lenis = new Lenis({
-      // Tuned for a “premium” feel; adjust as needed.
+      // Tuned for a "premium" feel; adjust as needed.
       duration: 1.15,
       smoothWheel: true,
       wheelMultiplier: 0.9,
       touchMultiplier: 1.0,
       syncTouch: true,
     });
+
+    // Store instance globally for access from other components
+    setLenisInstance(lenis);
 
     let rafId = 0;
     const raf = (time: number) => {
@@ -26,9 +30,9 @@ export function LenisProvider({children}: {children: React.ReactNode}) {
     return () => {
       window.cancelAnimationFrame(rafId);
       lenis.destroy();
+      setLenisInstance(null);
     };
   }, []);
 
   return <>{children}</>;
 }
-
