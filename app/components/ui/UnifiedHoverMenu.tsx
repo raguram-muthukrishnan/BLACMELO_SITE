@@ -1,6 +1,7 @@
 import {NavLink} from 'react-router';
 import {createPortal} from 'react-dom';
 import {useEffect, useState, useRef, useCallback} from 'react';
+import type {MenuConfig} from '~/lib/headerMenu';
 
 interface SubMenuItem {
   name: string;
@@ -16,17 +17,10 @@ interface MenuItem {
   isBold?: boolean;
 }
 
-interface MenuConfig {
-  sections: MenuItem[];
-  image: string;
-}
-
 interface UnifiedHoverMenuProps {
   activeMenu: string | null;
   menuConfigs: {
-    man: MenuConfig;
-    women: MenuConfig;
-    blacmelo: MenuConfig;
+    [key: string]: MenuConfig;
   };
   onMouseLeave: () => void;
 }
@@ -112,7 +106,20 @@ export function UnifiedHoverMenu({
   if (!activeMenu || !mounted) return null;
 
   const currentConfig = menuConfigs[activeMenu as keyof typeof menuConfigs];
-  if (!currentConfig) return null;
+  
+  // Debug logging
+  console.log('🎯 UnifiedHoverMenu render:', {
+    activeMenu,
+    mounted,
+    hasConfig: !!currentConfig,
+    configKeys: Object.keys(menuConfigs),
+    sections: currentConfig?.sections?.length || 0,
+  });
+  
+  if (!currentConfig) {
+    console.warn('⚠️ No config found for menu:', activeMenu);
+    return null;
+  }
 
   const menuContent = (
     <div 

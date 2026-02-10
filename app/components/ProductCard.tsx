@@ -41,6 +41,12 @@ export interface ProductCardProduct {
       currencyCode: CurrencyCode;
     };
   };
+  // Add metafield support for proper color name
+  metafields?: Array<{
+    key: string;
+    value: string;
+    namespace: string;
+  }> | null;
 }
 
 interface ProductCardProps {
@@ -75,7 +81,24 @@ export function ProductCard({product, loading}: ProductCardProps) {
     (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
   );
   const colorValue = colorOption?.value || '';
-  const hasMultipleColors = variantCount > 1;
+  
+  // Get proper color name from metafield if available with null safety
+  const colorMetafield = product.metafields?.filter(Boolean).find(
+    (m) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') && 
+           (m.namespace === 'custom' || m.namespace === 'category' || m.namespace?.includes('tshirt'))
+  );
+  const displayColorName = colorMetafield?.value || colorValue;
+  
+  // Count unique colors from variants
+  const uniqueColors = new Set(
+    product.variants?.nodes?.map(v => 
+      v.selectedOptions?.find(
+        (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+      )?.value
+    ).filter(Boolean)
+  );
+  const colorCount = uniqueColors.size;
+  const hasMultipleColors = colorCount > 1;
   
   // Get available sizes from variants
   const availableSizes = product.variants?.nodes
@@ -181,8 +204,8 @@ export function ProductCard({product, loading}: ProductCardProps) {
           <div className="product-card-info-left">
             <h3 className="product-card-title">{product.title}</h3>
             <p className="product-card-variant">
-              {colorValue}
-              {hasMultipleColors && <span className="product-card-colors">{variantCount} Colours</span>}
+              {displayColorName}
+              {hasMultipleColors && <span className="product-card-colors"> {colorCount} Colours</span>}
             </p>
           </div>
           <div className="product-card-info-right">

@@ -61,7 +61,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreenGallery, setIsFullscreenGallery] = useState(false);
-  const [openSection, setOpenSection] = useState<'product' | 'shipping' | null>(null);
+  const [openSection, setOpenSection] = useState<'description' | 'fit' | 'fabric' | 'shipping' | 'sizechart' | null>(null);
 
   // Sync active image with selected variant
   useEffect(() => {
@@ -86,9 +86,36 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
     }, {} as Record<string, string>) || {};
   }, [selectedVariant]);
 
-  const toggleSection = (section: 'product' | 'shipping') => {
+  const toggleSection = (section: 'description' | 'fit' | 'fabric' | 'shipping' | 'sizechart') => {
     setOpenSection(openSection === section ? null : section);
   };
+
+  // Helper to get metafield value or default text
+  const getMetafieldValue = (key: string, defaultText: string) => {
+    const metafield = product.metafields?.find((m: any) => m?.key === key);
+    return metafield?.value || defaultText;
+  };
+
+  // Get metafield values with defaults
+  const secondDescription = getMetafieldValue(
+    'second_description',
+    product.description || 'Discover the perfect blend of style and comfort with this premium piece.'
+  );
+  
+  const fitInfo = getMetafieldValue(
+    'fit',
+    'Model wears size M. Designed for a relaxed, slightly oversized fit.'
+  );
+  
+  const fabricCare = getMetafieldValue(
+    'fabric_care',
+    'Professional grade cloth only. Do not machine wash. Avoid prolonged exposure to moisture or sunlight.'
+  );
+  
+  const shippingReturns = getMetafieldValue(
+    'shipping_returns',
+    'Standard Shipping (3-5 Business Days)\nExpress Shipping (1-2 Business Days)\n\n14 day return policy for unused items with original tags.'
+  );
 
   // Helper to find specific options
   const colorOption = productOptions.find(o => o.name === 'Color' || o.name === 'Colour');
@@ -191,7 +218,11 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             <div className="hero-expanded-view">
               <div className="hero-expanded-header">
                 <h2 className="hero-expanded-title">
-                  {openSection === 'product' ? 'Product Details' : 'Shipping & Returns'}
+                  {openSection === 'description' ? 'Description' : 
+                   openSection === 'fit' ? 'Fit' : 
+                   openSection === 'fabric' ? 'Fabric Care' : 
+                   openSection === 'sizechart' ? 'Size Guide' :
+                   'Shipping & Returns'}
                 </h2>
                 <button 
                   className="hero-expanded-close"
@@ -205,25 +236,34 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 </button>
               </div>
               <div className="hero-expanded-content">
-                {openSection === 'product' && (
-                  <>
-                    {product.descriptionHtml ? (
-                      <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
-                    ) : (
-                      <p>{product.description || 'Product details will be displayed here.'}</p>
-                    )}
-                  </>
+                {openSection === 'description' && (
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {secondDescription}
+                  </div>
+                )}
+                {openSection === 'fit' && (
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {fitInfo}
+                  </div>
+                )}
+                {openSection === 'fabric' && (
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {fabricCare}
+                  </div>
+                )}
+                {openSection === 'sizechart' && (
+                  <div className="size-chart-container">
+                    <img 
+                      src="/app/assets/size_chart.jpeg" 
+                      alt="Size Chart" 
+                      className="size-chart-image"
+                    />
+                  </div>
                 )}
                 {openSection === 'shipping' && (
-                  <>
-                    <p><strong>SHIPPING</strong></p>
-                    <ul>
-                      <li>Standard Shipping (3-5 Business Days)</li>
-                      <li>Express Shipping (1-2 Business Days)</li>
-                    </ul>
-                    <p style={{ marginTop: '1rem' }}><strong>RETURNS</strong></p>
-                    <p>14 day return policy for unused items with original tags.</p>
-                  </>
+                  <div style={{ whiteSpace: 'pre-line' }}>
+                    {shippingReturns}
+                  </div>
                 )}
               </div>
             </div>
@@ -283,7 +323,13 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 <div style={{ marginBottom: '2rem' }}>
                   <div className="size-header">
                     <span>Select Size</span>
-                    <button className="size-guide-btn">Size Guide</button>
+                    <button 
+                      className="size-guide-btn"
+                      onClick={() => toggleSection('sizechart')}
+                      type="button"
+                    >
+                      Size Guide
+                    </button>
                   </div>
                   <div className="hero-sizes">
                     {sizeOption.optionValues.map((value) => {
@@ -358,27 +404,39 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 </div>
               </div>
 
-              {/* Accordions - REPRESENT Style */}
+              {/* Expandable Sections - 4 Buttons Horizontal Layout */}
               <div className="hero-expandable-sections">
-                <div className="expandable-section">
-                  <button 
-                    className="expandable-section-header"
-                    onClick={() => toggleSection('product')}
-                  >
-                    <span className="expandable-icon">+</span>
-                    <span className="expandable-title">Product Details</span>
-                  </button>
-                </div>
+                <button 
+                  className="expandable-section-btn"
+                  onClick={() => toggleSection('description')}
+                >
+                  <span className="expandable-icon">+</span>
+                  <span className="expandable-title">Description</span>
+                </button>
 
-                <div className="expandable-section">
-                  <button 
-                    className="expandable-section-header"
-                    onClick={() => toggleSection('shipping')}
-                  >
-                    <span className="expandable-icon">+</span>
-                    <span className="expandable-title">Shipping & Returns</span>
-                  </button>
-                </div>
+                <button 
+                  className="expandable-section-btn"
+                  onClick={() => toggleSection('fit')}
+                >
+                  <span className="expandable-icon">+</span>
+                  <span className="expandable-title">Fit</span>
+                </button>
+
+                <button 
+                  className="expandable-section-btn"
+                  onClick={() => toggleSection('fabric')}
+                >
+                  <span className="expandable-icon">+</span>
+                  <span className="expandable-title">Fabric Care</span>
+                </button>
+
+                <button 
+                  className="expandable-section-btn"
+                  onClick={() => toggleSection('shipping')}
+                >
+                  <span className="expandable-icon">+</span>
+                  <span className="expandable-title">Shipping & Returns</span>
+                </button>
               </div>
             </>
           )}

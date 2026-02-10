@@ -16,8 +16,13 @@ import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
+import filterPanelStyles from './styles/filter-panel.css?url';
 import {PageLayout} from './components/PageLayout';
 import {LenisProvider} from '~/components/smooth-scroll/LenisProvider';
+import {COLLECTION_MENU_QUERY} from '~/graphql/CollectionMenuQuery';
+import {parseCollectionMenus} from '~/lib/collectionMenu';
+import menuManImage from '~/assets/menu/menu_man.jpeg';
+import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 
 export type RootLoader = typeof loader;
 
@@ -102,17 +107,45 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const {storefront} = context;
 
-  const [header] = await Promise.all([
+  const [header, collectionMenuData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
-        headerMenuHandle: 'main-menu', // Adjust to your header menu handle
+        headerMenuHandle: 'main-menu',
       },
     }),
-    // Add other queries here, so that they are loaded in parallel
+    // Fetch collections with menu metafields for dynamic header menu
+    storefront.query(COLLECTION_MENU_QUERY, {
+      cache: storefront.CacheLong(),
+      variables: {
+        first: 50,
+      },
+    }).catch((error: Error) => {
+      console.error('Error fetching collection menu data:', error);
+      return null;
+    }),
   ]);
 
-  return {header};
+  // Parse collection menu data or use fallback
+  let menuConfigs = null;
+  
+  if (collectionMenuData) {
+    try {
+      console.log('📦 Collections data received');
+      menuConfigs = parseCollectionMenus(collectionMenuData, {
+        man: menuManImage,
+        women: menuWomanImage,
+        blacmelo: menuManImage,
+      });
+      console.log('✅ Collection menus parsed. Menus found:', Object.keys(menuConfigs));
+    } catch (error) {
+      console.error('❌ Error parsing collection menus:', error);
+    }
+  } else {
+    console.log('⚠️ No collection menu data found, using fallback menus');
+  }
+
+  return {header, menuConfigs};
 }
 
 /**
@@ -154,6 +187,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
+        <link rel="stylesheet" href={filterPanelStyles}></link>
         <Meta />
         <Links />
       </head>

@@ -114,7 +114,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         height
       }
     }
-    variants(first: 10) {
+    variants(first: 100) {
       nodes {
         id
         selectedOptions {
@@ -130,6 +130,18 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       maxVariantPrice {
         ...MoneyProductItem
       }
+    }
+    metafields(
+      identifiers: [
+        {namespace: "custom", key: "color_name"}
+        {namespace: "custom", key: "color"}
+        {namespace: "category", key: "color"}
+        {namespace: "category", key: "Color"}
+      ]
+    ) {
+      key
+      value
+      namespace
     }
   }
 ` as const;
