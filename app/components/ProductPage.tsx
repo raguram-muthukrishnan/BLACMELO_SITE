@@ -72,6 +72,8 @@ export function ProductPage({
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('SUGGESTED');
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
   const galleryRef = useRef<HTMLDivElement>(null);
   
   const images = product.images?.nodes || [];
@@ -86,6 +88,33 @@ export function ProductPage({
   const currentColor = selectedVariant?.selectedOptions?.find(
     opt => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
   )?.value || '';
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe && currentImageIndex < totalImages - 1) {
+      setCurrentImageIndex(prev => prev + 1);
+    }
+    if (isRightSwipe && currentImageIndex > 0) {
+      setCurrentImageIndex(prev => prev - 1);
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
 
   // Image navigation
   const goToPrevImage = () => {
@@ -171,8 +200,45 @@ export function ProductPage({
       {/* REPRESENT Style: Full-width vertical image stack + Sticky sidebar */}
       <section className="product-container-represent">
         
-        {/* LEFT: Full-Width Vertical Image Stack */}
+        {/* LEFT: Full-Width Vertical Image Stack (Desktop) / Image Carousel (Mobile) */}
         <div className="product-images-stack">
+          {/* Mobile Image Carousel */}
+          <div 
+            className="product-mobile-carousel"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="product-carousel-track" style={{transform: `translateX(-${currentImageIndex * 100}%)`}}>
+              {images.map((image: ProductImage, idx: number) => (
+                <div key={image.id || idx} className="product-carousel-slide">
+                  <Image
+                    data={image}
+                    alt={image.altText || `${product.title} - ${idx + 1}`}
+                    sizes="100vw"
+                    className="product-carousel-img"
+                  />
+                </div>
+              ))}
+            </div>
+            {/* Pagination Dots */}
+            <div className="product-carousel-pagination">
+              {images.map((_: any, idx: number) => (
+                <button
+                  key={idx}
+                  className={`carousel-dot ${idx === currentImageIndex ? 'active' : ''}`}
+                  onClick={() => setCurrentImageIndex(idx)}
+                  aria-label={`Go to image ${idx + 1}`}
+                />
+              ))}
+            </div>
+            {/* Image Counter */}
+            <div className="product-carousel-counter">
+              {currentImageIndex + 1} / {totalImages}
+            </div>
+          </div>
+
+          {/* Desktop Image Stack */}
           {images.map((image: ProductImage, idx: number) => (
             <div key={image.id || idx} className="product-image-wrapper">
               <Image
@@ -325,6 +391,38 @@ export function ProductPage({
                   </div>
                 )}
               </div>
+
+              {/* Fabric Care */}
+              {product.metafields?.find((m: any) => m.key === 'fabric_care')?.value && (
+                <div className="product-expandable-item">
+                  <button 
+                    className="product-expandable-trigger"
+                    onClick={() => toggleSection('fabric_care')}
+                  >
+                    <Plus size={18} strokeWidth={1.5} className={expandedSections.fabric_care ? 'rotated' : ''} />
+                    <span>Fabric Care</span>
+                  </button>
+                  {expandedSections.fabric_care && (
+                    <div className="product-expandable-content">
+                      {(() => {
+                        const fabricCareValue = product.metafields.find((m: any) => m.key === 'fabric_care')?.value || '';
+                        const lines = fabricCareValue.split('\n');
+                        return (
+                          <div style={{ lineHeight: '1.6' }}>
+                            {lines.map((line: string, idx: number) => {
+                              const trimmedLine = line.trim();
+                              if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                                return <div key={idx} style={{ paddingLeft: '1rem', marginBottom: '0.5rem' }}>{trimmedLine}</div>;
+                              }
+                              return trimmedLine ? <div key={idx} style={{ marginBottom: '0.5rem' }}>{trimmedLine}</div> : <br key={idx} />;
+                            })}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Shipping & Returns */}
               <div className="product-expandable-item">

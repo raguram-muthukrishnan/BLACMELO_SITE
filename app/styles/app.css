@@ -229,6 +229,7 @@ button {
   background: #ffffff;
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
 
 .gallery-scroll {
@@ -239,49 +240,16 @@ button {
   padding-bottom: 20px;
   user-select: none;
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Hide default scrollbar */
 .gallery-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* Custom minimal progress indicator */
-.gallery-module::before {
-  content: '';
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  border-radius: 0.5px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Active scroll indicator (optional - shows on scroll) */
-.gallery-scroll::after {
-  content: '';
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 0.5px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-}
-
-.gallery-scroll:active::after {
-  opacity: 1;
+.gallery-scroll:active {
+  cursor: grabbing;
 }
 
 .gallery-item {
@@ -608,9 +576,12 @@ button {
   opacity: 1;
 }
 
+/* Product-related styles moved to product.css */
+
 /* ========================================
    REPRESENT COLLECTION PAGE STYLES
    ======================================== */
+
 
 /* Hero Banner - Clean, No Overlay */
 .represent-collection-page {
@@ -1092,6 +1063,7 @@ button {
   overflow-x: hidden;
   background: #ffffff;
   border-left: 1px solid #e5e5e5;
+  z-index: 10;
 }
 
 .product-sidebar-content {
@@ -1558,6 +1530,82 @@ button {
   .product-container-represent {
     grid-template-columns: 1fr;
   }
+
+  /* Hide desktop image stack on mobile */
+  .product-image-wrapper {
+    display: none;
+  }
+
+  /* Show mobile carousel */
+  .product-mobile-carousel {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .product-carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.3s ease-out;
+  }
+
+  .product-carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Pagination Dots */
+  .product-carousel-pagination {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .carousel-dot.active {
+    background: #ffffff;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* Image Counter */
+  .product-carousel-counter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 10;
+  }
   
   .product-sidebar-sticky {
     position: relative;
@@ -1584,7 +1632,7 @@ button {
     background: #ffffff;
     border-top: 1px solid #e5e5e5;
     padding: 12px 16px;
-    z-index: 100;
+    z-index: 1000;
   }
   
   .mobile-bar-content {
@@ -1620,6 +1668,13 @@ button {
   
   .product-recommendations-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Hide mobile carousel on desktop */
+@media (min-width: 769px) {
+  .product-mobile-carousel {
+    display: none;
   }
 }
 

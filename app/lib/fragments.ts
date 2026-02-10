@@ -47,6 +47,15 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          metafields(
+            identifiers: [
+              {namespace: "custom", key: "shipping_and_returns"}
+            ]
+          ) {
+            key
+            value
+            namespace
+          }
         }
         selectedOptions {
           name
@@ -97,6 +106,15 @@ export const CART_QUERY_FRAGMENT = `#graphql
           title
           id
           vendor
+          metafields(
+            identifiers: [
+              {namespace: "custom", key: "shipping_and_returns"}
+            ]
+          ) {
+            key
+            value
+            namespace
+          }
         }
         selectedOptions {
           name

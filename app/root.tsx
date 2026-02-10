@@ -17,12 +17,17 @@ import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import filterPanelStyles from './styles/filter-panel.css?url';
+import accountStyles from './styles/account.css?url';
+import cartStyles from './styles/cart.css?url';
+import productStyles from './styles/product.css?url';
+import bannerOverlayStyles from './styles/banner-overlay.css?url';
 import {PageLayout} from './components/PageLayout';
 import {LenisProvider} from '~/components/smooth-scroll/LenisProvider';
-import {COLLECTION_MENU_QUERY} from '~/graphql/CollectionMenuQuery';
-import {parseCollectionMenus} from '~/lib/collectionMenu';
+import {DYNAMIC_HEADER_MENU_QUERY} from '~/graphql/DynamicHeaderMenuQuery';
+import {ANNOUNCEMENT_BAR_QUERY} from '~/graphql/AnnouncementBarQuery';
+import {parseDynamicHeaderMenu} from '~/lib/dynamicHeaderMenu';
+import {parseAnnouncementBar, getFallbackAnnouncements} from '~/lib/announcementBar';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
-import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 
 export type RootLoader = typeof loader;
 
@@ -107,45 +112,43 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const {storefront} = context;
 
-  const [header, collectionMenuData] = await Promise.all([
+  const [header, dynamicMenuData, announcementData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
         headerMenuHandle: 'main-menu',
       },
     }),
-    // Fetch collections with menu metafields for dynamic header menu
-    storefront.query(COLLECTION_MENU_QUERY, {
-      cache: storefront.CacheLong(),
+    // Fetch collections for dynamic header menu
+    storefront.query(DYNAMIC_HEADER_MENU_QUERY, {
+      cache: storefront.CacheNone(), // Temporarily disable cache for testing
       variables: {
         first: 50,
       },
     }).catch((error: Error) => {
-      console.error('Error fetching collection menu data:', error);
+      console.error('Error fetching dynamic menu data:', error);
+      return null;
+    }),
+    // Fetch announcement bar data
+    storefront.query(ANNOUNCEMENT_BAR_QUERY, {
+      cache: storefront.CacheNone(), // Temporarily disable cache for testing
+    }).catch((error: Error) => {
+      console.error('Error fetching announcement data:', error);
       return null;
     }),
   ]);
 
-  // Parse collection menu data or use fallback
-  let menuConfigs = null;
-  
-  if (collectionMenuData) {
-    try {
-      console.log('📦 Collections data received');
-      menuConfigs = parseCollectionMenus(collectionMenuData, {
-        man: menuManImage,
-        women: menuWomanImage,
-        blacmelo: menuManImage,
-      });
-      console.log('✅ Collection menus parsed. Menus found:', Object.keys(menuConfigs));
-    } catch (error) {
-      console.error('❌ Error parsing collection menus:', error);
-    }
-  } else {
-    console.log('⚠️ No collection menu data found, using fallback menus');
-  }
+  // Parse dynamic menu data
+  const dynamicMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuManImage);
+  console.log('✅ Dynamic menu config built with', dynamicMenuConfig.sections.length, 'sections');
 
-  return {header, menuConfigs};
+  // Parse announcement data
+  const announcements = announcementData 
+    ? parseAnnouncementBar(announcementData)
+    : getFallbackAnnouncements();
+  console.log('📢 Announcements loaded:', announcements.length);
+
+  return {header, dynamicMenuConfig, announcements};
 }
 
 /**
@@ -187,7 +190,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
+        <link rel="stylesheet" href={productStyles}></link>
         <link rel="stylesheet" href={filterPanelStyles}></link>
+        <link rel="stylesheet" href={accountStyles}></link>
+        <link rel="stylesheet" href={cartStyles}></link>
+        <link rel="stylesheet" href={bannerOverlayStyles}></link>
         <Meta />
         <Links />
       </head>

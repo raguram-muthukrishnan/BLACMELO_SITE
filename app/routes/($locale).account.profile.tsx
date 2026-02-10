@@ -86,46 +86,62 @@ export default function AccountProfile() {
   const customer = action?.customer ?? account?.customer;
 
   return (
-    <div className="account-profile">
-      <h2>My profile</h2>
-      <br />
-      <Form method="PUT">
-        <legend>Personal information</legend>
+    <div className="profile-container">
+      <div className="account-section-header">
+        <h2 className="account-section-title">Profile</h2>
+        <p className="account-section-subtitle">
+          Manage your personal information
+        </p>
+      </div>
+
+      <Form method="PUT" className="profile-form">
+        <legend>Personal Information</legend>
         <fieldset>
-          <label htmlFor="firstName">First name</label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            autoComplete="given-name"
-            placeholder="First name"
-            aria-label="First name"
-            defaultValue={customer.firstName ?? ''}
-            minLength={2}
-          />
-          <label htmlFor="lastName">Last name</label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            autoComplete="family-name"
-            placeholder="Last name"
-            aria-label="Last name"
-            defaultValue={customer.lastName ?? ''}
-            minLength={2}
-          />
+          <div className="form-group">
+            <label htmlFor="firstName" className="form-label">
+              First Name *
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              autoComplete="given-name"
+              placeholder="Enter your first name"
+              aria-label="First name"
+              defaultValue={customer.firstName ?? ''}
+              minLength={2}
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="lastName" className="form-label">
+              Last Name *
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              placeholder="Enter your last name"
+              aria-label="Last name"
+              defaultValue={customer.lastName ?? ''}
+              minLength={2}
+              required
+              className="form-input"
+            />
+          </div>
         </fieldset>
-        {action?.error ? (
-          <p>
-            <mark>
-              <small>{action.error}</small>
-            </mark>
-          </p>
-        ) : (
-          <br />
+
+        {action?.error && (
+          <div className="form-error">
+            <mark>{action.error}</mark>
+          </div>
         )}
-        <button type="submit" disabled={state !== 'idle'}>
-          {state !== 'idle' ? 'Updating' : 'Update'}
+
+        <button type="submit" disabled={state !== 'idle'} className="form-submit">
+          {state !== 'idle' ? 'Updating...' : 'Update Profile'}
         </button>
       </Form>
     </div>

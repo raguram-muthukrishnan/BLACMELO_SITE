@@ -261,24 +261,55 @@ export default function Addresses() {
   const {defaultAddress, addresses} = customer;
 
   return (
-    <div className="account-addresses">
-      <h2>Addresses</h2>
-      <br />
-      {!addresses.nodes.length ? (
-        <p>You have no addresses saved.</p>
-      ) : (
-        <div>
-          <div>
-            <legend>Create address</legend>
-            <NewAddressForm />
+    <div className="addresses-container">
+      <div className="account-section-header">
+        <h2 className="account-section-title">Addresses</h2>
+        <p className="account-section-subtitle">
+          Manage your shipping and billing addresses
+        </p>
+      </div>
+
+      <div className="address-form">
+        <legend>Add New Address</legend>
+        <NewAddressForm />
+      </div>
+
+      {addresses.nodes.length > 0 && (
+        <>
+          <div className="account-section-header" style={{marginTop: '40px'}}>
+            <h3 className="account-section-title" style={{fontSize: '1.25rem'}}>
+              Saved Addresses
+            </h3>
           </div>
-          <br />
-          <hr />
-          <br />
-          <ExistingAddresses
-            addresses={addresses}
-            defaultAddress={defaultAddress}
-          />
+          <div className="addresses-grid">
+            <ExistingAddresses
+              addresses={addresses}
+              defaultAddress={defaultAddress}
+            />
+          </div>
+        </>
+      )}
+
+      {addresses.nodes.length === 0 && (
+        <div className="empty-state">
+          <svg
+            className="empty-state-icon"
+            viewBox="0 0 80 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M40 10l20 13.33v26.67L40 70 20 50V23.33L40 10z"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path d="M40 40v20" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          <h3 className="empty-state-title">No saved addresses</h3>
+          <p className="empty-state-text">
+            Add your first address using the form above.
+          </p>
         </div>
       )}
     </div>

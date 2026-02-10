@@ -1,52 +1,41 @@
 import {NavLink} from 'react-router';
-import {useState, useRef, useCallback, useEffect} from 'react';
-import type {HeaderQuery} from 'storefrontapi.generated';
-import {Menu, User} from 'lucide-react';
+import {useState, useRef, useCallback, useEffect, Suspense} from 'react';
+import {Await, useAsyncValue} from 'react-router';
+import {useOptimisticCart, useAnalytics, type CartViewPayload} from '@shopify/hydrogen';
+import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
+import {Menu, User, ShoppingBag} from 'lucide-react';
 import logo from '~/assets/logos/Logo.avif';
-import {UnifiedHoverMenu} from '~/components/ui/UnifiedHoverMenu';
+import {DynamicHoverMenu} from '~/components/ui/DynamicHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
-import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 import {useAside} from '~/components/Aside';
-import type {MenuConfigs} from '~/lib/headerMenu';
-import {getFallbackMenuConfigs} from '~/lib/headerMenu';
+import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
+import {getFallbackDynamicMenu} from '~/lib/dynamicHeaderMenu';
 
 type HeaderProps = {
   header: HeaderQuery;
   cart: Promise<any>;
   isLoggedIn: Promise<boolean>;
   isProductPage?: boolean;
-  menuConfigs?: MenuConfigs;
+  dynamicMenuConfig?: DynamicMenuConfig;
 };
 
-export function Header({isProductPage = false, menuConfigs: providedMenuConfigs}: HeaderProps) {
+export function Header({isProductPage = false, dynamicMenuConfig: providedMenuConfig, cart}: HeaderProps) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const {open: openAside} = useAside();
 
-  // Get fallback configs
-  const fallbackConfigs = getFallbackMenuConfigs({
-    man: menuManImage,
-    women: menuWomanImage,
-    blacmelo: menuManImage,
-  });
-
-  // Use provided menu configs, but merge with fallback for missing keys
-  const menuConfigs = {
-    man: providedMenuConfigs?.man || fallbackConfigs.man,
-    women: providedMenuConfigs?.women || fallbackConfigs.women,
-    blacmelo: providedMenuConfigs?.blacmelo || fallbackConfigs.blacmelo,
-  };
+  // Use provided menu config or fallback
+  const menuConfig = providedMenuConfig || getFallbackDynamicMenu(menuManImage);
 
   // Debug logging
   useEffect(() => {
-    console.log('🎨 Header menuConfigs:', {
-      hasMan: !!menuConfigs.man,
-      hasWomen: !!menuConfigs.women,
-      hasBlacmelo: !!menuConfigs.blacmelo,
-      manSections: menuConfigs.man?.sections?.length || 0,
+    console.log('🎨 Header dynamic menu config:', {
+      sections: menuConfig.sections.length,
+      permanentSections: menuConfig.sections.filter(s => s.isPermanent).length,
+      dynamicSections: menuConfig.sections.filter(s => !s.isPermanent).length,
     });
-  }, [menuConfigs]);
+  }, [menuConfig]);
 
   // Handle scroll to change header background
   useEffect(() => {
@@ -103,46 +92,32 @@ export function Header({isProductPage = false, menuConfigs: providedMenuConfigs}
             <Menu size={24} />
           </button>
           
-          {/* Desktop Links - Simple triggers */}
+          {/* Desktop Links - Only Shop and Blacmelo Club */}
           <div
             className="hover-menu-trigger"
-            onMouseEnter={() => handleTriggerEnter('man')}
+            onMouseEnter={() => handleTriggerEnter('shop')}
           >
             <NavLink 
               prefetch="intent" 
-              to="/collections/unisex" 
+              to="/collections/all" 
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
-              Man
+              Shop
             </NavLink>
           </div>
           
           <div
             className="hover-menu-trigger"
-            onMouseEnter={() => handleTriggerEnter('women')}
+            onMouseEnter={() => handleTriggerEnter('blacmelo-club')}
           >
             <NavLink 
               prefetch="intent" 
-              to="/collections/unisex" 
+              to="/blacmelo-club" 
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
-              Women
-            </NavLink>
-          </div>
-          
-          <div
-            className="hover-menu-trigger"
-            onMouseEnter={() => handleTriggerEnter('blacmelo')}
-          >
-            <NavLink 
-              prefetch="intent" 
-              to="/collections/unisex" 
-              className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
-              end={false}
-            >
-              Blacmelo +
+              Blacmelo Club
             </NavLink>
           </div>
         </nav>
@@ -185,15 +160,63 @@ export function Header({isProductPage = false, menuConfigs: providedMenuConfigs}
           <NavLink prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
             <User size={20} />
           </NavLink>
+
+          {/* Cart Icon with Badge */}
+          <CartToggle cart={cart} />
         </nav>
       </div>
 
-      {/* Unified Menu Container */}
-      <UnifiedHoverMenu
-        activeMenu={activeMenu}
-        menuConfigs={menuConfigs}
-        onMouseLeave={handleMenuLeave}
-      />
+      {/* Dynamic Hover Menu - Shows for both Shop and Blacmelo Club */}
+      {(activeMenu === 'shop' || activeMenu === 'blacmelo-club') && (
+        <DynamicHoverMenu
+          isActive={true}
+          menuConfig={menuConfig}
+          onMouseLeave={handleMenuLeave}
+        />
+      )}
     </header>
+  );
+}
+
+function CartToggle({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
+  return (
+    <Suspense fallback={<CartBadge count={null} />}>
+      <Await resolve={cart}>
+        <CartBanner />
+      </Await>
+    </Suspense>
+  );
+}
+
+function CartBanner() {
+  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
+  const cart = useOptimisticCart(originalCart);
+  return <CartBadge count={cart?.totalQuantity ?? 0} />;
+}
+
+function CartBadge({count}: {count: number | null}) {
+  const {open} = useAside();
+  const {publish, shop, cart, prevCart} = useAnalytics();
+
+  return (
+    <button
+      className="blacmelo-cart-icon"
+      onClick={(e) => {
+        e.preventDefault();
+        open('cart');
+        publish('cart_viewed', {
+          cart,
+          prevCart,
+          shop,
+          url: window.location.href || '',
+        } as CartViewPayload);
+      }}
+      aria-label={`Cart with ${count ?? 0} items`}
+    >
+      <ShoppingBag size={20} />
+      {count !== null && count > 0 && (
+        <span className="blacmelo-cart-badge">{count}</span>
+      )}
+    </button>
   );
 }

@@ -15,30 +15,63 @@ export const meta: Route.MetaFunction = () => {
 export default function Homepage() {
   return (
     <div className="homepage">
-      {/* Frame 1 - Image Only */}
+
+      {/* Frame 1 - Image with Overlay and Buttons */}
       <EditorialBanner
         image={banner1}
         alt="BLACMELO Collection"
+        showOverlay={true}
+        overlayLabel="NOW LIVE"
+        overlayTitle="ARC-4 & ULTRA COLLECTION"
+        overlaySubtitle="ON A MISSION"
+        primaryButtonText="SHOP NOW"
+        primaryButtonLink="/collections/new-in"
+        secondaryButtonText="DISCOVER STORY"
+        secondaryButtonLink="/about"
       />
 
-      {/* Frame 2 - Video Only */}
+      {/* Frame 2 - Video with Overlay */}
       <EditorialVideo
         video={video1}
         poster={banner2}
         alt="BLACMELO Luxury"
+        showOverlay={true}
+        overlayLabel="COLLECTION 2"
+        overlayTitle="BESTSELLER COLLECTION"
+        overlaySubtitle="EXPLORE OUR FAVORITES"
+        primaryButtonText="SHOP NOW"
+        primaryButtonLink="/collections/bestseller"
+        secondaryButtonText="VIEW ALL"
+        secondaryButtonLink="/collections/all"
       />
 
-      {/* Frame 3 - Image Only */}
+      {/* Frame 3 - Image with Overlay */}
       <EditorialBanner
         image={banner3}
         alt="BLACMELO Style"
+        showOverlay={true}
+        overlayLabel="COLLECTION 3"
+        overlayTitle="247 COLLECTION"
+        overlaySubtitle="EVERYDAY ESSENTIALS"
+        primaryButtonText="SHOP NOW"
+        primaryButtonLink="/collections/247"
+        secondaryButtonText="LEARN MORE"
+        secondaryButtonLink="/about"
       />
 
-      {/* Frame 4 - Video Only */}
+      {/* Frame 4 - Video with Overlay */}
       <EditorialVideo
         video={video2}
         poster={banner4}
         alt="BLACMELO Premium"
+        showOverlay={true}
+        overlayLabel="COLLECTION 4"
+        overlayTitle="PREMIUM COLLECTION"
+        overlaySubtitle="LUXURY REDEFINED"
+        primaryButtonText="SHOP NOW"
+        primaryButtonLink="/collections/all"
+        secondaryButtonText="EXPLORE"
+        secondaryButtonLink="/collections/all"
       />
     </div>
   );

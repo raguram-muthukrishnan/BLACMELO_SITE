@@ -61,7 +61,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreenGallery, setIsFullscreenGallery] = useState(false);
-  const [openSection, setOpenSection] = useState<'description' | 'fit' | 'fabric' | 'shipping' | 'sizechart' | null>(null);
+  const [openSection, setOpenSection] = useState<string | null>(null);
 
   // Sync active image with selected variant
   useEffect(() => {
@@ -86,7 +86,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
     }, {} as Record<string, string>) || {};
   }, [selectedVariant]);
 
-  const toggleSection = (section: 'description' | 'fit' | 'fabric' | 'shipping' | 'sizechart') => {
+  const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
 
@@ -218,7 +218,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             <div className="hero-expanded-view">
               <div className="hero-expanded-header">
                 <h2 className="hero-expanded-title">
-                  {openSection === 'description' ? 'Description' : 
+                  {openSection === 'description' ? 'Product Details' : 
                    openSection === 'fit' ? 'Fit' : 
                    openSection === 'fabric' ? 'Fabric Care' : 
                    openSection === 'sizechart' ? 'Size Guide' :
@@ -247,8 +247,14 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                   </div>
                 )}
                 {openSection === 'fabric' && (
-                  <div style={{ whiteSpace: 'pre-line' }}>
-                    {fabricCare}
+                  <div style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                    {fabricCare.split('\n').map((line: string, idx: number) => {
+                      const trimmedLine = line.trim();
+                      if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                        return <div key={idx} style={{ paddingLeft: '1rem', marginBottom: '0.5rem' }}>{trimmedLine}</div>;
+                      }
+                      return trimmedLine ? <div key={idx} style={{ marginBottom: '0.5rem' }}>{trimmedLine}</div> : <br key={idx} />;
+                    })}
                   </div>
                 )}
                 {openSection === 'sizechart' && (
@@ -270,15 +276,25 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
           ) : (
             // Normal Form View
             <>
-              <div className="hero-header">
-                <div>
-                  <h1 className="hero-title">{product.title}</h1>
-                  {product.vendor && <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textTransform: 'uppercase' }}>{product.vendor}</div>}
-                </div>
-                <div className="hero-price">
-                  {selectedVariant?.price && <Money data={selectedVariant.price} />}
-                </div>
+            <div className="hero-header">
+              <div>
+                <h1 className="hero-title">{product.title}</h1>
+                {product.vendor && <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textTransform: 'uppercase' }}>{product.vendor}</div>}
               </div>
+              <div className="hero-price">
+                {selectedVariant?.price && <Money data={selectedVariant.price} />}
+              </div>
+            </div>
+
+            {/* Star Rating */}
+            <div className="hero-rating">
+              <div style={{ display: 'flex', gap: '2px' }}>
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} style={{ color: '#000' }}>★</span>
+                ))}
+              </div>
+              <span>40 Reviews</span>
+            </div>
 
               {/* Color Selector */}
               {colorOption && (
@@ -404,19 +420,21 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 </div>
               </div>
 
-              {/* Expandable Sections - 4 Buttons Horizontal Layout */}
+              {/* Expandable Sections - 2x2 Grid Layout */}
               <div className="hero-expandable-sections">
                 <button 
                   className="expandable-section-btn"
                   onClick={() => toggleSection('description')}
+                  type="button"
                 >
                   <span className="expandable-icon">+</span>
-                  <span className="expandable-title">Description</span>
+                  <span className="expandable-title">Product Details</span>
                 </button>
 
                 <button 
                   className="expandable-section-btn"
                   onClick={() => toggleSection('fit')}
+                  type="button"
                 >
                   <span className="expandable-icon">+</span>
                   <span className="expandable-title">Fit</span>
@@ -425,6 +443,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 <button 
                   className="expandable-section-btn"
                   onClick={() => toggleSection('fabric')}
+                  type="button"
                 >
                   <span className="expandable-icon">+</span>
                   <span className="expandable-title">Fabric Care</span>
@@ -433,6 +452,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 <button 
                   className="expandable-section-btn"
                   onClick={() => toggleSection('shipping')}
+                  type="button"
                 >
                   <span className="expandable-icon">+</span>
                   <span className="expandable-title">Shipping & Returns</span>

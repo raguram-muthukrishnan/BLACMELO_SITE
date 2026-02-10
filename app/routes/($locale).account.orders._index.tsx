@@ -63,7 +63,14 @@ export default function Orders() {
   const {orders} = customer;
 
   return (
-    <div className="orders">
+    <div className="orders-container">
+      <div className="account-section-header">
+        <h2 className="account-section-title">Order History</h2>
+        <p className="account-section-subtitle">
+          View and track your orders
+        </p>
+      </div>
+      
       <OrderSearchForm currentFilters={filters} />
       <OrdersTable orders={orders} filters={filters} />
     </div>
@@ -80,7 +87,7 @@ function OrdersTable({
   const hasFilters = !!(filters.name || filters.confirmationNumber);
 
   return (
-    <div className="acccount-orders" aria-live="polite">
+    <div className="account-orders" aria-live="polite">
       {orders?.nodes.length ? (
         <PaginatedResourceSection connection={orders}>
           {({node: order}) => <OrderItem key={order.id} order={order} />}
@@ -94,22 +101,44 @@ function OrdersTable({
 
 function EmptyOrders({hasFilters = false}: {hasFilters?: boolean}) {
   return (
-    <div>
+    <div className="empty-state">
+      <svg
+        className="empty-state-icon"
+        viewBox="0 0 80 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          x="10"
+          y="20"
+          width="60"
+          height="50"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+        />
+        <path d="M20 30h40M20 40h40M20 50h30" stroke="currentColor" strokeWidth="2" />
+      </svg>
+      
       {hasFilters ? (
         <>
-          <p>No orders found matching your search.</p>
-          <br />
-          <p>
-            <Link to="/account/orders">Clear filters →</Link>
+          <h3 className="empty-state-title">No orders found</h3>
+          <p className="empty-state-text">
+            No orders match your search criteria.
           </p>
+          <Link to="/account/orders" className="empty-state-link">
+            Clear Filters
+          </Link>
         </>
       ) : (
         <>
-          <p>You haven&apos;t placed any orders yet.</p>
-          <br />
-          <p>
-            <Link to="/collections">Start Shopping →</Link>
+          <h3 className="empty-state-title">No orders yet</h3>
+          <p className="empty-state-text">
+            You haven't placed any orders yet. Start shopping to see your orders here.
           </p>
+          <Link to="/collections" className="empty-state-link">
+            Start Shopping
+          </Link>
         </>
       )}
     </div>
@@ -201,22 +230,60 @@ function OrderSearchForm({
 
 function OrderItem({order}: {order: OrderItemFragment}) {
   const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
+  
   return (
-    <>
+    <div className="order-card">
       <fieldset>
-        <Link to={`/account/orders/${btoa(order.id)}`}>
-          <strong>#{order.number}</strong>
+        <div className="order-card-header">
+          <div>
+            <Link to={`/account/orders/${btoa(order.id)}`} className="order-number">
+              Order #{order.number}
+            </Link>
+            <p className="order-date">
+              {new Date(order.processedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+          </div>
+          <div className="order-total">
+            <Money data={order.totalPrice} />
+          </div>
+        </div>
+
+        <div className="order-details">
+          {order.confirmationNumber && (
+            <div className="order-detail-item">
+              <span className="order-detail-label">Confirmation</span>
+              <span className="order-detail-value">{order.confirmationNumber}</span>
+            </div>
+          )}
+          
+          <div className="order-detail-item">
+            <span className="order-detail-label">Payment Status</span>
+            <span className={`order-status ${order.financialStatus?.toLowerCase()}`}>
+              {order.financialStatus}
+            </span>
+          </div>
+          
+          {fulfillmentStatus && (
+            <div className="order-detail-item">
+              <span className="order-detail-label">Fulfillment</span>
+              <span className={`order-status ${fulfillmentStatus.toLowerCase()}`}>
+                {fulfillmentStatus}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <Link to={`/account/orders/${btoa(order.id)}`} className="order-view-link">
+          View Order Details
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="2" />
+          </svg>
         </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
-        {order.confirmationNumber && (
-          <p>Confirmation: {order.confirmationNumber}</p>
-        )}
-        <p>{order.financialStatus}</p>
-        {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
       </fieldset>
-      <br />
-    </>
+    </div>
   );
 }

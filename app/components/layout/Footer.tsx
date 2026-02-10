@@ -42,7 +42,7 @@ export function Footer({}: FooterProps) {
             <h3 className="footer-heading">BRAND</h3>
             <nav className="footer-links">
               <NavLink to="/">Home</NavLink>
-              <NavLink to="/shop">Shop</NavLink>
+              <NavLink to="/collections/all">Shop</NavLink>
               <NavLink to="/about">About Us</NavLink>
               <NavLink to="/contact">Contact Us</NavLink>
               <NavLink to="/faq">FAQ</NavLink>
@@ -164,7 +164,7 @@ export function Footer({}: FooterProps) {
               {openSections.company && (
                 <nav className="footer-mobile-links">
                   <NavLink to="/">Home</NavLink>
-                  <NavLink to="/shop">Shop</NavLink>
+                  <NavLink to="/collections/all">Shop</NavLink>
                   <NavLink to="/about">About Us</NavLink>
                   <NavLink to="/contact">Contact Us</NavLink>
                   <NavLink to="/faq">FAQ</NavLink>
@@ -195,32 +195,6 @@ export function Footer({}: FooterProps) {
                   <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
                   <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
                   <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
-                </div>
-              )}
-            </div>
-
-            {/* Download App */}
-            <div className="footer-mobile-section">
-              <button 
-                className="footer-mobile-toggle"
-                onClick={() => toggleSection('download')}
-                aria-expanded={openSections.download}
-              >
-                <span>DOWNLOAD APP</span>
-                <svg 
-                  className={`footer-mobile-icon ${openSections.download ? 'rotated' : ''}`}
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 16 16" 
-                  fill="none"
-                >
-                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              </button>
-              {openSections.download && (
-                <div className="footer-mobile-links">
-                  <a href="#" target="_blank" rel="noopener noreferrer">iOS App Store</a>
-                  <a href="#" target="_blank" rel="noopener noreferrer">Google Play Store</a>
                 </div>
               )}
             </div>

@@ -26,43 +26,59 @@ export function CartLineItem({
   const {close} = useAside();
 
   return (
-    <li key={id} className="cart-line">
-      {image && (
-        <Image
-          alt={title}
-          aspectRatio="1/1"
-          data={image}
-          height={100}
-          loading="lazy"
-          width={100}
-        />
-      )}
+    <li key={id} className="cart-line-item">
+      <div className="cart-line-content">
+        {/* Product Image */}
+        {image && (
+          <div className="cart-line-image">
+            <Image
+              alt={title}
+              aspectRatio="1/1"
+              data={image}
+              height={80}
+              loading="lazy"
+              width={80}
+            />
+          </div>
+        )}
 
-      <div>
-        <Link
-          prefetch="intent"
-          to={lineItemUrl}
-          onClick={() => {
-            if (layout === 'aside') {
-              close();
-            }
-          }}
-        >
-          <p>
-            <strong>{product.title}</strong>
-          </p>
-        </Link>
-        <ProductPrice price={line?.cost?.totalAmount} />
-        <ul>
-          {selectedOptions.map((option) => (
-            <li key={option.name}>
-              <small>
-                {option.name}: {option.value}
-              </small>
-            </li>
-          ))}
-        </ul>
+        {/* Product Details */}
+        <div className="cart-line-details">
+          <div className="cart-line-info">
+            <Link
+              prefetch="intent"
+              to={lineItemUrl}
+              onClick={() => {
+                if (layout === 'aside') {
+                  close();
+                }
+              }}
+              className="cart-line-title"
+            >
+              {product.title}
+            </Link>
+            
+            {/* Selected Options */}
+            <div className="cart-line-options">
+              {selectedOptions.map((option) => (
+                <span key={option.name} className="cart-line-option">
+                  {option.name}: {option.value}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="cart-line-price">
+            <ProductPrice price={line?.cost?.totalAmount} />
+          </div>
+        </div>
+      </div>
+
+      {/* Quantity Controls */}
+      <div className="cart-line-actions">
         <CartLineQuantity line={line} />
+        <CartLineRemoveButton lineIds={[id]} disabled={!!line.isOptimistic} />
       </div>
     </li>
   );
@@ -81,30 +97,31 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
           aria-label="Decrease quantity"
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
+          className="cart-quantity-btn"
         >
-          <span>&#8722; </span>
+          −
         </button>
       </CartLineUpdateButton>
-      &nbsp;
+      
+      <span className="cart-quantity-value">{quantity}</span>
+      
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
+          className="cart-quantity-btn"
         >
-          <span>&#43;</span>
+          +
         </button>
       </CartLineUpdateButton>
-      &nbsp;
-      <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
@@ -128,8 +145,8 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
-        Remove
+      <button disabled={disabled} type="submit" className="cart-remove-btn" aria-label="Remove item">
+        ✕
       </button>
     </CartForm>
   );

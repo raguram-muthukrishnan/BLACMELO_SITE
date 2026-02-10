@@ -173,8 +173,21 @@ export function parseCollectionMenus(
   const configs: MenuConfigs = {};
 
   if (!data?.collections?.nodes) {
+    console.warn('⚠️ No collections nodes found in data');
     return configs;
   }
+
+  console.log(`📊 Found ${data.collections.nodes.length} total collections`);
+  
+  // Log collections with menu metafields
+  const collectionsWithMenu = data.collections.nodes.filter(
+    c => c.menuCategory?.value && c.menuSection?.value
+  );
+  console.log(`✓ ${collectionsWithMenu.length} collections have menu metafields`);
+  
+  collectionsWithMenu.forEach(c => {
+    console.log(`  - ${c.title} (${c.handle}): category=${c.menuCategory?.value}, section=${c.menuSection?.value}`);
+  });
 
   const grouped = groupCollections(data.collections.nodes);
 
@@ -184,10 +197,13 @@ export function parseCollectionMenus(
       const defaultImage = defaultImages[category as keyof typeof defaultImages] || '';
       const {sections, image} = buildMenuSections(grouped[category], defaultImage);
       
-      configs[category] = {
-        sections,
-        image,
-      };
+      if (sections.length > 0) {
+        configs[category] = {
+          sections,
+          image,
+        };
+        console.log(`✅ Built menu for "${category}" with ${sections.length} sections`);
+      }
     }
   }
 

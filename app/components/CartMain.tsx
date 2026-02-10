@@ -28,26 +28,49 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 
   return (
     <div className={className}>
-      <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
-        <div aria-labelledby="cart-lines">
-          <ul>
-            {(cart?.lines?.nodes ?? []).map((line) => (
-              <CartLineItem key={line.id} line={line} layout={layout} />
-            ))}
-          </ul>
+      <CartEmpty hidden={cartHasItems} layout={layout} />
+      {cartHasItems ? (
+        <div className="cart-details">
+          {/* Cart Items */}
+          <div className="cart-items-container" aria-labelledby="cart-lines">
+            <ul className="cart-items-list">
+              {(cart?.lines?.nodes ?? []).map((line) => (
+                <CartLineItem key={line.id} line={line} layout={layout} />
+              ))}
+            </ul>
+          </div>
+
+          {/* Others Also Bought Section */}
+          <div className="cart-recommendations">
+            <h3 className="cart-recommendations-title">OTHERS ALSO BOUGHT</h3>
+            <div className="cart-recommendations-grid">
+              {/* Placeholder for recommended products */}
+            </div>
+          </div>
+
+          {/* Cart Summary */}
+          <CartSummary cart={cart} layout={layout} />
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
-      </div>
+      ) : null}
     </div>
   );
 }
 
 function CartEmpty({
   hidden = false,
+  layout,
 }: {
   hidden: boolean;
   layout?: CartMainProps['layout'];
 }) {
-  return null;
+  if (hidden) return null;
+
+  return (
+    <div className="cart-empty">
+      <p className="cart-empty-message">Your cart is empty.</p>
+      <a href="/collections/new-arrival" className="cart-empty-button">
+        BROWSE PRODUCTS
+      </a>
+    </div>
+  );
 }

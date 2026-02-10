@@ -13,6 +13,7 @@ import {
 } from '@shopify/hydrogen';
 import { ProductHero } from '~/components/ProductHero';
 import { Breadcrumb } from '~/components/Breadcrumb';
+import { ProductFeatureHero } from '~/components/ProductFeatureHero';
 import { GalleryCarousel } from '~/components/GalleryCarousel';
 import { ProductGrid } from '~/components/ProductGrid';
 import { CollectionSection } from '~/components/CollectionSection';
@@ -233,6 +234,15 @@ export default function Product() {
       />
 
       <Breadcrumb items={buildBreadcrumbItems()} />
+
+      {/* Product Feature Hero - Second Image with Features */}
+      {product.images?.nodes?.[1] && (
+        <ProductFeatureHero
+          image={product.images.nodes[1]}
+          title={product.title}
+          product={product}
+        />
+      )}
 
       <GalleryCarousel
         images={product.images?.nodes || []}

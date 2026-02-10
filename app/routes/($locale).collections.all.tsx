@@ -1,12 +1,10 @@
 import type {Route} from './+types/collections.all';
 import {useLoaderData} from 'react-router';
-import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
-import {ProductItem} from '~/components/ProductItem';
-import type {CollectionItemFragment} from 'storefrontapi.generated';
+import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
+import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Products`}];
+  return [{title: `BLACMELO | All Products`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -26,16 +24,37 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context, request}: Route.LoaderArgs) {
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 30,
   });
 
-  const [{products}] = await Promise.all([
-    storefront.query(CATALOG_QUERY, {
-      variables: {...paginationVariables},
+  const [{collection}] = await Promise.all([
+    storefront.query(COLLECTION_QUERY, {
+      variables: {handle: 'all-products', ...paginationVariables},
     }),
-    // Add other queries here, so that they are loaded in parallel
   ]);
-  return {products};
+
+  // If collection doesn't exist, create a virtual "All Products" collection
+  if (!collection) {
+    const [{products}] = await Promise.all([
+      storefront.query(ALL_PRODUCTS_QUERY, {
+        variables: {...paginationVariables},
+      }),
+    ]);
+
+    // Create a virtual collection object
+    return {
+      collection: {
+        id: 'gid://shopify/Collection/all',
+        handle: 'all-products',
+        title: 'All Products',
+        description: 'Shop all our products',
+        image: null,
+        products,
+      },
+    };
+  }
+
+  return {collection};
 }
 
 /**
@@ -47,34 +66,30 @@ function loadDeferredData({context}: Route.LoaderArgs) {
   return {};
 }
 
-export default function Collection() {
-  const {products} = useLoaderData<typeof loader>();
+export default function AllProductsCollection() {
+  const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>Products</h1>
-      <PaginatedResourceSection<CollectionItemFragment>
-        connection={products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        )}
-      </PaginatedResourceSection>
-    </div>
+    <>
+      <RepresentCollectionPage collection={collection} />
+      <Analytics.CollectionView
+        data={{
+          collection: {
+            id: collection.id,
+            handle: collection.handle,
+          },
+        }}
+      />
+    </>
   );
 }
 
-const COLLECTION_ITEM_FRAGMENT = `#graphql
-  fragment MoneyCollectionItem on MoneyV2 {
+const PRODUCT_ITEM_FRAGMENT = `#graphql
+  fragment MoneyProductItem on MoneyV2 {
     amount
     currencyCode
   }
-  fragment CollectionItem on Product {
+  fragment ProductItem on Product {
     id
     handle
     title
@@ -85,20 +100,90 @@ const COLLECTION_ITEM_FRAGMENT = `#graphql
       width
       height
     }
+    images(first: 2) {
+      nodes {
+        id
+        altText
+        url
+        width
+        height
+      }
+    }
+    variants(first: 100) {
+      nodes {
+        id
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
     priceRange {
       minVariantPrice {
-        ...MoneyCollectionItem
+        ...MoneyProductItem
       }
       maxVariantPrice {
-        ...MoneyCollectionItem
+        ...MoneyProductItem
+      }
+    }
+    metafields(
+      identifiers: [
+        {namespace: "custom", key: "color_name"}
+        {namespace: "custom", key: "color"}
+        {namespace: "category", key: "color"}
+        {namespace: "category", key: "Color"}
+      ]
+    ) {
+      key
+      value
+      namespace
+    }
+  }
+` as const;
+
+const COLLECTION_QUERY = `#graphql
+  ${PRODUCT_ITEM_FRAGMENT}
+  query AllProductsCollection(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int
+    $last: Int
+    $startCursor: String
+    $endCursor: String
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      id
+      handle
+      title
+      description
+      image {
+        url
+        altText
+      }
+      products(
+        first: $first,
+        last: $last,
+        before: $startCursor,
+        after: $endCursor
+      ) {
+        nodes {
+          ...ProductItem
+        }
+        pageInfo {
+          hasPreviousPage
+          hasNextPage
+          endCursor
+          startCursor
+        }
       }
     }
   }
 ` as const;
 
-// NOTE: https://shopify.dev/docs/api/storefront/latest/objects/product
-const CATALOG_QUERY = `#graphql
-  query Catalog(
+const ALL_PRODUCTS_QUERY = `#graphql
+  ${PRODUCT_ITEM_FRAGMENT}
+  query AllProducts(
     $country: CountryCode
     $language: LanguageCode
     $first: Int
@@ -108,7 +193,7 @@ const CATALOG_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
       nodes {
-        ...CollectionItem
+        ...ProductItem
       }
       pageInfo {
         hasPreviousPage
@@ -118,5 +203,4 @@ const CATALOG_QUERY = `#graphql
       }
     }
   }
-  ${COLLECTION_ITEM_FRAGMENT}
 ` as const;
