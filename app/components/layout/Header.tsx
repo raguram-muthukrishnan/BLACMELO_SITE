@@ -7,35 +7,42 @@ import {Menu, User, ShoppingBag} from 'lucide-react';
 import logo from '~/assets/logos/Logo.avif';
 import {DynamicHoverMenu} from '~/components/ui/DynamicHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
+import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 import {useAside} from '~/components/Aside';
 import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
 import {getFallbackDynamicMenu} from '~/lib/dynamicHeaderMenu';
+import headerStyles from '~/styles/layout/header.css?url';
 
 type HeaderProps = {
   header: HeaderQuery;
   cart: Promise<any>;
   isLoggedIn: Promise<boolean>;
   isProductPage?: boolean;
-  dynamicMenuConfig?: DynamicMenuConfig;
+  menMenuConfig?: DynamicMenuConfig;
+  womenMenuConfig?: DynamicMenuConfig;
 };
 
-export function Header({isProductPage = false, dynamicMenuConfig: providedMenuConfig, cart}: HeaderProps) {
+export function Header({isProductPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart}: HeaderProps) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const {open: openAside} = useAside();
 
-  // Use provided menu config or fallback
-  const menuConfig = providedMenuConfig || getFallbackDynamicMenu(menuManImage);
+  // Use provided menu configs or fallback
+  const menMenuConfig = providedMenMenuConfig || getFallbackDynamicMenu(menuManImage);
+  const womenMenuConfig = providedWomenMenuConfig || getFallbackDynamicMenu(menuWomanImage);
+  
+  // Select the appropriate menu config based on active menu
+  const currentMenuConfig = activeMenu === 'blacmelo-club' ? womenMenuConfig : menMenuConfig;
 
   // Debug logging
   useEffect(() => {
-    console.log('🎨 Header dynamic menu config:', {
-      sections: menuConfig.sections.length,
-      permanentSections: menuConfig.sections.filter(s => s.isPermanent).length,
-      dynamicSections: menuConfig.sections.filter(s => !s.isPermanent).length,
+    console.log('🎨 Header menu configs:', {
+      menSections: menMenuConfig.sections.length,
+      womenSections: womenMenuConfig.sections.length,
+      activeMenu: activeMenu,
     });
-  }, [menuConfig]);
+  }, [menMenuConfig, womenMenuConfig, activeMenu]);
 
   // Handle scroll to change header background
   useEffect(() => {
@@ -103,7 +110,7 @@ export function Header({isProductPage = false, dynamicMenuConfig: providedMenuCo
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
-              Shop
+              Man
             </NavLink>
           </div>
           
@@ -117,7 +124,7 @@ export function Header({isProductPage = false, dynamicMenuConfig: providedMenuCo
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
-              Blacmelo Club
+              Women
             </NavLink>
           </div>
         </nav>
@@ -136,24 +143,17 @@ export function Header({isProductPage = false, dynamicMenuConfig: providedMenuCo
           {/* Desktop Links */}
           <NavLink 
             prefetch="intent" 
-            to="/about" 
+            to="/the-vault" 
             className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
           >
-            About us
+            The Vault
           </NavLink>
           <NavLink 
             prefetch="intent" 
-            to="/contact" 
+            to="/the-prestige" 
             className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
           >
-            Contact us
-          </NavLink>
-          <NavLink 
-            prefetch="intent" 
-            to="/faq" 
-            className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
-          >
-            FAQ
+            The Prestige
           </NavLink>
           
           {/* User Icon (visible on all screens) */}
@@ -170,7 +170,7 @@ export function Header({isProductPage = false, dynamicMenuConfig: providedMenuCo
       {(activeMenu === 'shop' || activeMenu === 'blacmelo-club') && (
         <DynamicHoverMenu
           isActive={true}
-          menuConfig={menuConfig}
+          menuConfig={currentMenuConfig}
           onMouseLeave={handleMenuLeave}
         />
       )}

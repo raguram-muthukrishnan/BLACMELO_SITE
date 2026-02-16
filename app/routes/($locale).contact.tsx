@@ -2,6 +2,11 @@ import {Form} from 'react-router';
 import type {LoaderFunctionArgs, MetaFunction} from 'react-router';
 import banner4 from '~/assets/banner images/4.png';
 import banner2 from '~/assets/banner images/2.jpeg';
+import aboutContactStyles from '~/styles/pages/about-contact.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: aboutContactStyles},
+];
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [

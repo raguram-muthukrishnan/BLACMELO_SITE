@@ -13,6 +13,17 @@ import type {
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
 
+// Add search page styles
+import searchStyles from '~/styles/pages/search.css?url';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: searchStyles},
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+];
+
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
 };

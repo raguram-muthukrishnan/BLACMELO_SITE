@@ -1,6 +1,11 @@
 import {type MetaFunction} from 'react-router';
 import {useState} from 'react';
 import banner3 from '~/assets/banner images/3.jpeg';
+import aboutContactStyles from '~/styles/pages/about-contact.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: aboutContactStyles},
+];
 
 export const meta: MetaFunction = () => {
   return [

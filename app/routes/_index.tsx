@@ -118,7 +118,7 @@ function RecommendedProducts({
 }
 
 const COLLECTION_BY_HANDLE_QUERY = `#graphql
-  fragment CollectionWithProducts on Collection {
+  fragment IndexCollectionWithProducts on Collection {
     id
     title
     handle
@@ -152,10 +152,10 @@ const COLLECTION_BY_HANDLE_QUERY = `#graphql
       }
     }
   }
-  query CollectionByHandle($handle: String!, $country: CountryCode, $language: LanguageCode)
+  query IndexCollectionByHandle($handle: String!, $country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
-      ...CollectionWithProducts
+      ...IndexCollectionWithProducts
     }
   }
 ` as const;

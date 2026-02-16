@@ -4,6 +4,11 @@ import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
 
+// Add basic page styles for blogs
+export const links = () => [
+  // No specific CSS needed, will use global styles
+];
+
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
 export const meta: Route.MetaFunction = () => {

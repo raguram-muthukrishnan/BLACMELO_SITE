@@ -2,10 +2,23 @@ import type {Route} from './+types/collections.all';
 import {useLoaderData} from 'react-router';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
+import collectionStyles from '~/styles/pages/collection.css?url';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+import buttonsStyles from '~/styles/components/buttons.css?url';
+import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `BLACMELO | All Products`}];
 };
+
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+  {rel: 'stylesheet', href: buttonsStyles},
+  {rel: 'stylesheet', href: filterPanelStyles},
+];
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -85,11 +98,11 @@ export default function AllProductsCollection() {
 }
 
 const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
+  fragment MoneyProductItemAll on MoneyV2 {
     amount
     currencyCode
   }
-  fragment ProductItem on Product {
+  fragment ProductItemAll on Product {
     id
     handle
     title
@@ -120,10 +133,10 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     }
     priceRange {
       minVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemAll
       }
       maxVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemAll
       }
     }
     metafields(
@@ -168,7 +181,7 @@ const COLLECTION_QUERY = `#graphql
         after: $endCursor
       ) {
         nodes {
-          ...ProductItem
+          ...ProductItemAll
         }
         pageInfo {
           hasPreviousPage
@@ -193,7 +206,7 @@ const ALL_PRODUCTS_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
       nodes {
-        ...ProductItem
+        ...ProductItemAll
       }
       pageInfo {
         hasPreviousPage

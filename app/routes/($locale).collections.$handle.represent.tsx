@@ -3,10 +3,23 @@ import type {LoaderFunctionArgs, MetaFunction} from 'react-router';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
+import collectionStyles from '~/styles/pages/collection.css?url';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+import buttonsStyles from '~/styles/components/buttons.css?url';
+import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `BLACMELO | ${data?.collection?.title ?? ''}`}];
 };
+
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+  {rel: 'stylesheet', href: buttonsStyles},
+  {rel: 'stylesheet', href: filterPanelStyles},
+];
 
 export async function loader(args: LoaderFunctionArgs) {
   const deferredData = loadDeferredData(args);
@@ -65,11 +78,11 @@ export default function CollectionRepresent() {
 }
 
 const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
+  fragment MoneyProductItemRepresent on MoneyV2 {
     amount
     currencyCode
   }
-  fragment ProductItem on Product {
+  fragment ProductItemRepresent on Product {
     id
     handle
     title
@@ -100,10 +113,10 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     }
     priceRange {
       minVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemRepresent
       }
       maxVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemRepresent
       }
     }
   }
@@ -111,7 +124,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
 
 const COLLECTION_QUERY = `#graphql
   ${PRODUCT_ITEM_FRAGMENT}
-  query Collection(
+  query CollectionRepresentPage(
     $handle: String!
     $country: CountryCode
     $language: LanguageCode
@@ -136,7 +149,7 @@ const COLLECTION_QUERY = `#graphql
         after: $endCursor
       ) {
         nodes {
-          ...ProductItem
+          ...ProductItemRepresent
         }
         pageInfo {
           hasPreviousPage

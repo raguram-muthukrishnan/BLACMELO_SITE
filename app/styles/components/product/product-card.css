@@ -1,0 +1,374 @@
+/**
+ * BLACMELO Product Card - Grid Item Component
+ * Extracted from tailwind.css lines 2768-3014
+ */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none !important;
+  color: inherit;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  overflow: visible;
+  min-width: 0;
+  position: relative;
+}
+
+.card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none !important;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+}
+
+.product-card:hover {
+  text-decoration: none !important;
+}
+
+.product-card * {
+  text-decoration: none !important;
+}
+
+/* Card components used by ProductGrid and RecentlyViewed */
+.card-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: visible;
+  background: #f8f8f8;
+}
+
+.quick-add-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 4;
+  opacity: 0;
+  color: #000000;
+  padding: 0;
+  pointer-events: all;
+}
+
+.card-image-wrapper:hover .quick-add-btn {
+  opacity: 1;
+}
+
+.card-image-wrapper:has(.quick-add-overlay) .quick-add-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.quick-add-btn:hover {
+  opacity: 1;
+}
+
+.quick-add-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 3;
+  padding: 12px;
+  min-height: 80px;
+  pointer-events: all;
+}
+
+.quick-add-sizes {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.size-option {
+  min-width: 40px;
+  padding: 8px 12px;
+  border: 1px solid #000000;
+  background: transparent;
+  color: #000000;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.size-option:hover:not(.disabled) {
+  background: #000000;
+  color: #ffffff;
+}
+
+.size-option.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.size-option.disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent calc(50% - 0.5px),
+    #000000 calc(50% - 0.5px),
+    #000000 calc(50% + 0.5px),
+    transparent calc(50% + 0.5px),
+    transparent 100%
+  );
+  transform: rotate(-45deg);
+}
+
+.card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  clip-path: inset(0);
+}
+
+.card-info {
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px; /* text-xs: 12px per REPRESENT specs */
+  font-weight: 400;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.card-price {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px; /* text-xs: 12px per REPRESENT specs */
+  color: var(--muted-foreground);
+  font-weight: 700;
+}
+
+/* Desktop: slightly larger padding */
+@media (min-width: 1024px) {
+  .card-info {
+    padding: 16px;
+  }
+}
+
+/* Desktop border rules for different grid modes */
+.product-grid-small .product-card:nth-child(3n) {
+  border-right: none;
+}
+
+.product-grid-medium .product-card:nth-child(4n) {
+  border-right: none;
+}
+
+.product-grid-large .product-card:nth-child(6n) {
+  border-right: none;
+}
+
+@media (max-width: 1200px) {
+  .product-grid-small .product-card:nth-child(3n) {
+    border-right: 1px solid #f0f0f0;
+  }
+  .product-grid-small .product-card:nth-child(2n) {
+    border-right: none;
+  }
+  .product-grid-medium .product-card:nth-child(4n) {
+    border-right: 1px solid #f0f0f0;
+  }
+  .product-grid-medium .product-card:nth-child(3n) {
+    border-right: none;
+  }
+  .product-grid-large .product-card:nth-child(6n) {
+    border-right: 1px solid #f0f0f0;
+  }
+  .product-grid-large .product-card:nth-child(4n) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Keep borders on mobile for grid structure */
+  .product-card:nth-child(2n) {
+    border-right: none;
+  }
+
+  /* Make quick add button always visible on mobile */
+  .quick-add-btn {
+    opacity: 1;
+  }
+}
+
+.product-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.product-card-image img,
+.product-card-image picture,
+.product-card-image picture img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Primary image - visible by default, fades out on hover */
+.product-card-img-primary {
+  opacity: 1;
+  transition: opacity 0.25s ease-in-out;
+  z-index: 2;
+}
+
+.product-card-img-primary.fade-out {
+  opacity: 0;
+}
+
+/* Secondary image - hidden by default, fades in on hover */
+.product-card-img-secondary {
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+  z-index: 1;
+}
+
+.product-card-img-secondary.fade-in {
+  opacity: 1;
+}
+
+/* Quick Add Button */
+.product-card-quick-add {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.product-card-quick-add.visible,
+.product-card:hover .product-card-quick-add {
+  opacity: 1;
+}
+
+.product-card-quick-add svg {
+  width: 18px;
+  height: 18px;
+  color: #000000;
+}
+
+/* Product Card Info - REPRESENT Layout */
+.product-card-info {
+  padding: 16px; /* Mobile: p-4 (16px) */
+}
+
+/* Desktop: p-6 (24px) */
+@media (min-width: 1024px) {
+  .product-card-info {
+    padding: 24px;
+  }
+}
+
+.product-card-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.product-card-info-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-card-info-right {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.product-card-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px; /* Updated to 12px (text-xs) per REPRESENT specs */
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  color: #000000;
+  line-height: 1.3;
+  text-transform: none;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.product-card-variant {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+  margin: 0;
+  line-height: 1.4;
+  display: inline;
+  text-decoration: none;
+}
+
+.product-card-colors {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+  text-decoration: none;
+}
+
+.product-card-colors::before {
+  content: '';
+  margin-right: 0;
+}
+
+.product-card-price {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px; /* Updated to 12px (text-xs) per REPRESENT specs */
+  font-weight: 700;
+  color: #000000;
+  white-space: nowrap;
+}

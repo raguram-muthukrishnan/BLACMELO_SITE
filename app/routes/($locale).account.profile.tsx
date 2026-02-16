@@ -10,6 +10,9 @@ import {
 } from 'react-router';
 import type {Route} from './+types/account.profile';
 
+// Account profile inherits styles from parent account route
+export const links = () => [];
+
 export type ActionResponse = {
   error: string | null;
   customer: CustomerFragment | null;

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState, forwardRef, useCallback} from 'react';
 import {Link} from 'react-router';
 
 interface EditorialVideoProps {
@@ -8,32 +8,43 @@ interface EditorialVideoProps {
   showOverlay?: boolean;
   overlayLabel?: string;
   overlayTitle?: string;
-  overlaySubtitle?: string;
   primaryButtonText?: string;
   primaryButtonLink?: string;
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
 }
 
-export function EditorialVideo({
+export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(function EditorialVideo({
   video,
   poster,
   alt = '',
   showOverlay = false,
   overlayLabel = 'NOW LIVE',
   overlayTitle = 'COLLECTION',
-  overlaySubtitle = 'ON A MISSION',
   primaryButtonText = 'SHOP NOW',
   primaryButtonLink = '#',
   secondaryButtonText = 'DISCOVER STORY',
   secondaryButtonLink = '#',
-}: EditorialVideoProps) {
+}, forwardedRef) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const internalRef = useRef<HTMLDivElement>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
+  // Merge refs
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      internalRef.current = node;
+      if (typeof forwardedRef === 'function') {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        forwardedRef.current = node;
+      }
+    },
+    [forwardedRef]
+  );
+
   useEffect(() => {
-    if (!video || !videoRef.current || !sectionRef.current) return;
+    if (!video || !videoRef.current || !internalRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -53,7 +64,7 @@ export function EditorialVideo({
       {threshold: [0.5]}
     );
 
-    observer.observe(sectionRef.current);
+    observer.observe(internalRef.current);
 
     return () => {
       observer.disconnect();
@@ -62,7 +73,7 @@ export function EditorialVideo({
 
   return (
     <section
-      ref={sectionRef}
+      ref={setRefs}
       className="editorial-banner"
       style={{height: '100vh', minHeight: '600px', position: 'relative'}}
     >
@@ -87,7 +98,6 @@ export function EditorialVideo({
           <div className="banner-overlay-content">
             <p className="banner-overlay-label">{overlayLabel}</p>
             <h1 className="banner-overlay-title">{overlayTitle}</h1>
-            <p className="banner-overlay-subtitle">{overlaySubtitle}</p>
             <div className="banner-overlay-buttons">
               <Link to={primaryButtonLink} className="banner-overlay-btn">
                 {primaryButtonText}
@@ -101,4 +111,4 @@ export function EditorialVideo({
       )}
     </section>
   );
-}
+});

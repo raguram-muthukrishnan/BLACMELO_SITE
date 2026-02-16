@@ -1,0 +1,681 @@
+/**
+ * BLACMELO Product Hero Info - Product Details Sidebar Styling
+ * Styles for product title, price, colors, sizes, and other product info
+ */
+
+/* Product Header - Title & Price */
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 20px;
+}
+
+.hero-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  flex: 1;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.hero-price {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  white-space: nowrap;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+/* Star Rating */
+.hero-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #000000;
+  position: relative;
+}
+
+.hero-rating-judgeme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-rating-fallback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.hero-rating-fallback .empty-star {
+  font-size: 10px;
+  color: #000000;
+  line-height: 1;
+}
+
+.hero-rating-fallback .no-reviews-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.hero-rating * {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.hero-rating .jdgm-all-reviews-rating,
+.hero-rating .jdgm-all-reviews-count {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  font-family: 'Neue Haas Grotesk', sans-serif !important;
+}
+
+.hero-rating-count {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #000000;
+}
+/* Variant Thumbnails */
+.variant-thumbnails {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.variant-thumb {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #e5e5e5;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.variant-thumb:hover {
+  border-color: #000000;
+}
+
+.variant-thumb.selected {
+  border-color: #000000;
+}
+
+.variant-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Color/Colour Section */
+.hero-colour {
+  margin-bottom: 16px;
+}
+
+.colour-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.colour-header-left {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.colour-header-left span:first-child {
+  color: #000000;
+}
+
+.colour-name {
+  font-weight: 400;
+  color: #000000;
+}
+
+.bookmark-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  transition: opacity 0.2s ease;
+}
+
+.bookmark-btn:hover {
+  opacity: 0.6;
+}
+
+/* Swatches */
+.swatches {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.swatch-wrapper {
+  width: 50px;
+  height: 70px;
+  border: 3px solid #e5e5e5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  background: none;
+  padding: 0;
+  border-radius: 2px;
+}
+
+.swatch-wrapper.active {
+  border-color: #000000;
+  border-width: 3px;
+}
+
+.swatch-wrapper:hover {
+  border-color: #999999;
+}
+
+.swatch-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Size Section */
+.size-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: #000000;
+}
+
+.size-guide-btn {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-transform: lowercase;
+}
+
+.size-guide-btn:hover {
+  opacity: 0.7;
+}
+
+/* Size Buttons - Single Row */
+.hero-sizes {
+  display: flex;
+  gap: 0;
+  margin-bottom: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.size-btn {
+  flex: 1;
+  padding: 14px 12px;
+  border: 1px solid #cccccc;
+  border-right: none;
+  background: #ffffff;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  border-radius: 0;
+  position: relative;
+}
+
+.size-btn:last-child {
+  border-right: 1px solid #cccccc;
+}
+
+.size-btn:hover:not(.disabled) {
+  border-color: #000000;
+  z-index: 1;
+}
+
+.size-btn:hover:not(.disabled):not(:last-child) {
+  border-right: 1px solid #000000;
+}
+
+.size-btn.selected {
+  border-color: #000000;
+  background: #000000;
+  color: #ffffff;
+  z-index: 2;
+  border-right: 1px solid #000000;
+}
+
+.size-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  position: relative;
+  color: #999999;
+}
+
+.size-btn.disabled::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top right, transparent calc(50% - 0.5px), #bbbbbb calc(50% - 0.5px), #bbbbbb calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  pointer-events: none;
+}
+
+.hero-size-note {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.hero-size-note a {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #888888;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.hero-size-note a:hover {
+  color: #000000;
+}
+
+/* Add to Cart Container - Full Width */
+.hero-cart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-left: -170px;
+  margin-right: -170px;
+  width: calc(100% + 340px);
+}
+
+.hero-cart-container > form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-cart-container button {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Add to Cart Button */
+.hero-cta {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  border: 1px solid #000000;
+}
+
+.hero-cart-container button:hover:not(:disabled) .hero-cta:not(.disabled) {
+  background: #333333;
+  border-color: #333333;
+}
+
+.hero-cart-container button:disabled .hero-cta,
+.hero-cta.disabled {
+  background: #666666;
+  color: #cccccc;
+  border-color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Benefits List */
+.hero-benefits {
+  margin-bottom: 20px;
+  padding-top: 0;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.benefit-item:last-child {
+  margin-bottom: 0;
+}
+
+.benefit-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.benefit-item span {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  line-height: 18px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Expandable Sections - 2x2 Grid */
+.hero-expandable-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #e5e5e5;
+  border: 1px solid #e5e5e5;
+}
+
+.expandable-section-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: #000000;
+  text-align: left;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  transition: background 0.2s ease;
+}
+
+.expandable-section-btn:hover {
+  background: #f9f9f9;
+}
+
+.expandable-section-btn svg {
+  fill: none;
+}
+
+.expandable-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.expandable-title {
+  flex: 1;
+}
+
+/* Expanded View */
+.hero-expanded-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 100;
+  overflow-y: auto;
+  padding: 140px 160px 40px;
+}
+
+.hero-expanded-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.hero-expanded-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 500;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.hero-expanded-close {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.hero-expanded-close:hover {
+  background: #e5e5e5;
+}
+
+.hero-expanded-close svg {
+  fill: none;
+}
+
+.hero-expanded-content {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #666666;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+.size-chart-container {
+  max-width: 100%;
+}
+
+.size-chart-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Fullscreen Gallery */
+.fullscreen-gallery {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+}
+
+.fullscreen-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fullscreen-close svg {
+  fill: none;
+}
+
+.fullscreen-image-container {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Desktop Responsive */
+@media (min-width: 1025px) {
+  .hero-title {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .hero-price {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .hero-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .hero-price {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .hero-sizes {
+    gap: 0;
+  }
+
+  .size-btn {
+    padding: 12px 10px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .hero-cart-container {
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+  }
+
+  .swatches {
+    gap: 8px;
+  }
+
+  .swatch-wrapper {
+    width: 60px;
+    height: 75px;
+    border-width: 2px;
+  }
+
+  .swatch-wrapper.active {
+    border-width: 2px;
+  }
+
+  .hero-expanded-view {
+    padding: 30px 20px;
+  }
+
+  .hero-expandable-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .quantity-cart-container {
+    flex-direction: column;
+  }
+
+  .quantity-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-header {
+    margin-bottom: 12px;
+  }
+
+  .benefit-item span {
+    font-size: 11px;
+  }
+}

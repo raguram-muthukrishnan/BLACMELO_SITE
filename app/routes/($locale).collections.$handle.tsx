@@ -4,6 +4,19 @@ import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
 // import {CollectionPage} from '~/components/CollectionPage'; // Original style
+import collectionStyles from '~/styles/pages/collection.css?url';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+import buttonsStyles from '~/styles/components/buttons.css?url';
+import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+  {rel: 'stylesheet', href: buttonsStyles},
+  {rel: 'stylesheet', href: filterPanelStyles},
+];
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `BLACMELO | ${data?.collection?.title ?? ''}`}];
@@ -90,11 +103,11 @@ export default function Collection() {
 }
 
 const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
+  fragment MoneyProductItemCollection on MoneyV2 {
     amount
     currencyCode
   }
-  fragment ProductItem on Product {
+  fragment ProductItemCollection on Product {
     id
     handle
     title
@@ -125,10 +138,10 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     }
     priceRange {
       minVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemCollection
       }
       maxVariantPrice {
-        ...MoneyProductItem
+        ...MoneyProductItemCollection
       }
     }
     metafields(
@@ -149,7 +162,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
 // NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
 const COLLECTION_QUERY = `#graphql
   ${PRODUCT_ITEM_FRAGMENT}
-  query Collection(
+  query CollectionPage(
     $handle: String!
     $country: CountryCode
     $language: LanguageCode
@@ -174,7 +187,7 @@ const COLLECTION_QUERY = `#graphql
         after: $endCursor
       ) {
         nodes {
-          ...ProductItem
+          ...ProductItemCollection
         }
         pageInfo {
           hasPreviousPage

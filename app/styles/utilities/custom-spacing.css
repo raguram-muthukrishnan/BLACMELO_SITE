@@ -1,0 +1,262 @@
+/**
+ * BLACMELO Custom Utilities
+ * Pixel-perfect spacing and typography matching REPRESENT (row.representclo.com)
+ * Base: 16px | Mobile-first responsive system
+ */
+
+/* ========================================
+   PADDING UTILITIES - HORIZONTAL
+   ======================================== */
+
+.px-6px {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.px-14px {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.px-15px {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.px-32px {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* ========================================
+   PADDING UTILITIES - VERTICAL
+   ======================================== */
+
+.py-6px {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.py-12px {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.py-16px {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.py-20px {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.py-40px {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.py-80px {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.py-100px {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+/* ========================================
+   PADDING UTILITIES - ALL SIDES
+   ======================================== */
+
+.p-6px {
+  padding: 6px;
+}
+
+.p-15px {
+  padding: 15px;
+}
+
+.p-30px {
+  padding: 30px;
+}
+
+/* ========================================
+   GAP UTILITIES - GRID/FLEX SPACING
+   ======================================== */
+
+.gap-x-px {
+  column-gap: 1px;
+}
+
+.gap-y-35px {
+  row-gap: 35px;
+}
+
+/* ========================================
+   TYPOGRAPHY - FONT SIZES
+   ======================================== */
+
+.text-8px {
+  font-size: 8px;
+}
+
+.text-10px {
+  font-size: 10px;
+}
+
+.text-11px {
+  font-size: 11px;
+}
+
+.text-12px {
+  font-size: 12px;
+}
+
+.text-32px {
+  font-size: 32px;
+}
+
+.text-40px {
+  font-size: 40px;
+}
+
+/* ========================================
+   TYPOGRAPHY - LINE HEIGHTS
+   ======================================== */
+
+.leading-12px {
+  line-height: 12px;
+}
+
+.leading-14px {
+  line-height: 14px;
+}
+
+.leading-16px {
+  line-height: 16px;
+}
+
+/* ========================================
+   SIZING - HEIGHTS
+   ======================================== */
+
+.h-46px {
+  height: 46px;
+}
+
+.h-63px {
+  height: 63px;
+}
+
+/* ========================================
+   RESPONSIVE VARIANTS - DESKTOP (lg: ≥1024px)
+   ======================================== */
+
+@media (min-width: 1024px) {
+  /* Horizontal Padding - Desktop */
+  .lg\:px-20px {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .lg\:px-32px {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .lg\:px-40px {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .lg\:px-64px {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  /* Vertical Padding - Desktop */
+  .lg\:py-20px {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .lg\:py-40px {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .lg\:py-80px {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .lg\:py-100px {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  /* All Sides Padding - Desktop */
+  .lg\:p-30px {
+    padding: 30px;
+  }
+
+  .lg\:p-40px {
+    padding: 40px;
+  }
+
+  /* Gap Utilities - Desktop */
+  .lg\:gap-x-4 {
+    column-gap: 1rem; /* 16px */
+  }
+
+  .lg\:gap-y-8 {
+    row-gap: 2rem; /* 32px */
+  }
+
+  /* Font Sizes - Desktop */
+  .lg\:text-32px {
+    font-size: 32px;
+  }
+
+  .lg\:text-40px {
+    font-size: 40px;
+  }
+
+  /* Heights - Desktop */
+  .lg\:h-46px {
+    height: 46px;
+  }
+}
+
+/* ========================================
+   RESPONSIVE VARIANTS - EXTRA LARGE (xl: ≥1280px)
+   ======================================== */
+
+@media (min-width: 1280px) {
+  .xl\:px-52px {
+    padding-left: 52px;
+    padding-right: 52px;
+  }
+
+  .xl\:py-100px {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .xl\:gap-8 {
+    gap: 2rem; /* 32px */
+  }
+}
+
+/* ========================================
+   RESPONSIVE VARIANTS - 2XL (≥1536px)
+   ======================================== */
+
+@media (min-width: 1536px) {
+  .2xl\:gap-10 {
+    gap: 2.5rem; /* 40px */
+  }
+}

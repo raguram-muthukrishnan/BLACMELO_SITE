@@ -18,6 +18,9 @@ import {
   CREATE_ADDRESS_MUTATION,
 } from '~/graphql/customer-account/CustomerAddressMutations';
 
+// Account addresses inherits styles from parent account route
+export const links = () => [];
+
 export type ActionResponse = {
   addressId?: string | null;
   createdAddress?: AddressFragment;

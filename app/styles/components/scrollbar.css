@@ -1,0 +1,40 @@
+/**
+ * BLACMELO Custom Scrollbar - Global Scrollbar Styles
+ * Extracted from app.css lines 32-65
+ */
+
+/* Custom Scrollbar - Webkit Browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* Hide scrollbar on homepage */
+body:has(.homepage) {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+body:has(.homepage)::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

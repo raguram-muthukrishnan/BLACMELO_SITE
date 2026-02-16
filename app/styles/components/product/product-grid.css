@@ -1,0 +1,76 @@
+/**
+ * BLACMELO Product Grid - Collection Grid Layouts
+ * Extracted from tailwind.css lines 2606-2640, 2792-2830
+ * Updated with REPRESENT gap system
+ */
+
+/* Base product-grid class (default to medium grid) */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+}
+
+/* Responsive adjustments for base grid */
+@media (max-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Base grid with REPRESENT border system */
+.product-grid-small,
+.product-grid-medium,
+.product-grid-large {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+}
+
+.product-grid-small {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.product-grid-medium {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.product-grid-large {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .product-grid-small {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .product-grid-medium {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .product-grid-large {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile: small=1col, medium=2cols, large=3cols */
+  .product-grid-small {
+    grid-template-columns: 1fr;
+  }
+  .product-grid-medium {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .product-grid-large {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

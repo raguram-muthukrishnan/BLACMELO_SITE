@@ -1,0 +1,178 @@
+/**
+ * BLACMELO Product Hero - Main Product View
+ * Extracted from product.css lines 0-130
+ */
+
+/* ========================================
+   PRODUCT HERO SECTION (Main Product View)
+   ======================================== */
+
+.hero-product {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+/* Adjust hero height when announcement bar is visible */
+body:has(.announcement-bar:not([hidden])) .hero-product {
+  height: calc(100vh - 36px);
+  margin-top: 36px;
+}
+
+body:has(.dynamic-announcement-bar) .hero-product {
+  height: calc(100vh - 36px);
+  margin-top: 36px;
+}
+
+/* Hero Left - Image Gallery */
+.hero-left {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+body:has(.announcement-bar:not([hidden])) .hero-left {
+  height: calc(100vh - 36px);
+}
+
+body:has(.dynamic-announcement-bar) .hero-left {
+  height: calc(100vh - 36px);
+}
+
+/* Thumbnails - Hidden */
+.hero-thumbnails {
+  display: none;
+}
+
+/* Image Container */
+.hero-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.hero-image-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.hero-image-layer.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* Navigation Buttons */
+.hero-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.hero-nav:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.hero-nav svg {
+  fill: none;
+}
+
+.hero-prev {
+  left: 12px;
+}
+
+.hero-next {
+  right: 12px;
+}
+
+/* Hero Right - Product Details */
+.hero-right {
+  position: relative;
+  padding: 60px 170px 40px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100vh;
+  background: #ffffff;
+}
+
+body:has(.announcement-bar:not([hidden])) .hero-right {
+  height: calc(100vh - 36px);
+}
+
+body:has(.dynamic-announcement-bar) .hero-right {
+  height: calc(100vh - 36px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  /* Hero Product - Mobile Layout */
+  .hero-product {
+    grid-template-columns: 1fr;
+    height: auto;
+    margin-top: 0;
+  }
+
+  body:has(.announcement-bar:not([hidden])) .hero-product,
+  body:has(.dynamic-announcement-bar) .hero-product {
+    margin-top: 0;
+  }
+
+  .hero-left {
+    height: 60vh;
+    min-height: 60vh;
+  }
+
+  body:has(.announcement-bar:not([hidden])) .hero-left,
+  body:has(.dynamic-announcement-bar) .hero-left {
+    height: 60vh;
+  }
+
+  .hero-image-container {
+    height: 100%;
+  }
+
+  .hero-image {
+    object-position: center center;
+  }
+
+  .hero-right {
+    padding: 32px 20px 40px;
+    height: auto;
+  }
+}

@@ -1,0 +1,141 @@
+/**
+ * BLACMELO Size Selector - Product Size Selection
+ * Extracted from product.css and tailwind.css
+ */
+
+/* Size Selector - Center Bottom of Product Card */
+.product-card-sizes {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  background: transparent;
+  opacity: 0;
+  animation: sizesSlideIn 0.2s ease forwards;
+}
+
+@keyframes sizesSlideIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.product-card-size-btn {
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin-left: -1px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.product-card-size-btn:first-child {
+  margin-left: 0;
+}
+
+.product-card-size-btn:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.product-card-size-btn.unavailable {
+  color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Product Page Size Section */
+.product-size-section {
+  margin-bottom: 24px;
+}
+
+.product-size-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.product-size-box {
+  padding: 14px 12px;
+  border: 1.5px solid #cccccc;
+  background: #ffffff;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  border-radius: 1px;
+}
+
+.product-size-box:hover {
+  border-color: #000000;
+  border-width: 1.5px;
+}
+
+.product-size-box.selected {
+  border-color: #000000;
+  border-width: 2px;
+  background: #000000;
+  color: #ffffff;
+}
+
+.product-size-box.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  position: relative;
+  color: #999999;
+}
+
+.product-size-box.disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: #bbbbbb;
+  transform: translateY(-50%);
+}
+
+.product-size-notify-link {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #888888;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.product-size-notify-link:hover {
+  color: #000000;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .product-size-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .product-size-box {
+    padding: 12px 10px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}

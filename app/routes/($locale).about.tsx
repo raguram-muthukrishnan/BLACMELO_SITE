@@ -3,6 +3,11 @@ import type {LoaderFunctionArgs, MetaFunction} from 'react-router';
 import banner1 from '~/assets/banner images/1.jpeg';
 import banner2 from '~/assets/banner images/2.jpeg';
 import banner3 from '~/assets/banner images/3.jpeg';
+import aboutContactStyles from '~/styles/pages/about-contact.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: aboutContactStyles},
+];
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [

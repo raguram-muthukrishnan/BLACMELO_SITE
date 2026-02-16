@@ -3,6 +3,9 @@ import {Suspense} from 'react';
 import type {HeaderQuery, FooterQuery} from 'storefrontapi.generated';
 import {Header} from './Header';
 import {Footer} from './Footer';
+import announcementBarStyles from '~/styles/layout/announcement-bar.css?url';
+import overlayStyles from '~/styles/layout/overlay.css?url';
+import scrollbarStyles from '~/styles/components/scrollbar.css?url';
 
 type PageLayoutProps = {
   header: HeaderQuery;

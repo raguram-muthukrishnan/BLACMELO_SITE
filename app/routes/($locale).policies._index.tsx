@@ -2,6 +2,11 @@ import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/policies._index';
 import type {PoliciesQuery, PolicyItemFragment} from 'storefrontapi.generated';
 
+// Add basic page styles for policies
+export const links = () => [
+  // No specific CSS needed, will use global styles
+];
+
 export async function loader({context}: Route.LoaderArgs) {
   const data: PoliciesQuery = await context.storefront.query(POLICIES_QUERY);
 

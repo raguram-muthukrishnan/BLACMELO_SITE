@@ -8,6 +8,11 @@ import {
 } from 'react-router';
 import type {Route} from './+types/account';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import accountStyles from '~/styles/pages/account.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: accountStyles},
+];
 
 export function shouldRevalidate() {
   return true;

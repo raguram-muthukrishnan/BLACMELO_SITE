@@ -2,6 +2,13 @@ import {useLoaderData, type MetaFunction} from 'react-router';
 import type {Route} from './+types/shop';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {ProductCard} from '~/components/ui/ProductCard';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+];
 
 export const meta: MetaFunction<typeof loader> = () => {
   return [{title: 'Shop All Products'}];

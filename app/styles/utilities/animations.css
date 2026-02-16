@@ -1,0 +1,80 @@
+/**
+ * BLACMELO Animations - Keyframes and Animation Utilities
+ * Extracted from tailwind.css and product.css
+ */
+
+/* Ticker Scroll Animation - Announcement Bar */
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Content Fade In - Menu/Dropdown */
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Sizes Slide In - Product Card Size Selector */
+@keyframes sizesSlideIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide Down - Expandable Sections */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In/Out - Scroll Hints */
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Scroll Hint Fade - Gallery Modal */
+@keyframes scrollHintFade {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Common Animation Classes */
+.animate-fade-in {
+  animation: contentFadeIn 0.25s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease;
+}
+
+.animate-ticker {
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.animate-ticker.paused {
+  animation-play-state: paused;
+}

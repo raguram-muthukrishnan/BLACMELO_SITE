@@ -33,7 +33,7 @@
 }
 
 .dashboard-heading {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -59,7 +59,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -110,7 +110,7 @@
 }
 
 .dashboard-nav-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -131,7 +131,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -239,7 +239,7 @@
 }
 
 .account-section-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.75rem;
   font-weight: 600;
   color: #000000;
@@ -274,7 +274,7 @@
 }
 
 .order-search-legend {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -318,7 +318,7 @@
 
 .order-search-buttons button {
   padding: 12px 24px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -396,7 +396,7 @@
 }
 
 .order-number {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
   color: #000000;
@@ -429,7 +429,7 @@
 }
 
 .order-detail-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -446,7 +446,7 @@
 .order-status {
   display: inline-block;
   padding: 4px 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -467,7 +467,7 @@
 }
 
 .order-total {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   color: #000000;
@@ -478,7 +478,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -511,7 +511,7 @@
 }
 
 .empty-state-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
   color: #000000;
@@ -530,7 +530,7 @@
   align-items: center;
   gap: 8px;
   padding: 14px 32px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -561,7 +561,7 @@
 }
 
 .profile-form legend {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -586,7 +586,7 @@
 }
 
 .form-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   color: #000000;
@@ -620,14 +620,14 @@
 .form-error mark {
   background: transparent;
   color: #dc2626;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 .form-submit {
   padding: 14px 32px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -683,7 +683,7 @@
 .address-default-badge {
   display: inline-block;
   padding: 4px 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -709,7 +709,7 @@
 .address-btn {
   flex: 1;
   padding: 10px 16px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -755,7 +755,7 @@
 }
 
 .address-form legend {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -792,7 +792,7 @@
 }
 
 .address-form-checkbox label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   color: #000000;

@@ -12,14 +12,36 @@ import {
   Money,
 } from '@shopify/hydrogen';
 import { ProductHero } from '~/components/ProductHero';
-import { Breadcrumb } from '~/components/Breadcrumb';
 import { ProductFeatureHero } from '~/components/ProductFeatureHero';
-import { GalleryCarousel } from '~/components/GalleryCarousel';
+import { Breadcrumb } from '~/components/Breadcrumb';
 import { ProductGrid } from '~/components/ProductGrid';
-import { CollectionSection } from '~/components/CollectionSection';
+import { ProductReviews } from '~/components/ProductReviews';
 import { RecentlyViewed } from '~/components/RecentlyViewed';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { addToRecentlyViewed } from '~/lib/recentlyViewed';
+import productPageStyles from '~/styles/pages/product.css?url';
+import productHeroStyles from '~/styles/components/product/product-hero.css?url';
+import productHeroInfoStyles from '~/styles/components/product/product-hero-info.css?url';
+import productFeatureHeroStyles from '~/styles/components/product/product-feature-hero.css?url';
+import breadcrumbStyles from '~/styles/components/breadcrumb.css?url';
+import productGridStyles from '~/styles/components/product/product-grid.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
+import productReviewsStyles from '~/styles/components/product-reviews.css?url';
+import reviewFormStyles from '~/styles/components/review-form.css?url';
+import buttonsStyles from '~/styles/components/buttons.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: productPageStyles},
+  {rel: 'stylesheet', href: productHeroStyles},
+  {rel: 'stylesheet', href: productHeroInfoStyles},
+  {rel: 'stylesheet', href: productFeatureHeroStyles},
+  {rel: 'stylesheet', href: breadcrumbStyles},
+  {rel: 'stylesheet', href: productGridStyles},
+  {rel: 'stylesheet', href: productCardStyles},
+  {rel: 'stylesheet', href: productReviewsStyles},
+  {rel: 'stylesheet', href: reviewFormStyles},
+  {rel: 'stylesheet', href: buttonsStyles},
+];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
@@ -66,35 +88,12 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     variables: { productId: product.id },
   }).catch(() => ({ productRecommendations: [] }));
 
-  // Fetch specific collections for "You May Also Like" section
-  const collectionHandles = ['bestseller', 'new-in', 'bottoms', 'tops'];
-  
-  const collectionsData = await Promise.all(
-    collectionHandles.map(collectionHandle =>
-      storefront.query(COLLECTION_BY_HANDLE_QUERY, {
-        variables: { handle: collectionHandle }
-      }).catch(() => ({ collection: null }))
-    )
-  );
-
-  // Filter out null collections
-  const collections = collectionsData
-    .map(data => data.collection)
-    .filter(Boolean);
-
-  // Fetch product menu
-  const { menu: productMenu } = await storefront.query(PRODUCT_MENU_QUERY, {
-    variables: { handle: 'product-menu' }
-  }).catch(() => ({ menu: null }));
-
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
 
   return {
     product,
     recommendations: recommendations || [],
-    collections,
-    productMenu,
   };
 }
 
@@ -111,7 +110,7 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product, recommendations, collections, productMenu } = useLoaderData<typeof loader>();
+  const { product, recommendations } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -159,57 +158,6 @@ export default function Product() {
     options: rec.options,
   })) || [];
 
-  // Build breadcrumb items dynamically based on product collections
-  const buildBreadcrumbItems = () => {
-    const items = [{ label: 'Home', href: '/' }];
-    
-    // Get the first collection (primary collection)
-    const primaryCollection = product.collections?.nodes?.[0];
-    
-    if (primaryCollection) {
-      const collectionHandle = primaryCollection.handle.toLowerCase();
-      const collectionTitle = primaryCollection.title;
-      
-      // Check if collection is gender-specific (men/women)
-      if (collectionHandle.includes('men') && !collectionHandle.includes('women')) {
-        items.push({ label: 'Men', href: '/collections/men' });
-        // If it's a subcategory (not just "men"), add it
-        if (collectionHandle !== 'men') {
-          items.push({
-            label: collectionTitle,
-            href: `/collections/${primaryCollection.handle}`,
-          });
-        }
-      } else if (collectionHandle.includes('women')) {
-        items.push({ label: 'Women', href: '/collections/women' });
-        // If it's a subcategory (not just "women"), add it
-        if (collectionHandle !== 'women') {
-          items.push({
-            label: collectionTitle,
-            href: `/collections/${primaryCollection.handle}`,
-          });
-        }
-      } else {
-        // Regular collection (not gender-specific)
-        items.push({
-          label: collectionTitle,
-          href: `/collections/${primaryCollection.handle}`,
-        });
-      }
-    } else {
-      // Fallback to "All Products" if no collection
-      items.push({
-        label: 'All Products',
-        href: '/collections/all',
-      });
-    }
-    
-    // Add current product (no href)
-    items.push({ label: product.title });
-    
-    return items;
-  };
-
   return (
     <>
       <ProductHero
@@ -233,8 +181,6 @@ export default function Product() {
         }}
       />
 
-      <Breadcrumb items={buildBreadcrumbItems()} />
-
       {/* Product Feature Hero - Second Image with Features */}
       {product.images?.nodes?.[1] && (
         <ProductFeatureHero
@@ -244,26 +190,25 @@ export default function Product() {
         />
       )}
 
-      <GalleryCarousel
-        images={product.images?.nodes || []}
-      />
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={[
+        { label: 'Home', href: '/' },
+        { label: 'Products', href: '/products' },
+        ...(product.collections?.nodes?.[0] ? [{
+          label: product.collections.nodes[0].title,
+          href: `/collections/${product.collections.nodes[0].handle}`
+        }] : []),
+        { label: product.title }
+      ]} />
 
       <ProductGrid
         title="STYLE WITH"
-        products={transformedRecommendations.slice(0, 4)}
+        products={transformedRecommendations}
       />
 
-      {/* Display each collection as a separate section */}
-      {collections && collections.map((collection) => (
-        <CollectionSection
-          key={collection.id}
-          collection={collection}
-          productMenu={productMenu}
-        />
-      ))}
+      <ProductReviews productId={product.id} productHandle={product.handle} />
 
       <RecentlyViewed />
-
 
     </>
   );
@@ -443,6 +388,10 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
             name
             value
           }
+          price {
+            amount
+            currencyCode
+          }
         }
       }
       options {
@@ -462,98 +411,6 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         key
         value
         namespace
-      }
-    }
-  }
-` as const;
-
-const COLLECTION_BY_HANDLE_QUERY = `#graphql
-  fragment CollectionWithProducts on Collection {
-    id
-    title
-    handle
-    products(first: 12) {
-      nodes {
-        id
-        title
-        handle
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-          maxVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        featuredImage {
-          id
-          url
-          altText
-          width
-          height
-        }
-        images(first: 2) {
-          nodes {
-            id
-            url
-            altText
-            width
-            height
-          }
-        }
-        variants(first: 100) {
-          nodes {
-            id
-            selectedOptions {
-              name
-              value
-            }
-          }
-        }
-        metafields(
-          identifiers: [
-            {namespace: "custom", key: "color_name"}
-            {namespace: "custom", key: "color"}
-            {namespace: "category", key: "color"}
-            {namespace: "category", key: "Color"}
-          ]
-        ) {
-          key
-          value
-          namespace
-        }
-      }
-    }
-  }
-  query CollectionByHandle($handle: String!, $country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collection(handle: $handle) {
-      ...CollectionWithProducts
-    }
-  }
-` as const;
-
-const PRODUCT_MENU_QUERY = `#graphql
-  fragment MenuItem on MenuItem {
-    id
-    title
-    url
-    type
-    items {
-      id
-      title
-      url
-      type
-    }
-  }
-  query ProductMenu($handle: String!, $country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    menu(handle: $handle) {
-      id
-      items {
-        ...MenuItem
       }
     }
   }

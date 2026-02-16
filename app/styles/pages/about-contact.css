@@ -1,0 +1,767 @@
+/**
+ * BLACMELO About / Contact / FAQ Page Styles
+ * Shared stylesheet for static informational pages
+ */
+
+/* ========================================
+   ABOUT PAGE STYLES
+   ======================================== */
+
+.about-page {
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Hero Section */
+.about-hero-section {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  min-height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-hero-overlay {
+  text-align: center;
+  color: #ffffff;
+  z-index: 10;
+}
+
+.about-hero-subtitle {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+}
+
+.about-hero-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .about-hero-title {
+    font-size: 40px;
+  }
+}
+
+/* Vision Section - Image Left, Text Right */
+.about-vision-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 60vh;
+  background: #ffffff;
+}
+
+@media (max-width: 1024px) {
+  .about-vision-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-vision-image {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.about-vision-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-vision-content {
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .about-vision-content {
+    padding: 40px 24px;
+  }
+}
+
+.about-section-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 24px 0;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.about-section-text {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: #333333;
+  margin: 0;
+}
+
+/* Content Section - Text Left, Image Right */
+.about-content-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: #ffffff;
+}
+
+@media (max-width: 1024px) {
+  .about-content-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-content-text {
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .about-content-text {
+    padding: 40px 24px;
+  }
+}
+
+.about-paragraph {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: #333333;
+  margin: 0 0 20px 0;
+}
+
+.about-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.about-content-image {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  overflow: hidden;
+}
+
+.about-content-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 1024px) {
+  .about-content-section {
+    grid-template-columns: 1fr;
+  }
+
+  .about-content-text {
+    order: 1;
+  }
+
+  .about-content-image {
+    order: 2;
+  }
+}
+
+
+/* ========================================
+   CONTACT PAGE STYLES
+   ======================================== */
+
+.contact-page {
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Hero Section */
+.contact-hero-section {
+  padding: 80px 40px;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .contact-hero-section {
+    padding: 60px 24px;
+  }
+}
+
+.contact-hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.contact-hero-subtitle {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  margin: 0 0 12px 0;
+  color: #666666;
+  text-transform: uppercase;
+}
+
+.contact-hero-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 20px 0;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .contact-hero-title {
+    font-size: 32px;
+  }
+}
+
+.contact-hero-description {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0;
+}
+
+/* Main Section */
+.contact-main-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: #ffffff;
+}
+
+@media (max-width: 1024px) {
+  .contact-main-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Contact Form Container */
+.contact-form-container {
+  padding: 80px 60px;
+  background: #ffffff;
+  border-right: 1px solid #e5e5e5;
+}
+
+@media (max-width: 1024px) {
+  .contact-form-container {
+    border-right: none;
+    border-bottom: 1px solid #e5e5e5;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-form-container {
+    padding: 40px 24px;
+  }
+}
+
+.contact-section-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 32px 0;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+/* Contact Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .contact-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-label {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.contact-input,
+.contact-textarea {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
+  padding: 14px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #000000;
+  transition: border-color 0.2s ease;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+  outline: none;
+  border-color: #000000;
+}
+
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+  color: #999999;
+}
+
+.contact-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contact-submit-btn {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 16px 40px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.contact-submit-btn:hover {
+  background: #333333;
+}
+
+/* Contact Info Container */
+.contact-info-container {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.contact-info-image {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.contact-info-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-info-details {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (max-width: 768px) {
+  .contact-info-details {
+    padding: 40px 24px;
+  }
+}
+
+.contact-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-info-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #000000;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.contact-info-text {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0;
+}
+
+.contact-info-text a {
+  color: #000000;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.contact-info-text a:hover {
+  opacity: 0.6;
+}
+
+.contact-info-subtext {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+  margin: 4px 0 0 0;
+}
+
+.contact-social-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.contact-social-links a {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.contact-social-links a:hover {
+  opacity: 0.6;
+}
+
+/* Bottom Image Section */
+.contact-bottom-section {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.contact-bottom-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .contact-bottom-section {
+    height: 300px;
+  }
+}
+
+
+/* ========================================
+   FAQ PAGE STYLES
+   ======================================== */
+
+.faq-page {
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Hero Section */
+.faq-hero-section {
+  padding: 80px 40px;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .faq-hero-section {
+    padding: 60px 24px;
+  }
+}
+
+.faq-hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.faq-hero-subtitle {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  margin: 0 0 12px 0;
+  color: #666666;
+  text-transform: uppercase;
+}
+
+.faq-hero-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 20px 0;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .faq-hero-title {
+    font-size: 32px;
+  }
+}
+
+.faq-hero-description {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0;
+}
+
+/* Content Section */
+.faq-content-section {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 0;
+  background: #ffffff;
+}
+
+@media (max-width: 1024px) {
+  .faq-content-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* FAQ Container */
+.faq-container {
+  padding: 60px 80px;
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .faq-container {
+    padding: 40px 24px;
+  }
+}
+
+/* FAQ Category */
+.faq-category {
+  margin-bottom: 60px;
+}
+
+.faq-category:last-child {
+  margin-bottom: 0;
+}
+
+.faq-category-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 24px 0;
+  color: #000000;
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #000000;
+}
+
+/* FAQ List */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* FAQ Item */
+.faq-item {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+/* FAQ Question Button */
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity 0.2s ease;
+}
+
+.faq-question:hover {
+  opacity: 0.7;
+}
+
+.faq-question span {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #000000;
+  flex: 1;
+}
+
+.faq-question.active span {
+  color: #000000;
+}
+
+/* FAQ Icon */
+.faq-icon {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: #000000;
+}
+
+.faq-icon.rotated {
+  transform: rotate(45deg);
+}
+
+/* FAQ Answer */
+.faq-answer {
+  padding: 0 0 24px 0;
+  animation: faqSlideDown 0.3s ease;
+}
+
+@keyframes faqSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-answer p {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #666666;
+  margin: 0;
+}
+
+/* Side Image */
+.faq-side-image {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  overflow: hidden;
+  position: sticky;
+  top: 44px;
+}
+
+@media (max-width: 1024px) {
+  .faq-side-image {
+    position: relative;
+    top: 0;
+    min-height: 400px;
+  }
+}
+
+.faq-side-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CTA Section */
+.faq-cta-section {
+  padding: 80px 40px;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .faq-cta-section {
+    padding: 60px 24px;
+  }
+}
+
+.faq-cta-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 16px 0;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .faq-cta-title {
+    font-size: 24px;
+  }
+}
+
+.faq-cta-text {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0 0 32px 0;
+}
+
+.faq-cta-button {
+  display: inline-block;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 16px 40px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-transform: uppercase;
+}
+
+.faq-cta-button:hover {
+  background: #333333;
+  opacity: 1;
+}

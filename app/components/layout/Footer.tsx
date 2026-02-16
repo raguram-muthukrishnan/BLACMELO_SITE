@@ -2,6 +2,7 @@ import {NavLink} from 'react-router';
 import {useState} from 'react';
 import type {FooterQuery} from 'storefrontapi.generated';
 import logo from '~/assets/logos/Logo.avif';
+import footerStyles from '~/styles/layout/footer.css?url';
 
 type FooterProps = {
   footer: FooterQuery;

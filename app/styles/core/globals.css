@@ -1,0 +1,181 @@
+/**
+ * BLACMELO Design System - Global Element Styles
+ * Extracted from tailwind.css and app.css
+ */
+
+/* Global reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root,
+[data-react-router-root] {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #ffffff;
+}
+
+body {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Override reset.css main margin */
+body > main,
+main {
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-top: 44px; /* Default header height */
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Image defaults */
+img {
+  border-radius: 0;
+  display: block;
+  max-width: 100%;
+}
+
+/* Link defaults */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+/* Button defaults */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Custom Scrollbar - Minimal & Aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* Hide scrollbar on homepage */
+body:has(.homepage) {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+body:has(.homepage)::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Override any default main padding/margin */
+#root,
+[data-react-router-root] {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Ensure no container constraints on homepage */
+.homepage,
+.hero-section,
+.hero-banner-wrapper,
+.banner-wrapper {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  max-width: none !important;
+}
+
+/* Override app.css header styles */
+.blacmelo-header.header {
+  padding: 0 !important;
+  height: 44px !important;
+  display: block !important;
+}
+
+header.blacmelo-header {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide Judge.me default widgets - We use custom design */
+/* Only hide the DISPLAY widgets, keep submission forms visible */
+.jdgm-carousel-wrapper,
+.jdgm-rev-widg__header,
+.jdgm-prev-badge,
+.jdgm-histogram,
+.jdgm-divider,
+.jdgm-rev__icon,
+.jdgm-powered-by-wrapper,
+.jdgm-rev-widg__body,
+.jdgm-rev-widg__reviews {
+  display: none !important;
+}
+
+/* Keep review form, modals, and submission widgets visible */
+.jdgm-write-rev-link,
+.jdgm-write-rev-form,
+.jdgm-write-rev-wrapper,
+.jdgm--modal,
+.jdgm-modal,
+.jdgm-form {
+  display: block !important;
+}
+
+/* Keep only the hidden data widget */
+.jdgm-widget[data-jdgm-product-id] {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Judge.me Component Overrides - Match our design */
+.jdgm-all-reviews-rating,
+.jdgm-all-reviews-count {
+  font-family: 'Neue Haas Grotesk', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  line-height: 1.5 !important;
+}
+
+.jdgm-all-reviews-rating .jdgm-star,
+.jdgm-all-reviews-rating svg {
+  width: 10px !important;
+  height: 10px !important;
+  font-size: 10px !important;
+}

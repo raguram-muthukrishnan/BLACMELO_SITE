@@ -18,7 +18,7 @@
   gap: 8px;
   padding: 0 20px;
   margin-bottom: 32px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.8rem;
   color: #666666;
 }
@@ -67,7 +67,7 @@
 }
 
 .collection-count {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.9rem;
   font-weight: 400;
   color: #888888;
@@ -78,7 +78,7 @@
 }
 
 .collection-description {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.85rem;
   line-height: 1.6;
   color: #444444;
@@ -90,7 +90,7 @@
   border: none;
   padding: 0;
   margin-left: 4px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.85rem;
   color: #000000;
   text-decoration: underline;
@@ -127,7 +127,7 @@
 
 .view-label,
 .model-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.8rem;
   color: #000000;
 }
@@ -169,7 +169,7 @@
   background: none;
   border: none;
   padding: 8px 0;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.8rem;
   color: #000000;
   cursor: pointer;
@@ -204,7 +204,7 @@
 }
 
 .collection-section-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -307,7 +307,7 @@
 }
 
 .represent-collection-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
   font-weight: 400;
   text-transform: uppercase;
@@ -317,7 +317,7 @@
 }
 
 .represent-product-count {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: #999999;
@@ -356,7 +356,7 @@
 
 .represent-view-toggle::before {
   content: 'View';
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: #000000;
@@ -396,7 +396,7 @@
 
 /* Model Toggle */
 .represent-model-toggle {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   text-transform: none;
@@ -438,7 +438,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   text-transform: none;
@@ -579,7 +579,7 @@
 }
 
 .represent-card-title {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
   font-weight: 700;
   text-transform: none;
@@ -590,7 +590,7 @@
 }
 
 .represent-card-variant {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: #666666;
@@ -600,14 +600,14 @@
 }
 
 .represent-card-colors {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: #666666;
 }
 
 .represent-card-price {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
   font-weight: 700;
   color: #000000;
@@ -648,7 +648,7 @@
 }
 
 .no-products-message p {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 14px;
   color: #666666;
   margin: 0;

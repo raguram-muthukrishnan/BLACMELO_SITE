@@ -3,6 +3,11 @@ import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import collectionStyles from '~/styles/pages/collection.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: collectionStyles},
+];
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte

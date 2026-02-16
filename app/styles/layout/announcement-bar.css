@@ -1,0 +1,176 @@
+/**
+ * BLACMELO Announcement Bar - Fixed Top Banner
+ * Extracted from tailwind.css lines 224-403
+ */
+
+/* Announcement Bar */
+.announcement-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #000000;
+  color: #ffffff;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-height: 36px;
+}
+
+.announcement-bar-content {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.announcement-bar-text,
+.announcement-bar-link {
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.announcement-bar-link:hover {
+  opacity: 0.8;
+}
+
+.announcement-bar-link-text {
+  text-decoration: underline;
+}
+
+.announcement-bar-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.announcement-bar-close:hover {
+  opacity: 0.7;
+}
+
+/* ============================================
+   DYNAMIC ANNOUNCEMENT BAR WITH TICKER
+   ============================================ */
+
+.dynamic-announcement-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #000000;
+  color: #ffffff;
+  z-index: 200;
+  overflow: hidden;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.announcement-ticker-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.announcement-ticker {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+.announcement-ticker.paused {
+  animation-play-state: paused;
+}
+
+.announcement-ticker-content {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 0;
+  display: inline-block;
+  padding-right: 100px; /* Space between loops */
+}
+
+/* Adjust for dynamic announcement bar */
+body:has(.dynamic-announcement-bar) main {
+  padding-top: 0 !important; /* Remove padding so banner touches top */
+}
+
+body:has(.dynamic-announcement-bar) .blacmelo-header {
+  top: 36px;
+}
+
+body:has(.dynamic-announcement-bar) .unified-hover-menu-overlay {
+  top: 0;
+  height: 100vh;
+}
+
+body:not(:has(.dynamic-announcement-bar)) .unified-hover-menu-overlay {
+  top: 0;
+  height: 100vh;
+}
+
+/* Product page adjustments */
+body:has(.dynamic-announcement-bar) main:has(.hero-product) {
+  padding-top: 0 !important;
+}
+
+body:has(.dynamic-announcement-bar) .hero-product {
+  height: calc(100vh - 36px);
+  margin-top: 36px;
+}
+
+body:has(.dynamic-announcement-bar) .hero-left {
+  height: calc(100vh - 36px);
+}
+
+body:has(.dynamic-announcement-bar) .hero-right {
+  height: calc(100vh - 36px);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .announcement-ticker-content {
+    font-size: 0.7rem;
+  }
+
+  body:has(.dynamic-announcement-bar) main {
+    padding-top: 0 !important; /* Remove padding so banner touches top */
+  }
+
+  body:has(.dynamic-announcement-bar) main:has(.hero-product) {
+    padding-top: 0 !important;
+  }
+
+  body:has(.dynamic-announcement-bar) .hero-product {
+    margin-top: 0;
+  }
+
+  body:has(.dynamic-announcement-bar) .hero-left {
+    height: 100vh;
+  }
+}

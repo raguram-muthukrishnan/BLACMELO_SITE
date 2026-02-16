@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Image, Money } from '@shopify/hydrogen';
 import { useSearchParams, useLocation, useNavigate } from 'react-router';
 import { AddToCartButton } from './AddToCartButton';
+import { StarRating } from './StarRating';
+import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface ProductImage {
@@ -58,10 +60,48 @@ interface ProductHeroProps {
 export function ProductHero({ product, selectedVariant, productOptions }: ProductHeroProps) {
   const images = product.images?.nodes || [];
   const [params, setParams] = useSearchParams();
-  const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreenGallery, setIsFullscreenGallery] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [hasReviews, setHasReviews] = useState(false);
+
+  // Check if product has reviews
+  useEffect(() => {
+    const checkReviews = () => {
+      const ratingElement = document.querySelector('.jdgm-all-reviews-rating');
+      const countElement = document.querySelector('.jdgm-all-reviews-count');
+      
+      if (ratingElement && countElement) {
+        const countText = countElement.textContent || '0';
+        const reviewCount = parseInt(countText.replace(/\D/g, '')) || 0;
+        setHasReviews(reviewCount > 0);
+      } else {
+        setHasReviews(false);
+      }
+    };
+
+    // Check immediately
+    checkReviews();
+
+    // Check after delays to allow Judge.me to load
+    const timer1 = setTimeout(checkReviews, 500);
+    const timer2 = setTimeout(checkReviews, 1500);
+    const timer3 = setTimeout(checkReviews, 3000);
+
+    // Watch for DOM changes
+    const observer = new MutationObserver(checkReviews);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      observer.disconnect();
+    };
+  }, [product.id]);
 
   // Sync active image with selected variant
   useEffect(() => {
@@ -279,7 +319,6 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             <div className="hero-header">
               <div>
                 <h1 className="hero-title">{product.title}</h1>
-                {product.vendor && <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textTransform: 'uppercase' }}>{product.vendor}</div>}
               </div>
               <div className="hero-price">
                 {selectedVariant?.price && <Money data={selectedVariant.price} />}
@@ -288,20 +327,62 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
 
             {/* Star Rating */}
             <div className="hero-rating">
-              <div style={{ display: 'flex', gap: '2px' }}>
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} style={{ color: '#000' }}>★</span>
-                ))}
-              </div>
-              <span>40 Reviews</span>
+              {hasReviews ? (
+                <div className="hero-rating-judgeme">
+                  <JudgemeAllReviewsRating />
+                  <JudgemeAllReviewsCount />
+                </div>
+              ) : (
+                <div className="hero-rating-fallback">
+                  <span className="empty-star">☆</span>
+                  <span className="no-reviews-text">No reviews</span>
+                </div>
+              )}
             </div>
+
+            {/* Variant Thumbnails */}
+            {product.variants?.nodes && (
+              <div className="variant-thumbnails">
+                {product.variants.nodes
+                  .filter((variant: any) => variant.image)
+                  .map((variant: any) => {
+                    const isSelected = variant.id === selectedVariant.id;
+                    return (
+                      <div
+                        key={variant.id}
+                        className={`variant-thumb ${isSelected ? 'selected' : ''}`}
+                        onClick={() => {
+                          const params = new URLSearchParams();
+                          variant.selectedOptions?.forEach((opt: any) => {
+                            params.set(opt.name, opt.value);
+                          });
+                          setParams(params, { preventScrollReset: true, replace: true });
+                        }}
+                      >
+                        <Image
+                          data={variant.image}
+                          alt={variant.title}
+                          sizes="60px"
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
 
               {/* Color Selector */}
               {colorOption && (
                 <div className="hero-colour">
                   <div className="colour-header">
-                    <span>Select {colorOption.name}</span>
-                    <span className="colour-name">{currentOptions[colorOption.name]}</span>
+                    <div className="colour-header-left">
+                      <span>Select {colorOption.name}</span>
+                      <span className="colour-name">{currentOptions[colorOption.name]}</span>
+                    </div>
+                    <button className="bookmark-btn" aria-label="Add to wishlist">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 2h10v12l-5-3-5 3V2z" />
+                      </svg>
+                    </button>
                   </div>
                   <div className="swatches">
                     {colorOption.optionValues.map((value) => {
@@ -370,19 +451,11 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                 </div>
               )}
 
-              {/* Quantity Selector & Add To Cart - Horizontal Layout */}
-              <div className="quantity-cart-container">
-                {/* Quantity Selector */}
-                <div className="quantity-selector">
-                  <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>−</button>
-                  <div className="quantity-display">{quantity}</div>
-                  <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)}>+</button>
-                </div>
-
-                {/* Add To Cart */}
+              {/* Add To Cart - Full Width */}
+              <div className="hero-cart-container">
                 <AddToCartButton
-                  lines={selectedVariant ? [{ merchandiseId: selectedVariant.id, quantity }] : []}
-                  disabled={!selectedVariant || !selectedVariant.availableForSale}
+                  lines={selectedVariant ? [{ merchandiseId: selectedVariant.id, quantity: 1 }] : []}
+                  disabled={!selectedVariant || !selectedVariant.availableForSale || !currentOptions[sizeOption?.name || '']}
                   analytics={{
                     products: [
                       {
@@ -392,14 +465,19 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                         variantName: selectedVariant?.title,
                         brand: product.vendor,
                         price: selectedVariant?.price.amount,
-                        quantity: quantity,
+                        quantity: 1,
                       },
                     ],
-                    totalValue: parseFloat(selectedVariant?.price.amount || '0') * quantity,
+                    totalValue: parseFloat(selectedVariant?.price.amount || '0'),
                   }}
                 >
                   <div className={`hero-cta ${!selectedVariant?.availableForSale ? 'disabled' : ''}`}>
-                    {selectedVariant?.availableForSale ? 'ADD TO CART' : 'SOLD OUT'}
+                    {!selectedVariant?.availableForSale 
+                      ? 'SOLD OUT' 
+                      : !currentOptions[sizeOption?.name || ''] 
+                        ? 'SELECT A SIZE' 
+                        : 'ADD TO CART'
+                    }
                   </div>
                 </AddToCartButton>
               </div>

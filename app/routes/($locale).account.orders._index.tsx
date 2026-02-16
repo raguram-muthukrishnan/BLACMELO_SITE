@@ -24,6 +24,9 @@ import type {
 } from 'customer-accountapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
+// Account orders inherits styles from parent account route
+export const links = () => [];
+
 type OrdersLoaderData = {
   customer: CustomerOrdersFragment;
   filters: OrderFilterParams;

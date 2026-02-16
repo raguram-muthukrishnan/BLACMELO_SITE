@@ -3,6 +3,11 @@ import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
+import cartStyles from '~/styles/components/cart/cart.css?url';
+
+export const links = () => [
+  {rel: 'stylesheet', href: cartStyles},
+];
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];

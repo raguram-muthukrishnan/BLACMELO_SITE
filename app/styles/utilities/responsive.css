@@ -1,0 +1,133 @@
+/**
+ * BLACMELO Responsive - Breakpoint Utilities and Media Queries
+ */
+
+/* Breakpoint Variables (Reference)
+ * Mobile: < 768px
+ * Tablet: 768px - 1024px
+ * Desktop: > 1024px
+ * Large Desktop: > 1200px
+ */
+
+/* Common Responsive Utilities */
+
+/* Hide on Mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide on Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+/* Hide on Desktop */
+@media (min-width: 1025px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show only on Mobile */
+.show-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* Show only on Tablet */
+.show-tablet {
+  display: none !important;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .show-tablet {
+    display: block !important;
+  }
+}
+
+/* Show only on Desktop */
+.show-desktop {
+  display: none !important;
+}
+
+@media (min-width:
+
+ 1025px) {
+  .show-desktop {
+    display: block !important;
+  }
+}
+
+/* Container Max Widths */
+.container-sm {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-md {
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-lg {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-xl {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-2xl {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive Padding */
+.responsive-padding {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-padding {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-padding {
+    padding: 3rem;
+  }
+}
+
+/* Responsive Margins */
+.responsive-margin {
+  margin: 1rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-margin {
+    margin: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-margin {
+    margin: 3rem;
+  }
+}

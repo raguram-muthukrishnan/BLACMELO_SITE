@@ -1,0 +1,113 @@
+/**
+ * BLACMELO Floating Menu - Homepage Sticky Menu
+ * Extracted from tailwind.css lines 1441-1548
+ */
+
+/* Floating Menu */
+/* Absolute overlay layer so it never sits "between" banners */
+.floating-menu-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none; /* allow clicks only on inner links */
+}
+
+/* Sticky anchor (scroll-linked like reference) */
+.floating-menu {
+  position: sticky;
+  top: 40vh;
+  margin-top: 40vh;
+  pointer-events: none;
+}
+
+/* Inner layout matches reference: grid + spacing + uppercase */
+.floating-menu-inner {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.75rem; /* ~gap-11 */
+  text-align: center;
+  text-transform: uppercase;
+  padding-top: 79px;
+  padding-bottom: 79px;
+  background: transparent;
+  pointer-events: auto;
+  min-width: 320px;
+  max-width: 92vw;
+}
+
+.floating-menu-title {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: rgb(255, 255, 255);
+  text-transform: uppercase;
+}
+
+.floating-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+  margin-bottom: 2rem;
+}
+
+.floating-menu-item {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  display: block;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.floating-menu-item:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.floating-menu-discover {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-block;
+  transition: all 0.3s ease;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.floating-menu-discover:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+@media (max-width: 768px) {
+  .floating-menu {
+    top: 42vh;
+  }
+
+  .floating-menu-inner {
+    gap: 1.75rem;
+    padding-top: 56px;
+    padding-bottom: 56px;
+    min-width: 0;
+  }
+
+  .floating-menu-title {
+    font-size: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .floating-menu-item {
+    font-size: 1.5rem;
+  }
+
+  .floating-menu-discover {
+    font-size: 0.625rem;
+  }
+}
