@@ -1,0 +1,22 @@
+/**
+ * BLACMELO Design System - Font Declarations
+ * Neue Haas Grotesk Typography System
+ */
+
+/* Neue Haas Grotesk Light - For Subheads */
+@font-face {
+  font-family: 'Neue Haas Grotesk';
+  src: url('/fonts/neuehaasgrotdisp-45light-trial.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Neue Haas Grotesk Medium - For Headlines and Buttons */
+@font-face {
+  font-family: 'Neue Haas Grotesk';
+  src: url('/fonts/neuehaasgrotdisp-65medium-trial.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}

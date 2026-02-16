@@ -1,0 +1,128 @@
+/* Parallax Menu - Scroll-based Positioning */
+.parallax-menu {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  transition: opacity 0.4s ease-in-out;
+  will-change: top, opacity;
+}
+
+/* Smooth movement when changing positions */
+.parallax-menu[data-position="banner3"] {
+  transition: opacity 0.4s ease-in-out, top 0.1s linear;
+}
+
+.parallax-menu[data-position="static"] {
+  transition: opacity 0.4s ease-in-out, top 0.3s ease-out;
+}
+
+.parallax-menu[data-position="banner4"] {
+  transition: opacity 0.4s ease-in-out, top 0.1s linear;
+}
+
+/* Content Container */
+.parallax-menu-content {
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Top Label */
+.parallax-menu-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 24px 0;
+  opacity: 0.8;
+}
+
+/* Navigation Links Container */
+.parallax-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+/* Collection Links */
+.parallax-menu-link {
+  font-family: var(--font-body);
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: opacity 0.2s ease;
+  display: block;
+}
+
+.parallax-menu-link:hover {
+  opacity: 0.7;
+}
+
+/* Discover Button */
+.parallax-menu-discover {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  transition: border-color 0.2s ease;
+}
+
+.parallax-menu-discover:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.parallax-menu-discover svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.parallax-menu-discover:hover svg {
+  transform: translateX(3px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .parallax-menu-label {
+    font-size: 9px;
+    margin-bottom: 16px;
+  }
+
+  .parallax-menu-link {
+    font-size: 32px;
+  }
+
+  .parallax-menu-nav {
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  .parallax-menu-discover {
+    font-size: 10px;
+  }
+
+  .parallax-menu-banner4 {
+    bottom: 40px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .parallax-menu-link {
+    font-size: 40px;
+  }
+}

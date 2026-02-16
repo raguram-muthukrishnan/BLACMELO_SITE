@@ -1,4 +1,5 @@
 import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
+import {useJudgeme} from '@judgeme/shopify-hydrogen';
 import {
   Outlet,
   useRouteError,
@@ -13,14 +14,29 @@ import {
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.png';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+// Core styles (loaded globally)
 import resetStyles from '~/styles/reset.css?url';
-import appStyles from '~/styles/app.css?url';
-import tailwindCss from './styles/tailwind.css?url';
-import filterPanelStyles from './styles/filter-panel.css?url';
-import accountStyles from './styles/account.css?url';
-import cartStyles from './styles/cart.css?url';
-import productStyles from './styles/product.css?url';
-import bannerOverlayStyles from './styles/banner-overlay.css?url';
+import fontsStyles from '~/styles/core/fonts.css?url';
+import themeStyles from '~/styles/core/theme.css?url';
+import tailwindCss from '~/styles/core/tailwind.css?url';
+import globalsStyles from '~/styles/core/globals.css?url';
+
+// Utility styles (loaded globally)
+import animationsStyles from '~/styles/utilities/animations.css?url';
+import responsiveStyles from '~/styles/utilities/responsive.css?url';
+import typographyStyles from '~/styles/utilities/typography.css?url';
+import customSpacingStyles from '~/styles/utilities/custom-spacing.css?url';
+
+// Layout styles (loaded globally since layout appears on all pages)
+import headerStyles from '~/styles/layout/header.css?url';
+import footerStyles from '~/styles/layout/footer.css?url';
+import overlayStyles from '~/styles/layout/overlay.css?url';
+import announcementBarStyles from '~/styles/layout/announcement-bar.css?url';
+import scrollbarStyles from '~/styles/components/scrollbar.css?url';
+import hoverMenuStyles from '~/styles/components/menus/hover-menu.css?url';
+import cartStyles from '~/styles/components/cart/cart.css?url';
+
+// Component-specific and page-specific styles are now imported in their respective components/routes
 import {PageLayout} from './components/PageLayout';
 import {LenisProvider} from '~/components/smooth-scroll/LenisProvider';
 import {DYNAMIC_HEADER_MENU_QUERY} from '~/graphql/DynamicHeaderMenuQuery';
@@ -28,6 +44,7 @@ import {ANNOUNCEMENT_BAR_QUERY} from '~/graphql/AnnouncementBarQuery';
 import {parseDynamicHeaderMenu} from '~/lib/dynamicHeaderMenu';
 import {parseAnnouncementBar, getFallbackAnnouncements} from '~/lib/announcementBar';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
+import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 
 export type RootLoader = typeof loader;
 
@@ -74,6 +91,25 @@ export function links() {
       href: 'https://shop.app',
     },
     {rel: 'icon', type: 'image/png', href: favicon},
+    // Core styles (loaded globally)
+    {rel: 'stylesheet', href: resetStyles},
+    {rel: 'stylesheet', href: fontsStyles},
+    {rel: 'stylesheet', href: themeStyles},
+    {rel: 'stylesheet', href: tailwindCss},
+    {rel: 'stylesheet', href: globalsStyles},
+    // Utility styles (loaded globally)
+    {rel: 'stylesheet', href: animationsStyles},
+    {rel: 'stylesheet', href: responsiveStyles},
+    {rel: 'stylesheet', href: typographyStyles},
+    {rel: 'stylesheet', href: customSpacingStyles},
+    // Layout styles (loaded globally since layout appears on all pages)
+    {rel: 'stylesheet', href: headerStyles},
+    {rel: 'stylesheet', href: footerStyles},
+    {rel: 'stylesheet', href: overlayStyles},
+    {rel: 'stylesheet', href: announcementBarStyles},
+    {rel: 'stylesheet', href: scrollbarStyles},
+    {rel: 'stylesheet', href: hoverMenuStyles},
+    {rel: 'stylesheet', href: cartStyles},
   ];
 }
 
@@ -89,14 +125,14 @@ export async function loader(args: Route.LoaderArgs) {
   return {
     ...deferredData,
     ...criticalData,
-    publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
+    publicStoreDomain: env.PUBLIC_STORE_DOMAIN!,
     shop: getShopAnalytics({
       storefront,
-      publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
+      publicStorefrontId: env.PUBLIC_STOREFRONT_ID!,
     }),
     consent: {
-      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
-      storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN!,
+      storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN!,
       withPrivacyBanner: false,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
@@ -139,8 +175,10 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
   ]);
 
   // Parse dynamic menu data
-  const dynamicMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuManImage);
-  console.log('✅ Dynamic menu config built with', dynamicMenuConfig.sections.length, 'sections');
+  const menMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuManImage, 'men');
+  const womenMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuWomanImage, 'women');
+  console.log('✅ Men menu config built with', menMenuConfig.sections.length, 'sections');
+  console.log('✅ Women menu config built with', womenMenuConfig.sections.length, 'sections');
 
   // Parse announcement data
   const announcements = announcementData 
@@ -148,7 +186,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     : getFallbackAnnouncements();
   console.log('📢 Announcements loaded:', announcements.length);
 
-  return {header, dynamicMenuConfig, announcements};
+  return {header, menMenuConfig, womenMenuConfig, announcements};
 }
 
 /**
@@ -176,6 +214,12 @@ function loadDeferredData({context}: Route.LoaderArgs) {
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
+    judgeme: {
+      shopDomain: (context.env as any).JUDGEME_SHOP_DOMAIN || '',
+      publicToken: (context.env as any).JUDGEME_PUBLIC_TOKEN || '',
+      cdnHost: (context.env as any).JUDGEME_CDN_HOST || 'https://cdn.judge.me',
+      delay: 500,
+    },
   };
 }
 
@@ -187,14 +231,6 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href={tailwindCss}></link>
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
-        <link rel="stylesheet" href={productStyles}></link>
-        <link rel="stylesheet" href={filterPanelStyles}></link>
-        <link rel="stylesheet" href={accountStyles}></link>
-        <link rel="stylesheet" href={cartStyles}></link>
-        <link rel="stylesheet" href={bannerOverlayStyles}></link>
         <Meta />
         <Links />
       </head>
@@ -213,6 +249,8 @@ export default function App() {
   if (!data) {
     return <Outlet />;
   }
+
+  useJudgeme(data.judgeme);
 
   return (
     <Analytics.Provider

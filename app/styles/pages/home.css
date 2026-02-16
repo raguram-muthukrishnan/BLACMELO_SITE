@@ -1,0 +1,478 @@
+/**
+ * BLACMELO Home Page - Homepage Sections and Layouts
+ * Extracted from tailwind.css lines 1175-1580 and app.css lines 88-286
+ */
+
+.homepage {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Editorial Banner - Full Screen Layout */
+.editorial-banner {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.editorial-banner-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.editorial-banner-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.editorial-banner-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.editorial-banner-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+}
+
+.editorial-banner-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 40px;
+}
+
+.editorial-banner-text {
+  text-align: center;
+  color: #ffffff;
+  max-width: 800px;
+}
+
+.editorial-banner-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0 0 16px 0;
+  opacity: 0.9;
+}
+
+.editorial-banner-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 32px 0;
+  line-height: 1.2;
+}
+
+.editorial-banner-cta {
+  display: inline-block;
+  padding: 16px 48px;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Split Features Component - Two Column Layout */
+.split-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .split-features {
+    grid-template-columns: 1fr 1fr;
+    min-height: 80vh;
+  }
+}
+
+.split-text {
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .split-text {
+    padding: 100px;
+  }
+}
+
+.feature-item {
+  margin-bottom: 3rem;
+  max-width: 400px;
+}
+
+.feature-title {
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+  color: #000000;
+}
+
+.feature-desc {
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.split-image {
+  height: 100%;
+  min-height: 50vh;
+  position: relative;
+}
+
+.split-image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  position: absolute;
+}
+
+/* Split Features Center Format - For Second Description */
+.split-features-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  padding: 80px 20px;
+  background: #ffffff;
+  margin: 0;
+}
+
+.split-features-center-content {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.split-features-center-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333333;
+  margin: 0;
+}
+
+.split-features-center-text p {
+  margin: 0 0 1em 0;
+}
+
+.split-features-center-text p:last-child {
+  margin-bottom: 0;
+}
+
+.split-features-center-text ul,
+.split-features-center-text ol {
+  margin: 1em 0;
+  padding-left: 1.5em;
+  text-align: left;
+  display: inline-block;
+}
+
+.split-features-center-text li {
+  margin-bottom: 0.5em;
+}
+
+.split-features-center-text strong {
+  font-weight: 600;
+}
+
+.split-features-center-text em {
+  font-style: italic;
+}
+
+@media (min-width: 768px) {
+  .split-features-center {
+    min-height: 50vh;
+    padding: 100px 40px;
+  }
+
+  .split-features-center-text {
+    font-size: 18px;
+    line-height: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .split-features-center {
+    min-height: 60vh;
+    padding: 120px 60px;
+  }
+
+  .split-features-center-text {
+    font-size: 20px;
+    line-height: 2.2;
+  }
+}
+
+/* Gallery Carousel Component */
+.gallery-module {
+  padding: 53px 0 40px;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.gallery-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 2px;
+  padding-bottom: 20px;
+  user-select: none;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gallery-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-scroll:active {
+  cursor: grabbing;
+}
+
+.gallery-item {
+  flex: 0 0 80vw;
+  scroll-snap-align: center;
+  height: 60vh;
+}
+
+@media (min-width: 768px) {
+  .gallery-item {
+    flex: 0 0 40vw;
+    height: 70vh;
+  }
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Product Grid Component */
+.section-styled {
+  padding: 20px 40px;
+  background: #ffffff;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: #000000;
+}
+
+/* Recommended Products Section */
+.recommended-products {
+  padding: 4rem 2rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.recommended-products h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.recommended-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .editorial-banner {
+    height: 100svh; /* Small viewport height for mobile */
+  }
+
+  .editorial-banner-title {
+    font-size: 32px;
+  }
+
+  .editorial-banner-subtitle {
+    font-size: 10px;
+  }
+
+  .editorial-banner-cta {
+    padding: 14px 32px;
+    font-size: 11px;
+  }
+
+  .editorial-banner-content {
+    padding: 20px;
+  }
+
+  .recommended-products {
+    padding: 3rem 1rem;
+  }
+
+  .recommended-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+}
+/* Banner Overlay - Bottom Center Design */
+.banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 40px 60px;
+  pointer-events: none;
+}
+
+.banner-overlay-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.banner-overlay-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.banner-overlay-title {
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.banner-overlay-subtitle {
+  display: none; /* Hidden as per screenshot design */
+}
+
+.banner-overlay-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  pointer-events: auto;
+}
+
+.banner-overlay-btn {
+  padding: 14px 32px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* Mobile responsive for banner overlay */
+@media (max-width: 768px) {
+  .banner-overlay {
+    padding: 0 20px 40px;
+  }
+
+  .banner-overlay-label {
+    font-size: 9px;
+  }
+
+  .banner-overlay-title {
+    font-size: 28px;
+  }
+
+  .banner-overlay-buttons {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .banner-overlay-btn {
+    padding: 12px 24px;
+    font-size: 10px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .banner-overlay {
+    padding: 0 30px 50px;
+  }
+
+  .banner-overlay-title {
+    font-size: 36px;
+  }
+}

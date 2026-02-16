@@ -1,0 +1,258 @@
+/**
+ * BLACMELO Typography - Typography Utilities and Text Styles
+ */
+
+/* Font Family Utilities */
+.font-heading {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+}
+
+.font-subhead {
+  font-family: var(--font-subhead);
+  font-weight: var(--font-subhead-weight);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Font Weight Utilities */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Font Size Utilities */
+.text-xs {
+  font-size: 0.75rem; /* 12px */
+}
+
+.text-sm {
+  font-size: 0.875rem; /* 14px */
+}
+
+.text-base {
+  font-size: 1rem; /* 16px */
+}
+
+.text-lg {
+  font-size: 1.125rem; /* 18px */
+}
+
+.text-xl {
+  font-size: 1.25rem; /* 20px */
+}
+
+.text-2xl {
+  font-size: 1.5rem; /* 24px */
+}
+
+.text-3xl {
+  font-size: 1.875rem; /* 30px */
+}
+
+.text-4xl {
+  font-size: 2.25rem; /* 36px */
+}
+
+/* Text Transform */
+.uppercase {
+  text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.normal-case {
+  text-transform: none;
+}
+
+/* Letter Spacing */
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-normal {
+  letter-spacing: 0;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
+
+.tracking-widest {
+  letter-spacing: 0.2em;
+}
+
+/* Line Height */
+.leading-none {
+  line-height: 1;
+}
+
+.leading-tight {
+  line-height: 1.25;
+}
+
+.leading-snug {
+  line-height: 1.375;
+}
+
+.leading-normal {
+  line-height: 1.5;
+}
+
+.leading-relaxed {
+  line-height: 1.625;
+}
+
+.leading-loose {
+  line-height: 2;
+}
+
+/* Text Alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-black {
+  color: #000000;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-gray {
+  color: #666666;
+}
+
+.text-gray-light {
+  color: #888888;
+}
+
+/* Text Decoration */
+.no-underline {
+  text-decoration: none;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+/* Common Typography Patterns */
+
+/* Product Title */
+.product-title {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0;
+  text-transform: none;
+  color: #000000;
+}
+
+/* Section Heading */
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: var(--font-heading-weight);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #000000;
+  text-align: center;
+}
+
+/* Card Title */
+.card-title {
+  font-family: var(--font-subhead);
+  font-size: 0.875rem;
+  font-weight: var(--font-subhead-weight);
+  color: #000000;
+  line-height: 1.3;
+}
+
+/* Body Text */
+.body-text {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #666666;
+  line-height: 1.6;
+}
+
+/* Label Text */
+.label-text {
+  font-family: var(--font-button);
+  font-size: 0.75rem;
+  font-weight: var(--font-button-weight);
+  text-transform: uppercase;
+  letter-spacing: var(--font-button-tracking);
+  color: #000000;
+}
+
+/* Banner Title */
+.banner-title {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .banner-title {
+    font-size: 2rem;
+  }
+}

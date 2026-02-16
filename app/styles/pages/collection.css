@@ -1,0 +1,697 @@
+/**
+ * BLACMELO Collection Page - Collection Layout and Controls
+ * Extracted from tailwind.css lines 2420-2640
+ */
+
+.collection-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 60px 0 80px;
+  overflow-x: hidden;
+}
+
+/* Breadcrumb */
+.collection-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  margin-bottom: 32px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #666666;
+}
+
+.collection-breadcrumb a {
+  color: #000000;
+  text-decoration: underline;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.collection-breadcrumb a:hover {
+  opacity: 0.6;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #999999;
+}
+
+.collection-breadcrumb-bottom {
+  justify-content: center;
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+/* Collection Header */
+.collection-header {
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+
+.collection-header-top {
+  margin-bottom: 12px;
+}
+
+.collection-title {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 450;
+  margin: 0;
+  color: #000000;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.collection-count {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #888888;
+}
+
+.collection-description-wrapper {
+  max-width: 900px;
+}
+
+.collection-description {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #444444;
+  margin: 0;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #000000;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.read-more-btn:hover {
+  opacity: 0.6;
+}
+
+/* Collection Controls */
+.collection-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.collection-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.view-toggle,
+.model-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-label,
+.model-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #000000;
+}
+
+.view-btn,
+.model-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-btn:hover,
+.model-btn:hover,
+.view-btn.active,
+.model-btn.active {
+  opacity: 1;
+}
+
+.view-btn-boxes {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #000000;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.filter-btn:hover {
+  opacity: 0.6;
+}
+
+/* Product Grid Container */
+.product-grid {
+  display: grid;
+  gap: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Load More Section */
+.load-more-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px 24px;
+  gap: 24px;
+}
+
+/* Collection Section Styles */
+.collection-section {
+  padding: 60px 80px;
+  background: #fff;
+}
+
+.collection-section-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.collection-section-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.collection-section-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .collection-header {
+    padding: 0 16px;
+    margin-bottom: 16px;
+  }
+
+  .collection-controls {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+
+  .collection-controls-left {
+    gap: 16px;
+  }
+
+  .collection-breadcrumb-bottom {
+    margin-top: 16px;
+  }
+
+  .collection-section {
+    padding: 40px 20px;
+  }
+
+  .collection-section-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* ========================================
+   REPRESENT COLLECTION PAGE STYLES
+   ======================================== */
+
+.represent-collection-page {
+  width: 100%;
+  background: #ffffff;
+}
+
+.represent-hero {
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  min-height: 400px;
+  overflow: hidden;
+  background: #000000;
+}
+
+.represent-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.represent-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.represent-hero-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+}
+
+/* Collection Info Bar - Title and Count */
+.represent-collection-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.represent-collection-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #000000;
+  margin: 0;
+}
+
+.represent-product-count {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #999999;
+}
+
+/* Controls Bar - View Toggle, Model Toggle, Filter */
+.represent-controls-bar {
+  position: sticky;
+  top: 44px; /* Below header */
+  z-index: 40;
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.represent-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.represent-controls-right {
+  display: flex;
+  align-items: center;
+}
+
+/* View Toggle */
+.represent-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.represent-view-toggle::before {
+  content: 'View';
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #000000;
+  margin-right: 6px;
+}
+
+.represent-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 1px solid #d0d0d0;
+  border-radius: 2px;
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.represent-view-btn svg {
+  width: 10px;
+  height: 10px;
+}
+
+.represent-view-btn:hover {
+  border-color: #000000;
+  color: #000000;
+}
+
+.represent-view-btn.active {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+/* Model Toggle */
+.represent-model-toggle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.represent-model-toggle::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 2px;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.represent-model-toggle:hover::before {
+  border-color: #000000;
+}
+
+.represent-model-toggle.active::before {
+  background: #000000;
+  border-color: #000000;
+}
+
+/* Filter Button */
+.represent-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.represent-filter-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.represent-filter-btn:hover {
+  opacity: 0.6;
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #000000;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* Product Grid - Represent Style with 1px gaps */
+.represent-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.represent-product-grid.list-view {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .represent-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .represent-product-grid.list-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .represent-product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .represent-product-grid.list-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Product Card */
+.represent-product-card {
+  position: relative;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+}
+
+.represent-card-image-wrapper {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+}
+
+.represent-card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.7s ease-in-out;
+}
+
+.represent-card-image-primary {
+  opacity: 1;
+}
+
+.represent-card-image-secondary {
+  opacity: 0;
+}
+
+/* Image Swap on Hover */
+.represent-product-card:hover .represent-card-image-primary {
+  opacity: 0;
+}
+
+.represent-product-card:hover .represent-card-image-secondary {
+  opacity: 1;
+}
+
+/* Remove underline from product card links */
+.represent-product-card,
+.represent-product-card:hover,
+.represent-product-card * {
+  text-decoration: none !important;
+}
+
+/* Card Info */
+.represent-card-info {
+  padding: 12px 12px 16px;
+}
+
+.represent-card-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.represent-card-info-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.represent-card-info-right {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.represent-card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #000000;
+  margin: 0 0 2px 0;
+  line-height: 1.3;
+}
+
+.represent-card-variant {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+  margin: 0;
+  line-height: 1.4;
+  display: inline;
+}
+
+.represent-card-colors {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.represent-card-price {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #000000;
+  white-space: nowrap;
+}
+
+/* Load More */
+.represent-load-more {
+  padding: 3rem 0;
+  text-align: center;
+  background: white;
+}
+
+.represent-load-more-btn {
+  display: inline-block;
+  padding: 1rem 3rem;
+  background: transparent;
+  border: 1px solid #000000;
+  color: #000000;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: all 0.3s ease;
+}
+
+.represent-load-more-btn:hover {
+  background: #000000;
+  color: #ffffff;
+  opacity: 1;
+}
+
+/* No Products Message */
+.no-products-message {
+  grid-column: 1 / -1;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.no-products-message p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .represent-controls-bar {
+    top: 44px; /* Mobile header height */
+    padding: 8px 16px;
+  }
+
+  .represent-collection-info {
+    padding: 12px 16px 10px;
+  }
+
+  .represent-controls-left {
+    gap: 10px;
+  }
+
+  .represent-view-btn {
+    width: 14px;
+    height: 14px;
+  }
+
+  .represent-view-btn svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .represent-view-toggle::before,
+  .represent-model-toggle,
+  .represent-filter-btn {
+    font-size: 9px;
+  }
+
+  .represent-model-toggle::before {
+    width: 14px;
+    height: 14px;
+  }
+
+  .represent-filter-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+}
