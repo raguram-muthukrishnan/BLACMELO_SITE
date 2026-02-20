@@ -1,121 +1,48 @@
 /**
- * BLACMELO Mobile Menu - Full Screen Overlay
- * Extracted from tailwind.css lines 976-1172
+ * BLACMELO Mobile Menu - Full Screen Overlay (Represent-style)
  */
 
 /* ==========================================
-   Mobile Menu Overlay Styles
+   Mobile Menu Content
    ========================================== */
-.mobile-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: white;
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Mobile Menu Header */
-.mobile-menu-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  flex-shrink: 0;
-}
-
-.mobile-menu-header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.mobile-menu-close,
-.mobile-menu-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  color: #000000;
-}
-
-.mobile-menu-close svg,
-.mobile-menu-icon-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.mobile-menu-tabs {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.mobile-menu-tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  padding: 8px 0;
-  font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #888888;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.mobile-menu-tab.active {
-  color: #000000;
-}
-
-.mobile-menu-tab-dot {
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.mobile-menu-tab svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Mobile Menu Content */
 .mobile-menu-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px;
+  padding: 8px 24px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Section container */
 .mobile-menu-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
 }
 
+/* Section titles — small uppercase labels */
 .mobile-menu-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #888888;
-  margin: 0 0 4px 0;
+  letter-spacing: 0.15em;
+  color: #999999;
+  margin: 0 0 12px 0;
+  padding: 0;
 }
 
+/* Section divider */
+.mobile-menu-divider {
+  width: 100%;
+  height: 1px;
+  background: #e5e5e5;
+  margin: 4px 0;
+}
+
+/* Link list */
 .mobile-menu-list {
   list-style: none;
   margin: 0;
@@ -125,55 +52,71 @@
   gap: 0;
 }
 
+/* Menu items — clean, spacious links */
 .mobile-menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 6px 0;
+  padding: 10px 0;
   background: none;
   border: none;
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 400;
   color: #000000;
   text-decoration: none;
   cursor: pointer;
   text-align: left;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s ease;
+  line-height: 1.4;
 }
 
 .mobile-menu-item:hover,
 .mobile-menu-item:active {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-.mobile-menu-item.bold-item {
+/* Permanent / bold items — key navigation like "Shop All" */
+.mobile-menu-item.permanent-item {
   font-weight: 600;
-  font-size: 1rem;
-}
-
-.mobile-menu-item.expandable {
-  border-bottom: none;
+  font-size: 15px;
 }
 
 .mobile-menu-item svg {
-  color: #888888;
+  color: #cccccc;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
-.mobile-menu-item-desc {
-  display: inline;
-  margin-left: 8px;
-  font-size: 0.75rem;
-  color: #888888;
+/* Nested items — sub-collections under a parent */
+.mobile-menu-nested-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mobile-menu-item.nested-item {
+  font-size: 13px;
   font-weight: 400;
+  color: #666666;
+  padding: 8px 0;
+}
+
+.mobile-menu-item.nested-item:hover,
+.mobile-menu-item.nested-item:active {
+  color: #000000;
+  opacity: 1;
 }
 
 /* Mobile Menu Footer */
 .mobile-menu-footer {
-  padding: 16px 20px 24px;
-  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px 32px;
+  border-top: 1px solid #e5e5e5;
   flex-shrink: 0;
 }
 
@@ -185,8 +128,8 @@
   border: none;
   padding: 0;
   font-family: var(--font-body);
-  font-size: 0.85rem;
-  color: #000000;
+  font-size: 13px;
+  color: #666666;
   cursor: pointer;
 }
 
@@ -194,7 +137,7 @@
   font-size: 1.1rem;
 }
 
-/* Hide mobile menu on desktop */
+/* Hide mobile menu on desktop — Aside handles this via overlay */
 @media (min-width: 769px) {
   .mobile-menu-overlay {
     display: none;

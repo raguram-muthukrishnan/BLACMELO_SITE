@@ -19,6 +19,14 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    // The Lottie animation (Scene-1.json) embeds images as data:image/png
+    // base64 URIs.  Without "data:" here the browser's CSP blocks them,
+    // leaving a blank white rectangle instead of the logo.
+    imgSrc: [
+      "'self'",
+      "data:",
+      "https://cdn.shopify.com",
+    ],
   });
 
   const body = await renderToReadableStream(

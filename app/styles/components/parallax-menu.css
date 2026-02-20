@@ -4,27 +4,15 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 20;
-  transition: opacity 0.4s ease-in-out;
-  will-change: top, opacity;
+  will-change: top;
+  pointer-events: none;
 }
 
-/* Smooth movement when changing positions */
-.parallax-menu[data-position="banner3"] {
-  transition: opacity 0.4s ease-in-out, top 0.1s linear;
-}
-
-.parallax-menu[data-position="static"] {
-  transition: opacity 0.4s ease-in-out, top 0.3s ease-out;
-}
-
-.parallax-menu[data-position="banner4"] {
-  transition: opacity 0.4s ease-in-out, top 0.1s linear;
-}
-
-/* Content Container */
+/* Re-enable pointer events only on the content */
 .parallax-menu-content {
   text-align: center;
   color: #ffffff;
+  pointer-events: auto;
 }
 
 /* Top Label */
@@ -50,19 +38,16 @@
 /* Collection Links */
 .parallax-menu-link {
   font-family: var(--font-body);
-  font-size: 48px;
-  font-weight: 400;
+  font-size: 32px;
+  font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: #ffffff;
   text-decoration: none;
   line-height: 1.2;
-  transition: opacity 0.2s ease;
+  /* Opacity is driven by JS — smooth transition for the crossfade */
+  transition: opacity 0.35s ease;
   display: block;
-}
-
-.parallax-menu-link:hover {
-  opacity: 0.7;
 }
 
 /* Discover Button */
@@ -104,7 +89,7 @@
   }
 
   .parallax-menu-link {
-    font-size: 32px;
+    font-size: 24px;
   }
 
   .parallax-menu-nav {
@@ -115,14 +100,10 @@
   .parallax-menu-discover {
     font-size: 10px;
   }
-
-  .parallax-menu-banner4 {
-    bottom: 40px;
-  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .parallax-menu-link {
-    font-size: 40px;
+    font-size: 28px;
   }
 }

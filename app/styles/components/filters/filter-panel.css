@@ -66,7 +66,7 @@ body:has(.filter-overlay) {
 .filter-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   margin: 0;
   text-transform: uppercase;
@@ -133,7 +133,7 @@ body:has(.filter-overlay) {
 .filter-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   margin: 0 0 16px 0;
   text-transform: uppercase;
@@ -155,7 +155,7 @@ body:has(.filter-overlay) {
   border: none;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -266,7 +266,7 @@ body:has(.filter-overlay) {
   margin-bottom: 20px;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
 }
 
@@ -290,7 +290,7 @@ body:has(.filter-overlay) {
 .size-category-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   margin: 0 0 12px 0;
   text-transform: uppercase;
@@ -379,7 +379,7 @@ body:has(.filter-overlay) {
   flex: 1;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.05em;
   padding: 14px 20px;
   border: 1px solid #000000;

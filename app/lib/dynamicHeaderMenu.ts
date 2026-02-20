@@ -3,6 +3,8 @@
  * Builds header menu structure from Shopify collections
  */
 
+import { getHardcodedLinksForCategory } from '~/config/categoryHardcodedLinks';
+
 export type SectionType = 'permanent' | 'category' | 'common';
 export type DisplayStyle = 'bold' | 'normal' | 'title-with-items';
 export type ItemType = 'permanent' | 'dynamic';
@@ -87,40 +89,7 @@ export function parseDynamicHeaderMenu(
 
   const sections: DynamicMenuSection[] = [];
 
-  // Create permanent section as ONE section with items
-  const permanentSection: DynamicMenuSection = {
-    label: 'PERMANENT_LINKS',
-    link: '',
-    items: [
-      {
-        name: 'Shop All',
-        link: '/collections/all-products',
-        order: 1,
-        itemType: 'permanent',
-      },
-      {
-        name: 'Best Seller',
-        link: '/collections/bestsellers',
-        order: 2,
-        itemType: 'permanent',
-      },
-      {
-        name: 'New Arrival',
-        link: '/collections/new-arrival',
-        order: 3,
-        itemType: 'permanent',
-      },
-    ],
-    isPermanent: true, // Kept for backward compatibility
-    sectionType: 'permanent',
-    displayStyle: 'bold',
-    order: 0,
-  };
-
-  sections.push(permanentSection);
-  console.log('✅ Added permanent section with 3 items');
-
-  // If no data, return permanent section only
+  // If no data, return empty sections
   if (!data?.collections?.nodes) {
     console.warn('⚠️ No collections data found for dynamic menu');
     return { sections, image: defaultImage };
@@ -175,12 +144,13 @@ export function parseDynamicHeaderMenu(
   /**
    * Helper function to build nested collection structure
    * Returns collections with their children nested
+   * NOTE: Collections can appear BOTH as standalone items AND as nested children
    */
   function buildCollectionTree(collections: CollectionNode[]): Map<string, DynamicMenuItem> {
     const collectionMap = new Map<string, DynamicMenuItem>();
     const childCollections: CollectionNode[] = [];
     
-    // First pass: create all items and separate parent/child
+    // First pass: create items for ALL collections (both parent and child)
     collections.forEach((collection) => {
       const item: DynamicMenuItem = {
         name: collection.title,
@@ -190,13 +160,13 @@ export function parseDynamicHeaderMenu(
         children: [],
       };
       
+      // Add ALL collections to the map (allows them to appear as standalone items)
+      collectionMap.set(collection.handle, item);
+      
       const parentHandle = collection.menuParentCollection?.value;
       if (parentHandle) {
-        // This is a child collection
+        // Track this as a child collection for nesting purposes
         childCollections.push(collection);
-      } else {
-        // This is a parent/standalone collection
-        collectionMap.set(collection.handle, item);
       }
     });
     
@@ -230,18 +200,16 @@ export function parseDynamicHeaderMenu(
   
   // Build the nested collection tree
   const collectionTree = buildCollectionTree(menuCollections);
-  console.log(`🌳 Built collection tree with ${collectionTree.size} top-level items`);
+  console.log(`🌳 Built collection tree with ${collectionTree.size} items`);
 
-  // Get only parent collections (for section grouping)
-  const parentCollections = menuCollections.filter(
-    (collection) => !collection.menuParentCollection?.value
-  );
+  // Include ALL collections for section grouping (allows items to appear in multiple places)
+  const allCollections = menuCollections;
 
-  // Separate parent collections by section type
+  // Separate all collections by section type
   const commonCollections: CollectionNode[] = [];
   const categoryCollections: CollectionNode[] = [];
 
-  parentCollections.forEach((collection) => {
+  allCollections.forEach((collection) => {
     const sectionType = collection.menuSectionType?.value?.toLowerCase() || 'category';
     if (sectionType === 'common') {
       commonCollections.push(collection);
@@ -313,9 +281,11 @@ export function parseDynamicHeaderMenu(
   });
 
   // Define category display order and labels
-  const categoryOrder = ['featured', 'clothing', 'accessories', 'seasonal', 'uncategorized'];
+  const categoryOrder = ['featured', 'shop', 'explore', 'clothing', 'accessories', 'seasonal', 'uncategorized'];
   const categoryLabels: { [key: string]: string } = {
     featured: 'FEATURED',
+    shop: 'SHOP',
+    explore: 'EXPLORE',
     clothing: 'CLOTHING',
     accessories: 'ACCESSORIES',
     seasonal: 'SEASONAL',
@@ -325,8 +295,11 @@ export function parseDynamicHeaderMenu(
   // Add sections for each category
   let categoryOrderIndex = 2; // Start after permanent (0) and common (1)
   categoryOrder.forEach((category) => {
-    const collections = collectionsByCategory[category];
-    if (!collections || collections.length === 0) return;
+    const collections = collectionsByCategory[category] || [];
+    const hardcodedLinks = getHardcodedLinksForCategory(category);
+    
+    // Skip if category has no collections AND no hardcoded links
+    if (collections.length === 0 && hardcodedLinks.length === 0) return;
 
     // Create items for this category (using tree to include nested children)
     const items: DynamicMenuItem[] = collections.map((collection) => {
@@ -344,6 +317,22 @@ export function parseDynamicHeaderMenu(
       };
     });
 
+    // Inject hardcoded links for this category
+    if (hardcodedLinks.length > 0) {
+      hardcodedLinks.forEach((link) => {
+        items.push({
+          name: link.name,
+          link: link.link,
+          order: link.order,
+          itemType: link.itemType || 'dynamic',
+        });
+      });
+      console.log(`  🔗 Added ${hardcodedLinks.length} hardcoded link(s) to "${category}"`);
+    }
+
+    // Sort items by order (so hardcoded links appear in correct position)
+    items.sort((a, b) => (a.order || 999) - (b.order || 999));
+
     // Add category section
     sections.push({
       label: categoryLabels[category] || category.toUpperCase(),
@@ -355,7 +344,7 @@ export function parseDynamicHeaderMenu(
       order: categoryOrderIndex++,
     });
 
-    console.log(`➕ Added category "${category}" with ${items.length} collections`);
+    console.log(`➕ Added category "${category}" with ${items.length} items (${collections.length} collections + ${hardcodedLinks.length} hardcoded)`);
   });
 
   // Add any categories not in the predefined order
@@ -377,6 +366,23 @@ export function parseDynamicHeaderMenu(
         };
       });
 
+      // Inject hardcoded links for this category
+      const hardcodedLinks = getHardcodedLinksForCategory(category);
+      if (hardcodedLinks.length > 0) {
+        hardcodedLinks.forEach((link) => {
+          items.push({
+            name: link.name,
+            link: link.link,
+            order: link.order,
+            itemType: link.itemType || 'dynamic',
+          });
+        });
+        console.log(`  🔗 Added ${hardcodedLinks.length} hardcoded link(s) to "${category}"`);
+      }
+
+      // Sort items by order
+      items.sort((a, b) => (a.order || 999) - (b.order || 999));
+
       sections.push({
         label: category.toUpperCase(),
         link: '',
@@ -387,7 +393,7 @@ export function parseDynamicHeaderMenu(
         order: categoryOrderIndex++,
       });
 
-      console.log(`➕ Added custom category "${category}" with ${items.length} collections`);
+      console.log(`➕ Added custom category "${category}" with ${items.length} items (${collections.length} collections + ${hardcodedLinks.length} hardcoded)`);
     }
   });
 
@@ -407,36 +413,7 @@ export function parseDynamicHeaderMenu(
  */
 export function getFallbackDynamicMenu(defaultImage?: string): DynamicMenuConfig {
   return {
-    sections: [
-      {
-        label: 'PERMANENT_LINKS',
-        link: '',
-        items: [
-          {
-            name: 'Shop All',
-            link: '/collections/all-products',
-            order: 1,
-            itemType: 'permanent',
-          },
-          {
-            name: 'Best Seller',
-            link: '/collections/bestsellers',
-            order: 2,
-            itemType: 'permanent',
-          },
-          {
-            name: 'New Arrival',
-            link: '/collections/new-arrival',
-            order: 3,
-            itemType: 'permanent',
-          },
-        ],
-        isPermanent: true,
-        sectionType: 'permanent',
-        displayStyle: 'bold',
-        order: 0,
-      },
-    ],
+    sections: [],
     image: defaultImage,
   };
 }

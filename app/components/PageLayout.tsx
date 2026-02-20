@@ -40,6 +40,12 @@ export function PageLayout({
   const location = useLocation();
   const isProductPage = location.pathname.includes('/products/');
 
+  // Pages that should render a white header with black text/icons
+  const whiteHeaderPaths = ['/search', '/wishlist', '/faq', '/pages/', '/policies/'];
+  const isWhiteHeaderPage = whiteHeaderPaths.some((p) =>
+    location.pathname.includes(p),
+  );
+
   return (
     <Aside.Provider>
       {/* Dynamic Announcement Bar - Always visible */}
@@ -56,6 +62,7 @@ export function PageLayout({
           cart={cart}
           isLoggedIn={isLoggedIn}
           isProductPage={isProductPage}
+          isWhiteHeaderPage={isWhiteHeaderPage}
           menMenuConfig={menMenuConfig || undefined}
           womenMenuConfig={womenMenuConfig || undefined}
         />
@@ -96,14 +103,14 @@ function MobileMenuAside({
     );
   }
 
-  // Use dynamic menu config
+  // Use dynamic menu config — organised Represent-style layout
   return (
     <Aside type="mobile" heading="MENU">
       <div className="mobile-menu-content">
+        {/* Dynamic sections from Shopify collections config */}
         {menMenuConfig.sections.map((section, idx) => {
           const sectionType = section.sectionType || (section.isPermanent ? 'permanent' : 'category');
-          
-          // Permanent section - render items directly
+
           if (sectionType === 'permanent') {
             return (
               <div key={idx} className="mobile-menu-section permanent-section">
@@ -130,8 +137,7 @@ function MobileMenuAside({
               </div>
             );
           }
-          
-          // Common or Category section - render with optional title
+
           return (
             <div key={idx} className="mobile-menu-section">
               {section.label && section.label !== 'PERMANENT_LINKS' && section.label !== 'COMMON' && (
@@ -139,8 +145,8 @@ function MobileMenuAside({
               )}
               <ul className="mobile-menu-list">
                 {section.items?.map((item, itemIdx) => {
-                  const itemClass = item.itemType === 'permanent' 
-                    ? 'mobile-menu-item permanent-item' 
+                  const itemClass = item.itemType === 'permanent'
+                    ? 'mobile-menu-item permanent-item'
                     : 'mobile-menu-item';
                   return (
                     <li key={itemIdx}>
@@ -165,6 +171,39 @@ function MobileMenuAside({
             </div>
           );
         })}
+
+        {/* Divider */}
+        <div className="mobile-menu-divider" />
+
+        {/* Explore — static links not in the dynamic config */}
+        <div className="mobile-menu-section">
+          <h3 className="mobile-menu-section-title">EXPLORE</h3>
+          <ul className="mobile-menu-list">
+            <li><a href="/the-prestige" className="mobile-menu-item">The Prestige</a></li>
+            <li><a href="/the-vault" className="mobile-menu-item">The Vault</a></li>
+            <li><a href="/products/gift-card" className="mobile-menu-item">Gift Card</a></li>
+          </ul>
+        </div>
+
+        {/* Account & Services */}
+        <div className="mobile-menu-section">
+          <h3 className="mobile-menu-section-title">ACCOUNT</h3>
+          <ul className="mobile-menu-list">
+            <li><a href="/account" className="mobile-menu-item">My Account</a></li>
+            <li><a href="/wishlist" className="mobile-menu-item">Wishlist</a></li>
+            <li><a href="/search" className="mobile-menu-item">Search</a></li>
+          </ul>
+        </div>
+
+        {/* Help */}
+        <div className="mobile-menu-section">
+          <h3 className="mobile-menu-section-title">HELP</h3>
+          <ul className="mobile-menu-list">
+            <li><a href="/pages/contact" className="mobile-menu-item">Contact Us</a></li>
+            <li><a href="/faq" className="mobile-menu-item">FAQ</a></li>
+            <li><a href="/pages/shipping-returns" className="mobile-menu-item">Shipping & Returns</a></li>
+          </ul>
+        </div>
       </div>
     </Aside>
   );

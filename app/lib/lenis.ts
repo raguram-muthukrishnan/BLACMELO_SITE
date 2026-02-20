@@ -13,6 +13,18 @@ export function getLenisInstance() {
   return lenisInstance;
 }
 
+export function stopLenis() {
+  if (lenisInstance) {
+    lenisInstance.stop();
+  }
+}
+
+export function startLenis() {
+  if (lenisInstance) {
+    lenisInstance.start();
+  }
+}
+
 export function scrollToTop(immediate = true) {
   if (lenisInstance) {
     lenisInstance.scrollTo(0, {immediate});
@@ -21,7 +33,10 @@ export function scrollToTop(immediate = true) {
   }
 }
 
-export function scrollTo(target: number | string, options?: {immediate?: boolean; offset?: number}) {
+export function scrollTo(
+  target: number | string,
+  options?: {immediate?: boolean; offset?: number},
+) {
   if (lenisInstance) {
     lenisInstance.scrollTo(target, options);
   } else if (typeof window !== 'undefined' && typeof target === 'number') {

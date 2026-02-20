@@ -41,7 +41,7 @@
 .floating-menu-title {
   font-family: var(--font-heading);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 500;
   margin-bottom: 0.5rem;
   color: rgb(255, 255, 255);
   text-transform: uppercase;
@@ -57,7 +57,7 @@
 .floating-menu-item {
   font-family: var(--font-heading);
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   color: rgba(255, 255, 255, 0.4);
   transition: all 0.3s ease;

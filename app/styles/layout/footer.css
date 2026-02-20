@@ -76,7 +76,7 @@
 .footer-heading {
   font-family: var(--font-heading);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 1rem;
   color: #000000;
   text-transform: uppercase;
@@ -255,7 +255,7 @@
   .footer-mobile-newsletter-title {
     font-family: var(--font-heading);
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: 500;
     color: #000000;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
@@ -289,7 +289,7 @@
     border: none;
     font-family: var(--font-heading);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     color: #000000;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -356,7 +356,7 @@
   .footer-mobile-country-label {
     font-family: var(--font-heading);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     color: #000000;
     text-transform: uppercase;
     letter-spacing: 0.05em;

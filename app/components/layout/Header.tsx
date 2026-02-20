@@ -3,8 +3,8 @@ import {useState, useRef, useCallback, useEffect, Suspense} from 'react';
 import {Await, useAsyncValue} from 'react-router';
 import {useOptimisticCart, useAnalytics, type CartViewPayload} from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
-import {Menu, User, ShoppingBag} from 'lucide-react';
-import logo from '~/assets/logos/Logo.avif';
+import {Menu, User, ShoppingBag, Search, Bookmark} from 'lucide-react';
+import {LottieHeaderLogo} from '~/components/ui/LottieHeaderLogo';
 import {DynamicHoverMenu} from '~/components/ui/DynamicHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
 import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
@@ -18,11 +18,12 @@ type HeaderProps = {
   cart: Promise<any>;
   isLoggedIn: Promise<boolean>;
   isProductPage?: boolean;
+  isWhiteHeaderPage?: boolean;
   menMenuConfig?: DynamicMenuConfig;
   womenMenuConfig?: DynamicMenuConfig;
 };
 
-export function Header({isProductPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart}: HeaderProps) {
+export function Header({isProductPage = false, isWhiteHeaderPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart}: HeaderProps) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -86,7 +87,7 @@ export function Header({isProductPage = false, menMenuConfig: providedMenMenuCon
   };
 
   return (
-    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''}`}>
+    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''}`}>
       <div className="blacmelo-header-container">
         {/* Left Navigation */}
         <nav className="blacmelo-header-left">
@@ -104,9 +105,9 @@ export function Header({isProductPage = false, menMenuConfig: providedMenMenuCon
             className="hover-menu-trigger"
             onMouseEnter={() => handleTriggerEnter('shop')}
           >
-            <NavLink 
-              prefetch="intent" 
-              to="/collections/all" 
+            <NavLink
+              prefetch="intent"
+              to="/collections/full-collection"
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
@@ -118,9 +119,9 @@ export function Header({isProductPage = false, menMenuConfig: providedMenMenuCon
             className="hover-menu-trigger"
             onMouseEnter={() => handleTriggerEnter('blacmelo-club')}
           >
-            <NavLink 
-              prefetch="intent" 
-              to="/blacmelo-club" 
+            <NavLink
+              prefetch="intent"
+              to="/collections/full-collection"
               className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
               end={false}
             >
@@ -129,13 +130,9 @@ export function Header({isProductPage = false, menMenuConfig: providedMenMenuCon
           </div>
         </nav>
 
-        {/* Center Logo */}
-        <NavLink prefetch="intent" to="/" className="blacmelo-header-logo">
-          <img 
-            src={logo} 
-            alt="BLACMELO" 
-            className="blacmelo-logo-image"
-          />
+        {/* Center Logo — Lottie scroll-driven animation */}
+        <NavLink prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
+          <LottieHeaderLogo />
         </NavLink>
 
         {/* Right Navigation */}
@@ -154,6 +151,16 @@ export function Header({isProductPage = false, menMenuConfig: providedMenMenuCon
             className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
           >
             The Prestige
+          </NavLink>
+          
+          {/* Search Icon */}
+          <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon" aria-label="Search">
+            <Search size={20} />
+          </NavLink>
+          
+          {/* Wishlist Icon */}
+          <NavLink prefetch="intent" to="/wishlist" className="blacmelo-header-icon" aria-label="Wishlist">
+            <Bookmark size={20} />
           </NavLink>
           
           {/* User Icon (visible on all screens) */}

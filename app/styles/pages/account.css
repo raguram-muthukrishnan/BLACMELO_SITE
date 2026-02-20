@@ -35,7 +35,7 @@
 .dashboard-heading {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
   margin: 0 0 4px 0;
   color: #000000;
@@ -112,7 +112,7 @@
 .dashboard-nav-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #999999;
@@ -241,7 +241,7 @@
 .account-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.75rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   margin: 0 0 8px 0;
 }
@@ -276,7 +276,7 @@
 .order-search-legend {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #000000;
@@ -398,7 +398,7 @@
 .order-number {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -431,7 +431,7 @@
 .order-detail-label {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #999999;
@@ -448,7 +448,7 @@
   padding: 4px 12px;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-radius: 20px;
@@ -469,7 +469,7 @@
 .order-total {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #000000;
 }
 
@@ -513,7 +513,7 @@
 .empty-state-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #000000;
   margin: 0 0 12px 0;
 }
@@ -563,7 +563,7 @@
 .profile-form legend {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #000000;
@@ -685,7 +685,7 @@
   padding: 4px 12px;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: #000000;
@@ -757,7 +757,7 @@
 .address-form legend {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #000000;

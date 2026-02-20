@@ -12,7 +12,7 @@
   width: 100%;
   background: #000000;
   color: #ffffff;
-  z-index: 200;
+  z-index: 1050;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,7 +80,7 @@
   width: 100%;
   background: #000000;
   color: #ffffff;
-  z-index: 200;
+  z-index: 1050;
   overflow: hidden;
   min-height: 36px;
   display: flex;

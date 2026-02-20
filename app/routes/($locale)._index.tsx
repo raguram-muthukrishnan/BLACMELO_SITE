@@ -1,5 +1,5 @@
 import type {Route} from './+types/_index';
-import {useRef} from 'react';
+import {useRef, useCallback} from 'react';
 import {EditorialBanner} from '~/components/EditorialBanner';
 import {EditorialVideo} from '~/components/EditorialVideo';
 import {ParallaxMenu} from '~/components/ParallaxMenu';
@@ -21,13 +21,59 @@ export const meta: Route.MetaFunction = () => {
   return [{title: 'BLACMELO | The Missing Piece of Luxury'}];
 };
 
+/**
+ * Collection banners config — each entry creates a full-screen banner
+ * AND a corresponding link in the parallax menu.
+ *
+ * To add a new collection: append an entry here. The parallax menu
+ * will automatically pick up the new link and the ending animation
+ * will attach to whatever the last banner is.
+ */
+const COLLECTION_BANNERS: CollectionBannerConfig[] = [
+  {
+    type: 'image',
+    image: banner3,
+    alt: 'BLACMELO Style',
+    linkLabel: 'SEASON 01',
+    linkUrl: '/collections/season-01',
+  },
+  {
+    type: 'video',
+    video: video2,
+    poster: banner4,
+    alt: 'BLACMELO Premium',
+    linkLabel: 'SEASON 02',
+    linkUrl: '/collections/season-02',
+  },
+];
+
+interface CollectionBannerConfig {
+  type: 'image' | 'video';
+  image?: string;
+  video?: string;
+  poster?: string;
+  alt: string;
+  linkLabel: string;
+  linkUrl: string;
+}
+
 export default function Homepage() {
-  const banner3Ref = useRef<HTMLDivElement>(null);
-  const banner4Ref = useRef<HTMLDivElement>(null);
+  const bannerRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const setBannerRef = useCallback(
+    (index: number) => (el: HTMLDivElement | null) => {
+      bannerRefs.current[index] = el;
+    },
+    [],
+  );
+
+  const menuLinks = COLLECTION_BANNERS.map((b) => ({
+    label: b.linkLabel,
+    url: b.linkUrl,
+  }));
 
   return (
     <div className="homepage">
-
       {/* Frame 1 - Image with Overlay and Buttons */}
       <EditorialBanner
         image={banner1}
@@ -55,25 +101,30 @@ export default function Homepage() {
         secondaryButtonLink="/pages/247"
       />
 
-      {/* Frame 3 - Image without Overlay (with Parallax Menu) */}
-      <EditorialBanner
-        ref={banner3Ref}
-        image={banner3}
-        alt="BLACMELO Style"
-        showOverlay={false}
-      />
+      {/* Collection Banners — driven by config array */}
+      {COLLECTION_BANNERS.map((banner, i) =>
+        banner.type === 'image' ? (
+          <EditorialBanner
+            key={banner.linkUrl}
+            ref={setBannerRef(i)}
+            image={banner.image!}
+            alt={banner.alt}
+            showOverlay={false}
+          />
+        ) : (
+          <EditorialVideo
+            key={banner.linkUrl}
+            ref={setBannerRef(i)}
+            video={banner.video!}
+            poster={banner.poster}
+            alt={banner.alt}
+            showOverlay={false}
+          />
+        ),
+      )}
 
-      {/* Frame 4 - Video without Overlay */}
-      <EditorialVideo
-        ref={banner4Ref}
-        video={video2}
-        poster={banner4}
-        alt="BLACMELO Premium"
-        showOverlay={false}
-      />
-
-      {/* Parallax Menu */}
-      <ParallaxMenu banner3Ref={banner3Ref} banner4Ref={banner4Ref} />
+      {/* Parallax Menu — auto-scales with COLLECTION_BANNERS */}
+      <ParallaxMenu bannerRefs={bannerRefs} links={menuLinks} />
     </div>
   );
 }

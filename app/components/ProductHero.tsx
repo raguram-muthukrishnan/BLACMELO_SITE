@@ -4,6 +4,7 @@ import { useSearchParams, useLocation, useNavigate } from 'react-router';
 import { AddToCartButton } from './AddToCartButton';
 import { StarRating } from './StarRating';
 import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
+import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface ProductImage {
@@ -64,6 +65,43 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
   const [isFullscreenGallery, setIsFullscreenGallery] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [hasReviews, setHasReviews] = useState(false);
+  const [isInWishlistState, setIsInWishlistState] = useState(false);
+
+  // Check if product is in wishlist
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsInWishlistState(isInWishlist(product.id));
+    }
+
+    // Listen for wishlist changes
+    const handleWishlistChange = () => {
+      setIsInWishlistState(isInWishlist(product.id));
+    };
+
+    window.addEventListener('wishlistChanged', handleWishlistChange);
+    return () => {
+      window.removeEventListener('wishlistChanged', handleWishlistChange);
+    };
+  }, [product.id]);
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = () => {
+    const wishlistItem: WishlistItem = {
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      price: `$${selectedVariant.price.amount}`,
+      compareAtPrice: selectedVariant.compareAtPrice 
+        ? `$${selectedVariant.compareAtPrice.amount}`
+        : undefined,
+      image: selectedVariant.image?.url || images[0]?.url,
+      availableForSale: selectedVariant.availableForSale ?? true,
+      vendor: product.vendor,
+    };
+    
+    toggleWishlist(wishlistItem);
+    setIsInWishlistState(!isInWishlistState);
+  };
 
   // Check if product has reviews
   useEffect(() => {
@@ -236,10 +274,10 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             ))}
 
             <button className="hero-nav hero-prev" onClick={() => setActiveIndex((i) => (i - 1 + images.length) % images.length)}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
             <button className="hero-nav hero-next" onClick={() => setActiveIndex((i) => (i + 1) % images.length)}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
 
             <button
@@ -247,7 +285,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
               style={{ top: 'auto', bottom: '1rem', right: '1rem' }}
               onClick={() => setIsFullscreenGallery(true)}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
             </button>
           </div>
         </div>
@@ -326,19 +364,14 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             </div>
 
             {/* Star Rating */}
-            <div className="hero-rating">
-              {hasReviews ? (
+            {hasReviews && (
+              <div className="hero-rating">
                 <div className="hero-rating-judgeme">
                   <JudgemeAllReviewsRating />
                   <JudgemeAllReviewsCount />
                 </div>
-              ) : (
-                <div className="hero-rating-fallback">
-                  <span className="empty-star">☆</span>
-                  <span className="no-reviews-text">No reviews</span>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Variant Thumbnails */}
             {product.variants?.nodes && (
@@ -378,8 +411,12 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                       <span>Select {colorOption.name}</span>
                       <span className="colour-name">{currentOptions[colorOption.name]}</span>
                     </div>
-                    <button className="bookmark-btn" aria-label="Add to wishlist">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <button 
+                      className={`bookmark-btn ${isInWishlistState ? 'active' : ''}`}
+                      onClick={handleWishlistToggle}
+                      aria-label={isInWishlistState ? "Remove from wishlist" : "Add to wishlist"}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill={isInWishlistState ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
                         <path d="M3 2h10v12l-5-3-5 3V2z" />
                       </svg>
                     </button>

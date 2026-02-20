@@ -15,7 +15,6 @@ import { ProductHero } from '~/components/ProductHero';
 import { ProductFeatureHero } from '~/components/ProductFeatureHero';
 import { Breadcrumb } from '~/components/Breadcrumb';
 import { ProductGrid } from '~/components/ProductGrid';
-import { ProductReviews } from '~/components/ProductReviews';
 import { RecentlyViewed } from '~/components/RecentlyViewed';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { addToRecentlyViewed } from '~/lib/recentlyViewed';
@@ -26,8 +25,6 @@ import productFeatureHeroStyles from '~/styles/components/product/product-featur
 import breadcrumbStyles from '~/styles/components/breadcrumb.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
 import productCardStyles from '~/styles/components/product/product-card.css?url';
-import productReviewsStyles from '~/styles/components/product-reviews.css?url';
-import reviewFormStyles from '~/styles/components/review-form.css?url';
 import buttonsStyles from '~/styles/components/buttons.css?url';
 
 export const links = () => [
@@ -38,8 +35,6 @@ export const links = () => [
   {rel: 'stylesheet', href: breadcrumbStyles},
   {rel: 'stylesheet', href: productGridStyles},
   {rel: 'stylesheet', href: productCardStyles},
-  {rel: 'stylesheet', href: productReviewsStyles},
-  {rel: 'stylesheet', href: reviewFormStyles},
   {rel: 'stylesheet', href: buttonsStyles},
 ];
 
@@ -88,12 +83,20 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     variables: { productId: product.id },
   }).catch(() => ({ productRecommendations: [] }));
 
+  // Fetch best sellers collection
+  const { collection: bestSellersCollection } = await storefront.query(BEST_SELLERS_QUERY, {
+    variables: { handle: 'best-sellers' },
+  }).catch(() => ({ collection: null }));
+
+  const bestSellers = bestSellersCollection?.products?.nodes || [];
+
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
 
   return {
     product,
     recommendations: recommendations || [],
+    bestSellers,
   };
 }
 
@@ -110,7 +113,7 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product, recommendations } = useLoaderData<typeof loader>();
+  const { product, recommendations, bestSellers } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -144,18 +147,18 @@ export default function Product() {
     }
   }, [product, selectedVariant]);
 
-  // Transform recommendations for ProductCard
-  const transformedRecommendations = recommendations?.map((rec: any) => ({
-    id: rec.id,
-    handle: rec.handle,
-    title: rec.title,
-    vendor: rec.vendor,
-    featuredImage: rec.featuredImage,
-    images: rec.images,
-    priceRange: rec.priceRange,
-    compareAtPriceRange: rec.compareAtPriceRange,
-    variants: rec.variants,
-    options: rec.options,
+  // Transform best sellers for ProductCard
+  const transformedBestSellers = bestSellers?.map((product: any) => ({
+    id: product.id,
+    handle: product.handle,
+    title: product.title,
+    vendor: product.vendor,
+    featuredImage: product.featuredImage,
+    images: product.images,
+    priceRange: product.priceRange,
+    compareAtPriceRange: product.compareAtPriceRange,
+    variants: product.variants,
+    options: product.options,
   })) || [];
 
   return (
@@ -202,11 +205,9 @@ export default function Product() {
       ]} />
 
       <ProductGrid
-        title="STYLE WITH"
-        products={transformedRecommendations}
+        title="BEST SELLERS"
+        products={transformedBestSellers}
       />
-
-      <ProductReviews productId={product.id} productHandle={product.handle} />
 
       <RecentlyViewed />
 
@@ -411,6 +412,95 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         key
         value
         namespace
+      }
+    }
+  }
+` as const;
+
+const BEST_SELLERS_QUERY = `#graphql
+  query BestSellersCollection(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      id
+      title
+      products(first: 8) {
+        nodes {
+          id
+          handle
+          title
+          vendor
+          featuredImage {
+            id
+            url
+            altText
+            width
+            height
+          }
+          images(first: 2) {
+            nodes {
+              id
+              url
+              altText
+              width
+              height
+            }
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          compareAtPriceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          variants(first: 100) {
+            nodes {
+              id
+              availableForSale
+              selectedOptions {
+                name
+                value
+              }
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
+          options {
+            name
+            optionValues {
+              name
+            }
+          }
+          metafields(
+            identifiers: [
+              {namespace: "custom", key: "color_name"}
+              {namespace: "custom", key: "color"}
+              {namespace: "category", key: "color"}
+              {namespace: "category", key: "Color"}
+            ]
+          ) {
+            key
+            value
+            namespace
+          }
+        }
       }
     }
   }

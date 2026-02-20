@@ -14,6 +14,7 @@ import {
   X,
   Expand,
 } from 'lucide-react';
+import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
 
 // Types
 interface ProductImage {
@@ -70,6 +71,43 @@ export function ProductPage({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [isInWishlistState, setIsInWishlistState] = useState(false);
+
+  // Check if product is in wishlist
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsInWishlistState(isInWishlist(product.id));
+    }
+
+    // Listen for wishlist changes
+    const handleWishlistChange = () => {
+      setIsInWishlistState(isInWishlist(product.id));
+    };
+
+    window.addEventListener('wishlistChanged', handleWishlistChange);
+    return () => {
+      window.removeEventListener('wishlistChanged', handleWishlistChange);
+    };
+  }, [product.id]);
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = () => {
+    const wishlistItem: WishlistItem = {
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      price: `$${selectedVariant.price.amount}`,
+      compareAtPrice: selectedVariant.compareAtPrice 
+        ? `$${selectedVariant.compareAtPrice.amount}`
+        : undefined,
+      image: selectedVariant.image?.url || images[0]?.url,
+      availableForSale: selectedVariant.availableForSale ?? true,
+      vendor: product.vendor,
+    };
+    
+    toggleWishlist(wishlistItem);
+    setIsInWishlistState(!isInWishlistState);
+  };
   const [activeTab, setActiveTab] = useState('SUGGESTED');
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
   const [touchStart, setTouchStart] = useState(0);
@@ -270,8 +308,12 @@ export function ProductPage({
                   Select Colour <sup className="product-option-sup">2</sup>
                 </div>
                 <div className="product-color-current">{currentColor || 'Washed Black'}</div>
-                <button className="product-bookmark-btn" aria-label="Save to wishlist">
-                  <Bookmark size={20} strokeWidth={1.5} />
+                <button 
+                  className={`product-bookmark-btn ${isInWishlistState ? 'active' : ''}`}
+                  onClick={handleWishlistToggle}
+                  aria-label={isInWishlistState ? "Remove from wishlist" : "Save to wishlist"}
+                >
+                  <Bookmark size={20} strokeWidth={1.5} fill={isInWishlistState ? "currentColor" : "none"} />
                 </button>
               </div>
               <div className="product-color-swatches-grid">

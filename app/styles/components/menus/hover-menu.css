@@ -3,24 +3,101 @@
  * Extracted from tailwind.css lines 2147-2412
  */
 
-/* Unified Hover Menu Overlay - Single persistent container */
-.unified-hover-menu-overlay {
+/* ─── Full-page blur + dim overlay ────────────────────────────────────────────── */
+
+/**
+ * Sits between page content and the menu panel.
+ * z-index ladder: page content < blur overlay (998) < menu (999) < header when active (1000)
+ *
+ * The element is always portalled to <body> by DynamicHoverMenu so the CSS
+ * transition on opacity gives a smooth 300 ms fade-in / fade-out.
+ * The menu panel is at z-index 999 and starts below the header.
+ * The header increases to z-index 1000 when menu is active to remain clickable.
+ */
+.hover-menu-page-overlay {
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 997; /* Lower than menu panel */
+  pointer-events: none;
+
+  /* Dim layer - matches cart overlay (35% opacity) */
+  background: rgba(0, 0, 0, 0.35);
+
+  /* Blur layer – blurs everything rendered below this stacking context (24px matches cart) */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  /* Start invisible; transition to fully visible */
+  opacity: 0;
+  transition: opacity 300ms ease;
+  
+  /* Ensure it's always rendered */
+  visibility: hidden;
+}
+
+.hover-menu-page-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/**
+ * Fallback: browsers without backdrop-filter support get a darker dim only.
+ */
+@supports not (backdrop-filter: blur(1px)) {
+  .hover-menu-page-overlay {
+    background: rgba(0, 0, 0, 0.65);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────── */
+
+/* Unified Hover Menu Overlay - Single persistent container */
+.unified-hover-menu-overlay {
+  position: fixed;
+  top: 46px; /* Desktop header height */
+  left: 0;
   width: 50vw;
-  height: 100vh;
-  z-index: 50;
+  height: calc(100vh - 46px); /* Account for header */
+  z-index: 998; /* Above blur overlay */
   background: white;
   pointer-events: auto;
   display: flex;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
   will-change: opacity;
+  animation: menuSlideIn 0.3s ease-out;
 }
 
-body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
-  top: 0;
-  height: 100vh;
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Adjust for announcement bar */
+body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
+  top: calc(46px + 36px); /* Header + Announcement bar */
+  height: calc(100vh - 46px - 36px);
+}
+
+/* Mobile adjustments */
+@media (max-width: 1023px) {
+  .unified-hover-menu-overlay {
+    top: 63px; /* Mobile header height */
+    height: calc(100vh - 63px);
+  }
+  
+  body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
+    top: calc(63px + 36px);
+    height: calc(100vh - 63px - 36px);
+  }
 }
 
 .hover-menu-dropdown {
@@ -28,7 +105,7 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   width: 100%;
   height: 100%;
   background: white;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
 }
 
@@ -51,32 +128,47 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 .hover-menu-sections {
   flex: 0 0 45%;
   max-width: 280px;
+  background: white;
+  position: relative;
+  height: 100%;
+}
+
+/* Base UI ScrollArea Viewport - the actual scrollable container */
+.hover-menu-sections [data-slot="scroll-area-viewport"],
+.hover-menu-sections > div {
+  height: 100% !important;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto !important;
+}
+
+/* Also target by direct child */
+.hover-menu-sections > * {
+  height: 100%;
+  pointer-events: auto !important;
+}
+
+/* ScrollArea content wrapper */
+.hover-menu-sections-content {
   padding: 67px 30px 32px 10px; /* Top padding accounts for mobile header (63px) + 4px spacing, 10px left, 30px right */
-  overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: white;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  will-change: scroll-position;
 }
 
 /* Desktop: larger horizontal padding and account for desktop header height (46px) */
 @media (min-width: 1024px) {
-  .hover-menu-sections {
+  .hover-menu-sections-content {
     padding: 50px 30px 32px 10px; /* Top padding accounts for desktop header (46px) + 4px spacing, 10px left, 30px right */
   }
 }
 
 /* When announcement bar is present, add extra top padding */
-body:has(.dynamic-announcement-bar) .hover-menu-sections {
+body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
   padding-top: 103px; /* Mobile: 63px header + 36px announcement + 4px spacing */
 }
 
 @media (min-width: 1024px) {
-  body:has(.dynamic-announcement-bar) .hover-menu-sections {
+  body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
     padding-top: 86px; /* Desktop: 46px header + 36px announcement + 4px spacing */
   }
 }
@@ -117,7 +209,7 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections {
 .hover-menu-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0;
@@ -192,13 +284,18 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections {
   font-size: 16px;
   line-height: 22px;
   font-weight: 500;
-  padding: 0;
+  padding: 4px 0;
   color: #000000;
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
   display: flex;
   align-items: center;
-  will-change: opacity;
+  will-change: opacity, transform;
+}
+
+.hover-menu-item-link.permanent-item:hover {
+  opacity: 0.7;
+  transform: translateX(2px);
 }
 
 /* Dynamic items - normal, smaller */
@@ -209,11 +306,16 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections {
   line-height: 18px;
   color: #000000;
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
   display: flex;
   align-items: center;
   padding: 2px 0;
-  will-change: opacity;
+  will-change: opacity, transform;
+}
+
+.hover-menu-item-link.dynamic-item:hover {
+  opacity: 0.7;
+  transform: translateX(2px);
 }
 
 /* Backward compatibility - old bold-item class */
@@ -262,40 +364,37 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections {
   transform: translateX(3px);
 }
 
-/* Smooth scrollbar - always thin, visible on hover */
-.hover-menu-sections {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-.hover-menu-sections:hover {
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-}
-
-.hover-menu-nested-panel:hover {
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-}
-
-/* Webkit scrollbar styling (Chrome, Safari, Edge) */
-.hover-menu-sections::-webkit-scrollbar,
-.hover-menu-nested-panel::-webkit-scrollbar {
-  width: 6px;
-}
-
-.hover-menu-sections::-webkit-scrollbar-track,
-.hover-menu-nested-panel::-webkit-scrollbar-track {
+/* Smooth scrollbar - remove old styles, Base UI handles scrolling */
+/* Base UI Scrollbar styling */
+.hover-menu-sections [role="scrollbar"],
+.hover-menu-nested-panel [role="scrollbar"] {
   background: transparent;
+  width: 8px !important;
+  border-radius: 4px;
+  z-index: 10;
 }
 
-.hover-menu-sections::-webkit-scrollbar-thumb,
-.hover-menu-nested-panel::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+.hover-menu-sections [role="scrollbar"][data-orientation="vertical"],
+.hover-menu-nested-panel [role="scrollbar"][data-orientation="vertical"] {
+  right: 2px;
 }
 
-.hover-menu-sections:hover::-webkit-scrollbar-thumb,
-.hover-menu-nested-panel:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.25);
+/* Scrollbar thumb */
+.hover-menu-sections [role="scrollbar"] > *,
+.hover-menu-nested-panel [role="scrollbar"] > * {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+  transition: background-color 0.2s ease;
+}
+
+.hover-menu-sections:hover [role="scrollbar"] > *,
+.hover-menu-nested-panel:hover [role="scrollbar"] > * {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+}
+
+.hover-menu-sections [role="scrollbar"]:hover > *,
+.hover-menu-nested-panel [role="scrollbar"]:hover > * {
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Right panel - contains image or nested menu */
@@ -374,43 +473,58 @@ body:has(.dynamic-announcement-bar) .hover-menu-image {
   width: 100%;
   height: 100%;
   background: white;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  will-change: opacity, transform;
+}
+
+/* Base UI ScrollArea Viewport for nested panel */
+.hover-menu-nested-panel [data-slot="scroll-area-viewport"],
+.hover-menu-nested-panel > div {
+  height: 100% !important;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto !important;
+}
+
+.hover-menu-nested-panel > * {
+  height: 100%;
+  pointer-events: auto !important;
+}
+
+/* Nested panel content wrapper */
+.nested-panel-content {
   padding: 67px 30px 32px 10px; /* Match left panel padding: top/right/bottom/left */
   display: flex;
   flex-direction: column;
-  transition: opacity 0.3s ease;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  will-change: scroll-position;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 .hover-menu-nested-panel.fade-in {
   opacity: 1;
   pointer-events: auto;
+  transform: translateX(0);
 }
 
 .hover-menu-nested-panel.fade-out {
   opacity: 0;
   pointer-events: none;
+  transform: translateX(10px);
 }
 
 /* Desktop: account for desktop header height */
 @media (min-width: 1024px) {
-  .hover-menu-nested-panel {
+  .nested-panel-content {
     padding: 50px 30px 32px 10px; /* Match left panel desktop padding */
   }
 }
 
 /* When announcement bar is present */
-body:has(.dynamic-announcement-bar) .hover-menu-nested-panel {
+body:has(.dynamic-announcement-bar) .nested-panel-content {
   padding-top: 103px; /* Match left panel: 63px header + 36px announcement + 4px spacing */
 }
 
 @media (min-width: 1024px) {
-  body:has(.dynamic-announcement-bar) .hover-menu-nested-panel {
+  body:has(.dynamic-announcement-bar) .nested-panel-content {
     padding-top: 86px; /* Match left panel: 46px header + 36px announcement + 4px spacing */
   }
 }
@@ -433,32 +547,14 @@ body:has(.dynamic-announcement-bar) .hover-menu-nested-panel {
   line-height: 1.4;
   color: #000000;
   text-decoration: none;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
   display: block;
   padding: 4px 0;
 }
 
-/* Custom scrollbar for menu */
-.hover-menu-sections::-webkit-scrollbar {
-  width: 5px;
-}
-
-.hover-menu-sections::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.hover-menu-sections::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  transition: background 0.2s ease;
-}
-
-.hover-menu-sections:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.hover-menu-sections::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.35);
+.nested-panel-item:hover {
+  opacity: 0.7;
+  transform: translateX(2px);
 }
 
 @media (max-width: 768px) {

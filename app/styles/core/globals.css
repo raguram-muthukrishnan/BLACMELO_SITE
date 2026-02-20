@@ -24,6 +24,7 @@ body {
   color: #000000;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 13px;
+  font-weight: 400;
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -168,7 +169,7 @@ header.blacmelo-header {
 .jdgm-all-reviews-count {
   font-family: 'Neue Haas Grotesk', sans-serif !important;
   font-size: 10px !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
   color: #000000 !important;
   line-height: 1.5 !important;
 }

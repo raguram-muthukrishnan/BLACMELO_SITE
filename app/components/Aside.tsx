@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import {stopLenis, startLenis} from '~/lib/lenis';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -39,6 +40,25 @@ export function Aside({
     const abortController = new AbortController();
 
     if (expanded) {
+      // Stop Lenis smooth scroll
+      stopLenis();
+      
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      const body = document.body;
+      
+      // Store original styles
+      const originalOverflow = body.style.overflow;
+      const originalPosition = body.style.position;
+      const originalTop = body.style.top;
+      const originalWidth = body.style.width;
+      
+      // Lock body scroll using position fixed method
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollY}px`;
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+
       document.addEventListener(
         'keydown',
         function handler(event: KeyboardEvent) {
@@ -48,8 +68,27 @@ export function Aside({
         },
         {signal: abortController.signal},
       );
+
+      return () => {
+        abortController.abort();
+        
+        // Restore body styles
+        body.style.position = originalPosition;
+        body.style.top = originalTop;
+        body.style.width = originalWidth;
+        body.style.overflow = originalOverflow;
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+        
+        // Restart Lenis smooth scroll
+        startLenis();
+      };
+    } else {
+      return () => {
+        abortController.abort();
+      };
     }
-    return () => abortController.abort();
   }, [close, expanded]);
 
   // Don't render anything if not expanded to avoid layout issues

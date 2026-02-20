@@ -44,7 +44,7 @@
 .about-hero-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 64px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0;
   text-transform: uppercase;
@@ -101,7 +101,7 @@
 .about-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 24px 0;
   color: #000000;
@@ -226,7 +226,7 @@
 .contact-hero-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 48px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 20px 0;
   color: #000000;
@@ -285,7 +285,7 @@
 .contact-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 32px 0;
   color: #000000;
@@ -320,7 +320,7 @@
 .contact-label {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.05em;
   color: #000000;
   text-transform: uppercase;
@@ -357,7 +357,7 @@
 .contact-submit-btn {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.05em;
   padding: 16px 40px;
   background: #000000;
@@ -415,7 +415,7 @@
 .contact-info-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.1em;
   color: #000000;
   margin: 0;
@@ -528,7 +528,7 @@
 .faq-hero-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 48px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 20px 0;
   color: #000000;
@@ -588,7 +588,7 @@
 .faq-category-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 24px 0;
   color: #000000;
@@ -635,7 +635,7 @@
 .faq-question span {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
   color: #000000;
   flex: 1;
@@ -722,7 +722,7 @@
 .faq-cta-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.05em;
   margin: 0 0 16px 0;
   color: #000000;
@@ -748,7 +748,7 @@
   display: inline-block;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.05em;
   padding: 16px 40px;
   background: #000000;

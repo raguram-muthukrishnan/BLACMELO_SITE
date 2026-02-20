@@ -1,6 +1,8 @@
 import {NavLink} from 'react-router';
 import {createPortal} from 'react-dom';
 import {useEffect, useState, useRef, useCallback} from 'react';
+import {ScrollArea} from '~/components/ui/scroll-area';
+import {stopLenis, startLenis} from '~/lib/lenis';
 
 interface SubMenuItem {
   name: string;
@@ -72,6 +74,44 @@ export function HoverMenu({
     };
   }, []);
 
+  // Prevent body scroll when menu is open - stop Lenis and lock body
+  useEffect(() => {
+    if (isOpen) {
+      // Stop Lenis smooth scroll
+      stopLenis();
+      
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      const body = document.body;
+      
+      // Store original styles
+      const originalOverflow = body.style.overflow;
+      const originalPosition = body.style.position;
+      const originalTop = body.style.top;
+      const originalWidth = body.style.width;
+      
+      // Lock body scroll using position fixed method
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollY}px`;
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+
+      return () => {
+        // Restore body styles
+        body.style.position = originalPosition;
+        body.style.top = originalTop;
+        body.style.width = originalWidth;
+        body.style.overflow = originalOverflow;
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+        
+        // Restart Lenis smooth scroll
+        startLenis();
+      };
+    }
+  }, [isOpen]);
+
   // Reset expanded item when menu closes
   useEffect(() => {
     if (!isOpen) {
@@ -121,47 +161,49 @@ export function HoverMenu({
       <div className="hover-menu-dropdown">
         <div className="hover-menu-content" key={title}>
           {/* Left side - Menu sections */}
-          <div className="hover-menu-sections">
-            {sections.map((section, idx) => (
-              <div key={idx} className={`hover-menu-section ${section.isBold ? 'bold-section' : ''}`}>
-                {section.label && (
-                  <h3 className="hover-menu-section-title">{section.label}</h3>
-                )}
-                {section.items && (
-                  <ul className={`hover-menu-list ${section.isBold ? 'bold-list' : ''}`}>
-                    {section.items.map((item, itemIdx) => {
-                      const itemName = getItemName(item);
-                      const hasSubmenu = section.hasSubmenu && 
-                        ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories'].includes(itemName);
-                      const itemDescription = itemName === 'Outfits' ? 'Shop curated looks' : null;
-                      
-                      return (
-                        <li key={itemIdx} className={hasSubmenu ? 'has-submenu' : ''}>
-                          <NavLink 
-                            to={getItemLink(item, section.link)}
-                            className={`hover-menu-item-link ${section.isBold ? 'bold-item' : ''}`}
-                            onMouseEnter={() => hasSubmenu && setExpandedItem(itemName)}
-                          >
-                            <span className="hover-menu-item-text">
-                              {itemName}
-                              {itemDescription && (
-                                <span className="hover-menu-item-description">{itemDescription}</span>
-                              )}
-                            </span>
-                            {hasSubmenu && <ChevronRight />}
-                          </NavLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
+          <ScrollArea className="hover-menu-sections">
+            <div className="hover-menu-sections-content">
+              {sections.map((section, idx) => (
+                <div key={idx} className={`hover-menu-section ${section.isBold ? 'bold-section' : ''}`}>
+                  {section.label && (
+                    <h3 className="hover-menu-section-title">{section.label}</h3>
+                  )}
+                  {section.items && (
+                    <ul className={`hover-menu-list ${section.isBold ? 'bold-list' : ''}`}>
+                      {section.items.map((item, itemIdx) => {
+                        const itemName = getItemName(item);
+                        const hasSubmenu = section.hasSubmenu && 
+                          ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories'].includes(itemName);
+                        const itemDescription = itemName === 'Outfits' ? 'Shop curated looks' : null;
+                        
+                        return (
+                          <li key={itemIdx} className={hasSubmenu ? 'has-submenu' : ''}>
+                            <NavLink 
+                              to={getItemLink(item, section.link)}
+                              className={`hover-menu-item-link ${section.isBold ? 'bold-item' : ''}`}
+                              onMouseEnter={() => hasSubmenu && setExpandedItem(itemName)}
+                            >
+                              <span className="hover-menu-item-text">
+                                {itemName}
+                                {itemDescription && (
+                                  <span className="hover-menu-item-description">{itemDescription}</span>
+                                )}
+                              </span>
+                              {hasSubmenu && <ChevronRight />}
+                            </NavLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
           
           {/* Right side - Image */}
           {menuImage && (
-            <div className="hover-menu-image">
+            <div ref={rightPanelRef} className="hover-menu-image">
               <img src={menuImage} alt={`${title} collection`} />
             </div>
           )}

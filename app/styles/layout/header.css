@@ -43,6 +43,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   .blacmelo-header.header-menu-active {
     background: #ffffff !important;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Above blur overlay (998) and menu panel (999) to remain clickable */
   }
 }
 
@@ -135,6 +136,86 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   color: #ffffff;
 }
 
+/* ── White Header for utility / content pages ── */
+.blacmelo-header.header-white-page {
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.blacmelo-header.header-white-page.header-scrolled {
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Black text for links, icons, buttons */
+.blacmelo-header.header-white-page .blacmelo-header-link,
+.blacmelo-header.header-white-page .blacmelo-header-icon,
+.blacmelo-header.header-white-page .blacmelo-cart-icon,
+.blacmelo-header.header-white-page .blacmelo-mobile-menu-btn,
+.blacmelo-header.header-white-page .blacmelo-mobile-search-btn {
+  color: #000000 !important;
+}
+
+/* Black underlines */
+.blacmelo-header.header-white-page .blacmelo-header-link::after,
+.blacmelo-header.header-white-page .blacmelo-header-icon::after,
+.blacmelo-header.header-white-page .blacmelo-cart-icon::after {
+  background: #000000 !important;
+}
+
+/* Hover stays black */
+.blacmelo-header.header-white-page .blacmelo-header-link:hover,
+.blacmelo-header.header-white-page .blacmelo-header-icon:hover,
+.blacmelo-header.header-white-page .blacmelo-cart-icon:hover,
+.blacmelo-header.header-white-page .blacmelo-mobile-menu-btn:hover {
+  color: #000000 !important;
+}
+
+/* Scrolled state keeps black text */
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-link,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-icon,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-cart-icon,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-mobile-menu-btn {
+  color: #000000 !important;
+}
+
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-link::after,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-icon::after,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-cart-icon::after {
+  background: #000000 !important;
+}
+
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-link:hover,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-header-icon:hover,
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-cart-icon:hover {
+  color: #000000 !important;
+}
+
+/* Lottie logo: disable blend mode so it renders normally on white bg */
+.blacmelo-header.header-white-page .blacmelo-lottie-logo-wrapper svg {
+  mix-blend-mode: normal;
+}
+
+/* Static logo (fallback): show as black */
+.blacmelo-header.header-white-page .blacmelo-logo-image {
+  filter: none !important;
+}
+
+.blacmelo-header.header-white-page.header-scrolled .blacmelo-logo-image {
+  filter: none !important;
+}
+
+/* Hover-menu trigger underlines */
+.blacmelo-header.header-white-page .hover-menu-trigger .blacmelo-header-link::after {
+  background: #000000 !important;
+}
+
+/* Cart badge on white header: invert to white on black */
+.blacmelo-header.header-white-page .blacmelo-cart-badge {
+  background: #000000;
+  color: #ffffff;
+}
+
 .blacmelo-header-container {
   display: flex;
   align-items: center;
@@ -186,23 +267,74 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 106px;
-  height: 24px;
+  /* Full header height so the Lottie animation has room to render.
+     Width auto-sizes to the 640:360 (≈1.78) aspect ratio at each height. */
+  height: 100%;
+  width: auto;
   text-decoration: none;
+  overflow: hidden;
 }
 
+/* ------------------------------------------------------------------
+   Lottie logo wrapper
+   The animation canvas is 640×360 (16:9).  We size it relative to the
+   header height and let the Lottie SVG scale within the box.
+   ------------------------------------------------------------------ */
+.blacmelo-lottie-logo-wrapper {
+  /* Desktop: inherit the 46px header height; width maintains 1.78 ratio */
+  height: 46px;
+  width: 82px;   /* 46 × (640/360) ≈ 82 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none; /* let the wrapping <a> handle clicks */
+}
+
+/* Make the SVG fill the wrapper exactly */
+.blacmelo-lottie-logo-wrapper svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  /*
+    mix-blend-mode: multiply removes the animation's solid white background
+    without any JS.  How it works:
+      white (1,1,1) × anything = that colour  → white bg disappears
+      black (0,0,0) × anything = (0,0,0)      → dark logo elements stay black
+    This keeps the logo visible over both light and dark page backgrounds.
+  */
+  mix-blend-mode: multiply;
+}
+
+/* When the hover-menu turns the header white, the blend mode isn't needed
+   (the white bg merges with the white header naturally) and we want full,
+   un-blended colours for maximum sharpness. */
+.blacmelo-header.header-menu-active .blacmelo-lottie-logo-wrapper svg {
+  mix-blend-mode: normal;
+}
+
+/* SSR placeholder keeps layout stable during hydration */
+.blacmelo-lottie-logo-ssr-placeholder {
+  display: block;
+  width: 82px;
+  height: 46px;
+}
+
+/* ------------------------------------------------------------------
+   Legacy .blacmelo-logo-image styles (kept in case any other page
+   still renders the static <img> logo directly).
+   ------------------------------------------------------------------ */
 .blacmelo-logo-image {
   width: 106px;
   height: 24px;
   object-fit: contain;
   display: block;
-  filter: brightness(0) invert(1); /* Make logo white by default */
+  filter: brightness(0) invert(1);
   transition: filter 0.3s ease;
 }
 
-/* Logo stays white when scrolled */
 .blacmelo-header.header-scrolled .blacmelo-logo-image {
-  filter: brightness(0) invert(1); /* Keep logo white when scrolled */
+  filter: brightness(0) invert(1);
 }
 
 .blacmelo-header-link {
@@ -397,7 +529,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   background: #000000;
   color: #ffffff;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: 'Neue Haas Grotesk', sans-serif;
   min-width: 16px;
   height: 16px;
@@ -532,6 +664,17 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     flex: 0 0 auto;
   }
 
+  /* Mobile Lottie logo: taller header (63px) → wider animation */
+  .blacmelo-lottie-logo-wrapper {
+    height: 53px;
+    width: 94px;  /* 53 × (640/360) ≈ 94 */
+  }
+
+  .blacmelo-lottie-logo-ssr-placeholder {
+    height: 53px;
+    width: 94px;
+  }
+
   .blacmelo-logo-image {
     width: auto;
     height: 20px;
@@ -598,6 +741,37 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   /* Hover color stays white when scrolled */
   .blacmelo-header.header-scrolled .blacmelo-cart-icon:hover {
     color: #ffffff;
+  }
+
+  /* ── White header pages on mobile ── */
+  .blacmelo-header.header-white-page {
+    background: #ffffff !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  .blacmelo-header.header-white-page.header-scrolled {
+    background: #ffffff !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  .blacmelo-header.header-white-page .blacmelo-mobile-menu-btn {
+    color: #000000 !important;
+  }
+
+  .blacmelo-header.header-white-page .blacmelo-header-icon {
+    color: #000000 !important;
+  }
+
+  .blacmelo-header.header-white-page .blacmelo-cart-icon {
+    color: #000000 !important;
+  }
+
+  .blacmelo-header.header-white-page .blacmelo-logo-image {
+    filter: none !important;
+  }
+
+  .blacmelo-header.header-white-page .blacmelo-lottie-logo-wrapper svg {
+    mix-blend-mode: normal;
   }
 }
 
