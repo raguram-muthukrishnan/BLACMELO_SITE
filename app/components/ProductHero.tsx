@@ -93,14 +93,14 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
       handle: product.handle,
       title: product.title,
       price: `$${selectedVariant.price.amount}`,
-      compareAtPrice: selectedVariant.compareAtPrice 
+      compareAtPrice: selectedVariant.compareAtPrice
         ? `$${selectedVariant.compareAtPrice.amount}`
         : undefined,
       image: selectedVariant.image?.url || images[0]?.url,
       availableForSale: selectedVariant.availableForSale ?? true,
       vendor: product.vendor,
     };
-    
+
     toggleWishlist(wishlistItem);
     setIsInWishlistState(!isInWishlistState);
   };
@@ -110,7 +110,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
     const checkReviews = () => {
       const ratingElement = document.querySelector('.jdgm-all-reviews-rating');
       const countElement = document.querySelector('.jdgm-all-reviews-count');
-      
+
       if (ratingElement && countElement) {
         const countText = countElement.textContent || '0';
         const reviewCount = parseInt(countText.replace(/\D/g, '')) || 0;
@@ -181,17 +181,17 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
     'second_description',
     product.description || 'Discover the perfect blend of style and comfort with this premium piece.'
   );
-  
+
   const fitInfo = getMetafieldValue(
     'fit',
     'Model wears size M. Designed for a relaxed, slightly oversized fit.'
   );
-  
+
   const fabricCare = getMetafieldValue(
     'fabric_care',
     'Professional grade cloth only. Do not machine wash. Avoid prolonged exposure to moisture or sunlight.'
   );
-  
+
   const shippingReturns = getMetafieldValue(
     'shipping_returns',
     'Standard Shipping (3-5 Business Days)\nExpress Shipping (1-2 Business Days)\n\n14 day return policy for unused items with original tags.'
@@ -298,13 +298,13 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
             <div className="hero-expanded-view">
               <div className="hero-expanded-header">
                 <h2 className="hero-expanded-title">
-                  {openSection === 'description' ? 'Product Details' : 
-                   openSection === 'fit' ? 'Fit' : 
-                   openSection === 'fabric' ? 'Fabric Care' : 
-                   openSection === 'sizechart' ? 'Size Guide' :
-                   'Shipping & Returns'}
+                  {openSection === 'description' ? 'Product Details' :
+                    openSection === 'fit' ? 'Fit' :
+                      openSection === 'fabric' ? 'Fabric Care' :
+                        openSection === 'sizechart' ? 'Size Guide' :
+                          'Shipping & Returns'}
                 </h2>
-                <button 
+                <button
                   className="hero-expanded-close"
                   onClick={() => setOpenSection(null)}
                   aria-label="Close"
@@ -339,9 +339,9 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                 )}
                 {openSection === 'sizechart' && (
                   <div className="size-chart-container">
-                    <img 
-                      src="/app/assets/size_chart.jpeg" 
-                      alt="Size Chart" 
+                    <img
+                      src="/app/assets/size_chart.jpeg"
+                      alt="Size Chart"
                       className="size-chart-image"
                     />
                   </div>
@@ -356,63 +356,128 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
           ) : (
             // Normal Form View
             <>
-            <div className="hero-header">
-              <div>
-                <h1 className="hero-title">{product.title}</h1>
-                <p className="hero-category">THE BLACMELO ORIGINALS</p>
-              </div>
-              <div className="hero-price">
-                {selectedVariant?.price && <Money data={selectedVariant.price} />}
-              </div>
-            </div>
-
-            {/* Star Rating */}
-            {hasReviews && (
-              <div className="hero-rating">
-                <div className="hero-rating-judgeme">
-                  <JudgemeAllReviewsRating />
-                  <JudgemeAllReviewsCount />
+              <div className="hero-header">
+                <div>
+                  <h1 className="hero-title">{product.title}</h1>
+                  <p className="hero-category">THE BLACMELO ORIGINALS</p>
+                </div>
+                <div className="hero-price">
+                  {selectedVariant?.price && <Money data={selectedVariant.price} />}
                 </div>
               </div>
-            )}
 
-            {/* Color Product Switcher - Product-level colors */}
-            {relatedColorProducts && relatedColorProducts.length > 0 && (
-              <ColorProductSwitcher 
-                products={relatedColorProducts}
-                currentProductHandle={product.handle}
-              />
-            )}
+              {/* Star Rating */}
+              {hasReviews && (
+                <div className="hero-rating">
+                  <div className="hero-rating-judgeme">
+                    <JudgemeAllReviewsRating />
+                    <JudgemeAllReviewsCount />
+                  </div>
+                </div>
+              )}
 
-            {/* Variant Thumbnails - Only if no color products */}
-            {(!relatedColorProducts || relatedColorProducts.length === 0) && product.variants?.nodes && (
-              <div className="variant-thumbnails">
-                {product.variants.nodes
-                  .filter((variant: any) => variant.image)
-                  .map((variant: any) => {
-                    const isSelected = variant.id === selectedVariant.id;
-                    return (
-                      <div
-                        key={variant.id}
-                        className={`variant-thumb ${isSelected ? 'selected' : ''}`}
-                        onClick={() => {
-                          const params = new URLSearchParams();
-                          variant.selectedOptions?.forEach((opt: any) => {
-                            params.set(opt.name, opt.value);
-                          });
-                          setParams(params, { preventScrollReset: true, replace: true });
-                        }}
-                      >
-                        <Image
-                          data={variant.image}
-                          alt={variant.title}
-                          sizes="60px"
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
+              {/* Color Product Switcher - Product-level colors */}
+              {relatedColorProducts && relatedColorProducts.length > 0 && (
+                <ColorProductSwitcher
+                  products={relatedColorProducts}
+                  currentProductHandle={product.handle}
+                />
+              )}
+
+              {/* Variant Thumbnails — color thumbnails for 2+ colors, product image for 1 color */}
+              {(() => {
+                // Skip if ColorProductSwitcher is already handling colors
+                if (relatedColorProducts && relatedColorProducts.length > 0) return null;
+
+                // Helper: extract color value from a variant's selectedOptions
+                const getColorValue = (variant: any): string =>
+                  variant.selectedOptions?.find(
+                    (opt: any) =>
+                      opt.name.toLowerCase() === 'color' ||
+                      opt.name.toLowerCase() === 'colour'
+                  )?.value || '';
+
+                // Helper: extract color option name (e.g. "Color" vs "Colour")
+                const getColorOptionName = (variant: any): string =>
+                  variant.selectedOptions?.find(
+                    (opt: any) =>
+                      opt.name.toLowerCase() === 'color' ||
+                      opt.name.toLowerCase() === 'colour'
+                  )?.name || 'Color';
+
+                // Build a Map: colorValue → first variant with that color that has an image
+                const colorVariantMap = new Map<string, any>();
+                for (const variant of (product.variants?.nodes || [])) {
+                  const color = getColorValue(variant);
+                  // Skip variants with no color option (size-only variants)
+                  if (!color) continue;
+                  // Only use the first variant we find for each color, and it must have an image
+                  if (!colorVariantMap.has(color) && variant.image) {
+                    colorVariantMap.set(color, variant);
+                  }
+                }
+
+                const uniqueColorVariants = Array.from(colorVariantMap.values());
+
+                // ── MULTI-COLOR: one clickable thumbnail per unique color ──
+                if (uniqueColorVariants.length >= 2) {
+                  const currentColorValue = selectedVariant?.selectedOptions?.find(
+                    (opt: any) =>
+                      opt.name.toLowerCase() === 'color' ||
+                      opt.name.toLowerCase() === 'colour'
+                  )?.value || '';
+
+                  return (
+                    <div className="variant-thumbnails">
+                      {uniqueColorVariants.map((variant: any) => {
+                        const variantColor = getColorValue(variant);
+                        const colorOptName = getColorOptionName(variant);
+                        const isSelected = variantColor === currentColorValue;
+
+                        return (
+                          <div
+                            key={variant.id}
+                            className={`variant-thumb ${isSelected ? 'selected' : ''}`}
+                            title={variantColor}
+                            onClick={() => {
+                              // Navigate to this color only — don't carry over size
+                              const newParams = new URLSearchParams();
+                              newParams.set(colorOptName, variantColor);
+                              setParams(newParams, { preventScrollReset: true, replace: true });
+                            }}
+                          >
+                            <Image
+                              data={variant.image}
+                              alt={variantColor || variant.title}
+                              sizes="60px"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
+                // ── SINGLE-COLOR (or no color option): show first product image as thumbnail ──
+                const firstImage =
+                  product.images?.nodes?.[0] ||
+                  selectedVariant?.image ||
+                  product.featuredImage;
+
+                if (!firstImage) return null;
+
+                return (
+                  <div className="variant-thumbnails">
+                    <div className="variant-thumb selected" title={product.title}>
+                      <Image
+                        data={firstImage}
+                        alt={product.title}
+                        sizes="60px"
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Color Selector - Only show if no related color products */}
               {!relatedColorProducts?.length && colorOption && (
@@ -422,7 +487,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                       <span>Select {colorOption.name}</span>
                       <span className="colour-name">{currentOptions[colorOption.name]}</span>
                     </div>
-                    <button 
+                    <button
                       className={`bookmark-btn ${isInWishlistState ? 'active' : ''}`}
                       onClick={handleWishlistToggle}
                       aria-label={isInWishlistState ? "Remove from wishlist" : "Add to wishlist"}
@@ -466,7 +531,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                 <div style={{ marginBottom: '2rem' }}>
                   <div className="size-header">
                     <span>Select Size</span>
-                    <button 
+                    <button
                       className="size-guide-btn"
                       onClick={() => toggleSection('sizechart')}
                       type="button"
@@ -518,10 +583,10 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                   }}
                 >
                   <div className={`hero-cta ${!selectedVariant?.availableForSale ? 'disabled' : ''}`}>
-                    {!selectedVariant?.availableForSale 
-                      ? 'SOLD OUT' 
-                      : !currentOptions[sizeOption?.name || ''] 
-                        ? 'SELECT A SIZE' 
+                    {!selectedVariant?.availableForSale
+                      ? 'SOLD OUT'
+                      : !currentOptions[sizeOption?.name || '']
+                        ? 'SELECT A SIZE'
                         : 'ADD TO CART'
                     }
                   </div>
@@ -546,7 +611,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
 
               {/* Expandable Sections - 2x2 Grid Layout */}
               <div className="hero-expandable-sections">
-                <button 
+                <button
                   className="expandable-section-btn"
                   onClick={() => toggleSection('description')}
                   type="button"
@@ -555,7 +620,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                   <span className="expandable-title">Product Details</span>
                 </button>
 
-                <button 
+                <button
                   className="expandable-section-btn"
                   onClick={() => toggleSection('fit')}
                   type="button"
@@ -564,7 +629,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                   <span className="expandable-title">Fit</span>
                 </button>
 
-                <button 
+                <button
                   className="expandable-section-btn"
                   onClick={() => toggleSection('fabric')}
                   type="button"
@@ -573,7 +638,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                   <span className="expandable-title">Fabric Care</span>
                 </button>
 
-                <button 
+                <button
                   className="expandable-section-btn"
                   onClick={() => toggleSection('shipping')}
                   type="button"

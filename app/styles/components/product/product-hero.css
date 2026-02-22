@@ -142,26 +142,34 @@ body:has(.dynamic-announcement-bar) .hero-right {
 
 /* Mobile Responsive */
 @media (max-width: 1024px) {
+
   /* Hero Product - Mobile Layout */
   .hero-product {
     grid-template-columns: 1fr;
-    height: auto;
-    margin-top: 0;
+    height: auto !important;
+    margin-top: 0 !important;
+    overflow: visible;
   }
 
+  /* Override high-specificity body:has() desktop height rules */
   body:has(.announcement-bar:not([hidden])) .hero-product,
   body:has(.dynamic-announcement-bar) .hero-product {
+    height: auto;
     margin-top: 0;
   }
 
   .hero-left {
     height: 60vh;
     min-height: 60vh;
+    max-height: 60vh;
+    overflow: hidden;
   }
 
   body:has(.announcement-bar:not([hidden])) .hero-left,
   body:has(.dynamic-announcement-bar) .hero-left {
     height: 60vh;
+    min-height: 60vh;
+    max-height: 60vh;
   }
 
   .hero-image-container {
@@ -172,8 +180,19 @@ body:has(.dynamic-announcement-bar) .hero-right {
     object-position: center center;
   }
 
+  /* Reset hero-right to auto height so it grows with content */
   .hero-right {
+    position: relative;
     padding: 32px 20px 40px;
+    height: auto !important;
+    min-height: unset;
+    overflow-y: visible;
+  }
+
+  /* Override high-specificity body:has() desktop height rules for hero-right */
+  body:has(.announcement-bar:not([hidden])) .hero-right,
+  body:has(.dynamic-announcement-bar) .hero-right {
     height: auto;
+    min-height: unset;
   }
 }

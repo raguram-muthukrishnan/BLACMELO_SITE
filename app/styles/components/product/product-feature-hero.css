@@ -92,28 +92,28 @@
     grid-template-columns: 1fr;
     min-height: auto;
   }
-  
+
   .product-feature-content {
     padding: 3rem 2rem;
     order: 2;
     min-height: auto;
   }
-  
+
   .product-feature-image {
     order: 1;
     aspect-ratio: 4/3;
     min-height: 400px;
   }
-  
+
   /* Adjust blur effect for mobile */
   .product-feature-image::after {
     width: 30%;
   }
-  
+
   .product-feature-static-title {
     font-size: 1.25rem;
   }
-  
+
   .product-feature-static-text {
     font-size: 0.85rem;
   }
@@ -121,17 +121,22 @@
 
 @media (max-width: 768px) {
   .product-feature-hero {
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    clear: both;
+    position: relative;
+    display: block;
+    width: 100%;
   }
-  
+
   .product-feature-content {
     padding: 2rem 1rem;
   }
-  
+
   .product-feature-image {
     min-height: 300px;
   }
-  
+
   .product-feature-static-content {
     max-width: 100%;
   }

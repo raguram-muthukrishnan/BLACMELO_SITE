@@ -91,9 +91,10 @@
   left: 0;
   right: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* Frosted glass — product image stays visible */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -109,6 +110,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -160,15 +162,13 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    transparent calc(50% - 0.5px),
-    #000000 calc(50% - 0.5px),
-    #000000 calc(50% + 0.5px),
-    transparent calc(50% + 0.5px),
-    transparent 100%
-  );
+  background: linear-gradient(to right,
+      transparent 0%,
+      transparent calc(50% - 0.5px),
+      #000000 calc(50% - 0.5px),
+      #000000 calc(50% + 0.5px),
+      transparent calc(50% + 0.5px),
+      transparent 100%);
   transform: rotate(-45deg);
 }
 
@@ -193,7 +193,8 @@
 
 .card-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px; /* text-xs: 12px per REPRESENT specs */
+  font-size: 12px;
+  /* text-xs: 12px per REPRESENT specs */
   font-weight: 400;
   color: var(--foreground);
   margin: 0;
@@ -202,7 +203,8 @@
 
 .card-price {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px; /* text-xs: 12px per REPRESENT specs */
+  font-size: 12px;
+  /* text-xs: 12px per REPRESENT specs */
   color: var(--muted-foreground);
   font-weight: 500;
 }
@@ -231,24 +233,30 @@
   .product-grid-small .product-card:nth-child(3n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-small .product-card:nth-child(2n) {
     border-right: none;
   }
+
   .product-grid-medium .product-card:nth-child(4n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-medium .product-card:nth-child(3n) {
     border-right: none;
   }
+
   .product-grid-large .product-card:nth-child(6n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-large .product-card:nth-child(4n) {
     border-right: none;
   }
 }
 
 @media (max-width: 768px) {
+
   /* Keep borders on mobile for grid structure */
   .product-card:nth-child(2n) {
     border-right: none;
@@ -257,6 +265,13 @@
   /* Make quick add button always visible on mobile */
   .quick-add-btn {
     opacity: 1;
+  }
+
+  /* On mobile: overlay is even more see-through — product stays front and centre */
+  .quick-add-overlay {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 }
 
@@ -331,7 +346,8 @@
 
 /* Product Card Info - REPRESENT Layout */
 .product-card-info {
-  padding: 16px; /* Mobile: p-4 (16px) */
+  padding: 16px;
+  /* Mobile: p-4 (16px) */
 }
 
 /* Desktop: p-6 (24px) */
@@ -360,7 +376,8 @@
 
 .product-card-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px; /* Updated to 12px (text-xs) per REPRESENT specs */
+  font-size: 12px;
+  /* Updated to 12px (text-xs) per REPRESENT specs */
   font-weight: 500;
   margin: 0 0 2px 0;
   color: #000000;
@@ -396,7 +413,8 @@
 
 .product-card-price {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px; /* Updated to 12px (text-xs) per REPRESENT specs */
+  font-size: 12px;
+  /* Updated to 12px (text-xs) per REPRESENT specs */
   font-weight: 500;
   color: #000000;
   white-space: nowrap;

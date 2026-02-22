@@ -104,6 +104,7 @@
   line-height: 1.5;
   color: #000000;
 }
+
 /* Variant Thumbnails */
 .variant-thumbnails {
   display: flex;
@@ -134,6 +135,7 @@
   height: 100%;
   object-fit: cover;
 }
+
 /* Color/Colour Section */
 .hero-colour {
   margin-bottom: 16px;
@@ -349,7 +351,7 @@
   width: calc(100% + 340px);
 }
 
-.hero-cart-container > form {
+.hero-cart-container>form {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -663,8 +665,73 @@
     border-width: 2px;
   }
 
+  /* Expanded view — inline block, no fixed/sticky (Lenis-compatible) */
   .hero-expanded-view {
-    padding: 30px 20px;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    z-index: 1;
+    background: #ffffff;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Header row: close button + title — stays at top of the block */
+  .hero-expanded-view .hero-expanded-header {
+    position: relative;
+    top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+    z-index: auto;
+  }
+
+  /* Readable content area */
+  .hero-expanded-view .hero-expanded-content {
+    overflow-y: visible;
+    padding: 0 0 40px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #444444;
+  }
+
+  /* Tap-sized close button */
+  .hero-expanded-view .hero-expanded-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Hide the product image column while expanded content is showing */
+  .hero-product:has(.hero-expanded-view) .hero-left {
+    display: none;
+  }
+
+  /* Push hero-right down so expanded header clears the sticky site header */
+  .hero-product:has(.hero-expanded-view) .hero-right {
+    padding-top: 80px;
+  }
+
+  /* Extra offset when announcement bar is also present (+36px) */
+  body:has(.dynamic-announcement-bar) .hero-product:has(.hero-expanded-view) .hero-right,
+  body:has(.announcement-bar:not([hidden])) .hero-product:has(.hero-expanded-view) .hero-right {
+    padding-top: 116px;
   }
 
   .hero-expandable-sections {
