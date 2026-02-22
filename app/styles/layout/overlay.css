@@ -52,19 +52,42 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.overlay aside main {
+  flex: 1;
   overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .overlay.expanded aside {
   transform: translateX(0);
 }
 
-/* Mobile menu — full-screen overlay instead of side drawer */
+/* Mobile menu — full-screen overlay, slides from left, positioned below header */
 @media (max-width: 768px) {
   .overlay[data-type="mobile"] aside {
     width: 100vw;
     max-width: 100vw;
     box-shadow: none;
+    left: 0;
+    right: auto;
+    top: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    padding-top: 63px;
+  }
+
+  .overlay[data-type="mobile"].expanded aside {
+    transform: translateX(0);
+  }
+
+  /* When announcement bar is visible, adjust padding */
+  body:has(.announcement-bar:not([hidden])) .overlay[data-type="mobile"] aside {
+    padding-top: 99px;
   }
 
   .overlay[data-type="mobile"] .close-outside {
@@ -72,20 +95,27 @@
   }
 }
 
+/* Cart aside - should appear above announcement bar */
+.overlay[data-type="cart"] aside {
+  z-index: 1002;
+}
+
 .overlay aside header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0 32px;
   border-bottom: 1px solid #e0e0e0;
   flex-shrink: 0;
+  min-height: 60px;
+  background: #ffffff;
 }
 
 .overlay aside header h3 {
   margin: 0;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #000000;
@@ -105,6 +135,7 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease;
+  font-weight: 300;
 }
 
 .overlay aside header .close:hover {
@@ -114,7 +145,15 @@
 .overlay aside main {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cart aside header alignment - match announcement bar padding */
+.overlay[data-type="cart"] aside header {
+  padding: 0 32px;
+  min-height: 60px;
 }
 
 /* Search Aside */

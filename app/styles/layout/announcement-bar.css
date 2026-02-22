@@ -12,7 +12,7 @@
   width: 100%;
   background: #000000;
   color: #ffffff;
-  z-index: 1050;
+  z-index: 1001; /* Above everything including hover menu overlay and panel */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,7 +80,7 @@
   width: 100%;
   background: #000000;
   color: #ffffff;
-  z-index: 1050;
+  z-index: 1001; /* Above everything including hover menu overlay and panel */
   overflow: hidden;
   min-height: 36px;
   display: flex;

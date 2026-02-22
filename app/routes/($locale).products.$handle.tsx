@@ -26,6 +26,7 @@ import breadcrumbStyles from '~/styles/components/breadcrumb.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
 import productCardStyles from '~/styles/components/product/product-card.css?url';
 import buttonsStyles from '~/styles/components/buttons.css?url';
+import colorProductSwitcherStyles from '~/styles/components/color-product-switcher.css?url';
 
 export const links = () => [
   {rel: 'stylesheet', href: productPageStyles},
@@ -36,6 +37,7 @@ export const links = () => [
   {rel: 'stylesheet', href: productGridStyles},
   {rel: 'stylesheet', href: productCardStyles},
   {rel: 'stylesheet', href: buttonsStyles},
+  {rel: 'stylesheet', href: colorProductSwitcherStyles},
 ];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -78,23 +80,85 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     throw new Response(null, { status: 404 });
   }
 
+  // Get color_family metafield to fetch related color products
+  // Safely find color_family metafield with null checks
+  let colorFamily: string | undefined;
+  
+  if (Array.isArray(product.metafields)) {
+    const colorFamilyField = product.metafields.find(
+      (m: any) => {
+        if (!m) return false;
+        return m.namespace === 'custom' && m.key === 'color_family';
+      }
+    );
+    
+    colorFamily = colorFamilyField?.value;
+  }
+
+  let relatedColorProducts: any[] = [];
+
+  // If color_family exists, fetch all products with the same family
+  if (colorFamily) {
+    try {
+      // Escape special characters in the search query
+      const escapedColorFamily = colorFamily.replace(/[:"]/g, '\\$&');
+      
+      const result = await storefront.query(COLOR_FAMILY_PRODUCTS_QUERY, {
+        variables: { 
+          query: `metafields.custom.color_family:"${escapedColorFamily}"`,
+          first: 20 
+        },
+      });
+      
+      relatedColorProducts = result?.products?.nodes || [];
+      
+      // Additional filter to ensure exact match (Shopify search can be fuzzy)
+      relatedColorProducts = relatedColorProducts.filter((p: any) => {
+        const pColorFamily = p.metafields?.find(
+          (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
+        )?.value;
+        return pColorFamily === colorFamily;
+      });
+    } catch (error) {
+      console.error('[Color Products] Error fetching related products:', error);
+      relatedColorProducts = [];
+    }
+  }
+
   // Fetch recommendations with actual product ID
   const { productRecommendations: recommendations } = await storefront.query(RECOMMENDED_PRODUCTS_QUERY, {
     variables: { productId: product.id },
   }).catch(() => ({ productRecommendations: [] }));
 
-  // Fetch best sellers collection
-  const { collection: bestSellersCollection } = await storefront.query(BEST_SELLERS_QUERY, {
-    variables: { handle: 'best-sellers' },
-  }).catch(() => ({ collection: null }));
+  // Fetch best sellers collection - try multiple possible handles
+  let bestSellersCollection = null;
+  const possibleHandles = ['best-seller', 'best-sellers', 'bestseller', 'bestsellers'];
+  
+  for (const handle of possibleHandles) {
+    try {
+      const result = await storefront.query(BEST_SELLERS_QUERY, {
+        variables: { handle },
+      });
+      console.log(`[Best Sellers] Trying handle: ${handle}`, result);
+      if (result?.collection?.products?.nodes?.length > 0) {
+        bestSellersCollection = result.collection;
+        console.log(`[Best Sellers] Found collection with handle: ${handle}, products:`, result.collection.products.nodes.length);
+        break;
+      }
+    } catch (error) {
+      console.error(`[Best Sellers] Error fetching collection with handle ${handle}:`, error);
+    }
+  }
 
   const bestSellers = bestSellersCollection?.products?.nodes || [];
+  console.log('[Best Sellers] Final bestSellers array:', bestSellers.length, bestSellers);
 
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
 
   return {
     product,
+    relatedColorProducts,
     recommendations: recommendations || [],
     bestSellers,
   };
@@ -113,7 +177,7 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product, recommendations, bestSellers } = useLoaderData<typeof loader>();
+  const { product, relatedColorProducts, recommendations, bestSellers } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -161,12 +225,16 @@ export default function Product() {
     options: product.options,
   })) || [];
 
+  console.log('[Product Page] bestSellers:', bestSellers);
+  console.log('[Product Page] transformedBestSellers:', transformedBestSellers);
+
   return (
     <>
       <ProductHero
         product={product}
         selectedVariant={selectedVariant}
         productOptions={productOptions}
+        relatedColorProducts={relatedColorProducts}
       />
       <Analytics.ProductView
         data={{
@@ -206,7 +274,18 @@ export default function Product() {
 
       <ProductGrid
         title="BEST SELLERS"
-        products={transformedBestSellers}
+        products={transformedBestSellers.length > 0 ? transformedBestSellers : recommendations?.slice(0, 8).map((product: any) => ({
+          id: product.id,
+          handle: product.handle,
+          title: product.title,
+          vendor: product.vendor,
+          featuredImage: product.featuredImage,
+          images: product.images,
+          priceRange: product.priceRange,
+          compareAtPriceRange: product.compareAtPriceRange,
+          variants: product.variants,
+          options: product.options,
+        })) || []}
       />
 
       <RecentlyViewed />
@@ -260,6 +339,7 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    productType
     encodedVariantExistence
     encodedVariantAvailability
     images(first: 20) {
@@ -288,6 +368,11 @@ const PRODUCT_FRAGMENT = `#graphql
         }
       }
     }
+    variants(first: 100) {
+      nodes {
+        ...ProductVariant
+      }
+    }
     selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
       ...ProductVariant
     }
@@ -303,6 +388,9 @@ const PRODUCT_FRAGMENT = `#graphql
       {namespace: "custom", key: "fit"}
       {namespace: "custom", key: "fabric_care"}
       {namespace: "custom", key: "shipping_returns"}
+      {namespace: "custom", key: "color_family"}
+      {namespace: "custom", key: "color_name"}
+      {namespace: "shopify", key: "category"}
     ]) {
       key
       value
@@ -500,6 +588,56 @@ const BEST_SELLERS_QUERY = `#graphql
             value
             namespace
           }
+        }
+      }
+    }
+  }
+` as const;
+
+const COLOR_FAMILY_PRODUCTS_QUERY = `#graphql
+  query ColorFamilyProducts(
+    $query: String!
+    $first: Int!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, query: $query) {
+      nodes {
+        id
+        handle
+        title
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first: 1) {
+          nodes {
+            id
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+        metafields(
+          identifiers: [
+            {namespace: "custom", key: "color_name"}
+            {namespace: "custom", key: "color_family"}
+          ]
+        ) {
+          key
+          value
+          namespace
         }
       }
     }

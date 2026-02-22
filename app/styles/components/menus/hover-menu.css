@@ -7,20 +7,20 @@
 
 /**
  * Sits between page content and the menu panel.
- * z-index ladder: page content < blur overlay (998) < menu (999) < header when active (1000)
- *
- * The element is always portalled to <body> by DynamicHoverMenu so the CSS
- * transition on opacity gives a smooth 300 ms fade-in / fade-out.
- * The menu panel is at z-index 999 and starts below the header.
- * The header increases to z-index 1000 when menu is active to remain clickable.
+ * Z-index hierarchy:
+ * - Announcement bar: 90
+ * - Header (default): 100
+ * - Blur overlay: 998 (covers everything including announcement bar)
+ * - Menu panel: 999
+ * - Header (when menu active): 1000 (stays clickable above menu)
  */
 .hover-menu-page-overlay {
   position: fixed;
-  top: 0;
+  top: 0; /* Start from very top to cover announcement bar */
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 997; /* Lower than menu panel */
+  z-index: 998; /* Above announcement bar (90) and header (100), below menu (999) */
   pointer-events: none;
 
   /* Dim layer - matches cart overlay (35% opacity) */
@@ -41,6 +41,7 @@
 .hover-menu-page-overlay.is-visible {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto; /* Allow clicks to close menu */
 }
 
 /**
@@ -61,7 +62,7 @@
   left: 0;
   width: 50vw;
   height: calc(100vh - 46px); /* Account for header */
-  z-index: 998; /* Above blur overlay */
+  z-index: 999; /* Above blur overlay (998), below header when active (1000) */
   background: white;
   pointer-events: auto;
   display: flex;
@@ -561,4 +562,9 @@ body:has(.dynamic-announcement-bar) .nested-panel-content {
   .hover-menu-overlay {
     display: none;
   }
+}
+
+/* Ensure overlay covers announcement bar */
+.hover-menu-page-overlay.is-visible {
+  z-index: 998 !important;
 }

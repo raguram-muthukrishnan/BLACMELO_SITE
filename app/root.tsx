@@ -34,6 +34,7 @@ import overlayStyles from '~/styles/layout/overlay.css?url';
 import announcementBarStyles from '~/styles/layout/announcement-bar.css?url';
 import scrollbarStyles from '~/styles/components/scrollbar.css?url';
 import hoverMenuStyles from '~/styles/components/menus/hover-menu.css?url';
+import mobileMenuStyles from '~/styles/components/menus/mobile-menu.css?url';
 import cartStyles from '~/styles/components/cart/cart.css?url';
 
 // Component-specific and page-specific styles are now imported in their respective components/routes
@@ -109,6 +110,7 @@ export function links() {
     {rel: 'stylesheet', href: announcementBarStyles},
     {rel: 'stylesheet', href: scrollbarStyles},
     {rel: 'stylesheet', href: hoverMenuStyles},
+    {rel: 'stylesheet', href: mobileMenuStyles},
     {rel: 'stylesheet', href: cartStyles},
   ];
 }

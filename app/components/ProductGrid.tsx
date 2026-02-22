@@ -55,6 +55,7 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
     const [quickAddProduct, setQuickAddProduct] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isMobile, setIsMobile] = useState(false);
     
     const itemsPerPage = 8; // Even number that works for both desktop (4 cols) and mobile (2 cols)
     const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -63,6 +64,16 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const displayProducts = products.slice(startIndex, endIndex);
+
+    // Detect mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Auto-close timer
     useEffect(() => {
@@ -75,9 +86,24 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
         }
     }, [quickAddProduct, isHovered]);
 
-    const handleQuickAddHover = (productId: string) => {
-        setQuickAddProduct(productId);
+    const handleQuickAddClick = (e: React.MouseEvent, productId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile) {
+            // On mobile, toggle the overlay
+            setQuickAddProduct(quickAddProduct === productId ? null : productId);
+        } else {
+            // On desktop, show on hover
+            setQuickAddProduct(productId);
+        }
         setIsHovered(true);
+    };
+
+    const handleQuickAddHover = (productId: string) => {
+        if (!isMobile) {
+            setQuickAddProduct(productId);
+            setIsHovered(true);
+        }
     };
 
     const handleQuickAddLeave = () => {
@@ -147,12 +173,21 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
                                     
                                     {/* Quick Add Button */}
                                     <button 
-                                        className="quick-add-btn"
+                                        className={`quick-add-btn ${isQuickAddOpen ? 'active' : ''}`}
                                         onMouseEnter={() => handleQuickAddHover(product.id)}
                                         onMouseLeave={handleQuickAddLeave}
+                                        onClick={(e) => handleQuickAddClick(e, product.id)}
                                         aria-label="Quick add"
                                     >
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <svg 
+                                            width="16" 
+                                            height="16" 
+                                            viewBox="0 0 24 24" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            strokeWidth="2"
+                                            className={`plus-icon ${isQuickAddOpen ? 'rotated' : ''}`}
+                                        >
                                             <line x1="12" y1="5" x2="12" y2="19"></line>
                                             <line x1="5" y1="12" x2="19" y2="12"></line>
                                         </svg>

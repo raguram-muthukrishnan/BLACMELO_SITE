@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   z-index: 4;
   opacity: 0;
   color: #000000;
@@ -61,13 +61,24 @@
   pointer-events: all;
 }
 
+.quick-add-btn .plus-icon {
+  transition: transform 0.3s ease;
+}
+
+.quick-add-btn .plus-icon.rotated {
+  transform: rotate(45deg);
+}
+
+.quick-add-btn.active {
+  opacity: 1;
+}
+
 .card-image-wrapper:hover .quick-add-btn {
   opacity: 1;
 }
 
 .card-image-wrapper:has(.quick-add-overlay) .quick-add-btn {
-  opacity: 0;
-  pointer-events: none;
+  opacity: 1;
 }
 
 .quick-add-btn:hover {
@@ -80,7 +91,9 @@
   left: 0;
   right: 0;
   width: 100%;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -88,34 +101,50 @@
   padding: 12px;
   min-height: 80px;
   pointer-events: all;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .quick-add-sizes {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: center;
   align-items: center;
   width: 100%;
+  max-width: 100%;
 }
 
 .size-option {
-  min-width: 40px;
-  padding: 8px 12px;
+  min-width: 44px;
+  padding: 10px 14px;
   border: 1px solid #000000;
-  background: transparent;
+  background: #ffffff;
   color: #000000;
   font-family: var(--font-heading);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .size-option:hover:not(.disabled) {
   background: #000000;
   color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .size-option.disabled {

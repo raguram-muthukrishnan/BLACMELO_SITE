@@ -1,6 +1,7 @@
 /**
  * BLACMELO Product Page - Product Page Layout Only (Components in separate files)
  * Extracted from product.css lines 135-302
+ * Updated: 2025-01-22 - Fixed section flow and z-index
  */
 
 /* Section Styling for Product Page Components */
@@ -9,6 +10,9 @@
   background: #ffffff;
   max-width: var(--max-width);
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  clear: both;
 }
 
 .section-title {

@@ -29,6 +29,14 @@ export function Header({
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
+      <NavLink 
+        prefetch="intent" 
+        to="/collections/blacmelo-club" 
+        className="header-blacmelo-club"
+        style={activeLinkStyle}
+      >
+        Blacmelo Club
+      </NavLink>
       <HeaderMenu
         menu={menu}
         viewport="desktop"

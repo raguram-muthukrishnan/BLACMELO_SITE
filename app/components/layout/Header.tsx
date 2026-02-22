@@ -3,11 +3,11 @@ import {useState, useRef, useCallback, useEffect, Suspense} from 'react';
 import {Await, useAsyncValue} from 'react-router';
 import {useOptimisticCart, useAnalytics, type CartViewPayload} from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
-import {Menu, User, ShoppingBag, Search, Bookmark} from 'lucide-react';
-import {LottieHeaderLogo} from '~/components/ui/LottieHeaderLogo';
+import {Menu, User, ShoppingBag, Search, Bookmark, X} from 'lucide-react';
 import {DynamicHoverMenu} from '~/components/ui/DynamicHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
 import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
+import logoImage from '~/assets/logos/Logo.avif';
 import {useAside} from '~/components/Aside';
 import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
 import {getFallbackDynamicMenu} from '~/lib/dynamicHeaderMenu';
@@ -27,7 +27,10 @@ export function Header({isProductPage = false, isWhiteHeaderPage = false, menMen
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const {open: openAside} = useAside();
+  const {open: openAside, close: closeAside, type: asideType} = useAside();
+  
+  // Track if mobile menu is open
+  const isMobileMenuOpen = asideType === 'mobile';
 
   // Use provided menu configs or fallback
   const menMenuConfig = providedMenMenuConfig || getFallbackDynamicMenu(menuManImage);
@@ -83,21 +86,28 @@ export function Header({isProductPage = false, isWhiteHeaderPage = false, menMen
   }, [handleMenuEnter]);
 
   const handleMobileMenuClick = () => {
-    openAside('mobile');
+    if (isMobileMenuOpen) {
+      closeAside();
+    } else {
+      openAside('mobile');
+    }
   };
 
   return (
-    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''}`}>
+    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''} ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
       <div className="blacmelo-header-container">
         {/* Left Navigation */}
         <nav className="blacmelo-header-left">
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Transforms to Close Button */}
           <button 
-            className="blacmelo-mobile-menu-btn" 
+            className={`blacmelo-mobile-menu-btn ${isMobileMenuOpen ? 'menu-open' : ''}`}
             onClick={handleMobileMenuClick}
-            aria-label="Menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            <Menu size={24} />
+            <span className="menu-icon-wrapper">
+              <Menu size={24} className="menu-icon" />
+              <X size={24} className="close-icon" />
+            </span>
           </button>
           
           {/* Desktop Links - Only Shop and Blacmelo Club */}
@@ -128,11 +138,19 @@ export function Header({isProductPage = false, isWhiteHeaderPage = false, menMen
               Women
             </NavLink>
           </div>
+
+          <NavLink
+            prefetch="intent"
+            to="/collections/blacmelo-club"
+            className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
+          >
+            Blacmelo Club
+          </NavLink>
         </nav>
 
-        {/* Center Logo — Lottie scroll-driven animation */}
+        {/* Center Logo */}
         <NavLink prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
-          <LottieHeaderLogo />
+          <img src={logoImage} alt="BLACMELO" className="blacmelo-logo-image" />
         </NavLink>
 
         {/* Right Navigation */}

@@ -1,5 +1,5 @@
 import {useState, useRef, useEffect} from 'react';
-import {Link} from 'react-router';
+import {Link, useNavigate} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
 import {AddToCartButton} from './AddToCartButton';
@@ -15,6 +15,7 @@ import {
   Expand,
 } from 'lucide-react';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
+import { getColorVariantThumbnails, buildVariantUrl, isColorSelected } from '~/lib/variantHelpers';
 
 // Types
 interface ProductImage {
@@ -113,6 +114,7 @@ export function ProductPage({
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const galleryRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   
   const images = product.images?.nodes || [];
   const totalImages = images.length;
@@ -126,6 +128,9 @@ export function ProductPage({
   const currentColor = selectedVariant?.selectedOptions?.find(
     opt => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
   )?.value || '';
+
+  // Get all color variant thumbnails
+  const colorVariants = getColorVariantThumbnails(product, product.handle);
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -301,13 +306,13 @@ export function ProductPage({
               </div>
             </div>
 
-            {/* Color Selector */}
+            {/* Color Selector - Variant Thumbnails */}
             <div className="product-color-section">
               <div className="product-color-header">
                 <div className="product-color-label">
-                  Select Colour <sup className="product-option-sup">2</sup>
+                  Select Colour <sup className="product-option-sup">{colorVariants.length}</sup>
                 </div>
-                <div className="product-color-current">{currentColor || 'Washed Black'}</div>
+                <div className="product-color-current">{currentColor || 'Select a color'}</div>
                 <button 
                   className={`product-bookmark-btn ${isInWishlistState ? 'active' : ''}`}
                   onClick={handleWishlistToggle}
@@ -317,28 +322,45 @@ export function ProductPage({
                 </button>
               </div>
               <div className="product-color-swatches-grid">
-                <button className="product-color-swatch-box active">
-                  {selectedVariant?.image && (
-                    <Image
-                      data={selectedVariant.image}
-                      alt={currentColor}
-                      width={100}
-                      height={120}
-                      className="product-swatch-image"
-                    />
-                  )}
-                </button>
-                {images[1] && (
-                  <button className="product-color-swatch-box">
-                    <Image
-                      data={images[1]}
-                      alt="Alternative color"
-                      width={100}
-                      height={120}
-                      className="product-swatch-image"
-                    />
-                  </button>
-                )}
+                {colorVariants.map((variant) => {
+                  const isSelected = isColorSelected(variant.colorValue, selectedVariant);
+                  const variantUrl = buildVariantUrl(product.handle, variant.colorValue, colorOption?.name || 'Color');
+                  
+                  return (
+                    <Link
+                      key={variant.id}
+                      to={variantUrl}
+                      className={`product-color-swatch-box ${isSelected ? 'active' : ''} ${!variant.availableForSale ? 'out-of-stock' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(variantUrl, { replace: true });
+                        setCurrentImageIndex(0); // Reset to first image
+                      }}
+                      aria-label={`Select ${variant.colorName} - ${variant.availableForSale ? 'Available' : 'Out of stock'}`}
+                    >
+                      {variant.image && (
+                        <Image
+                          data={variant.image}
+                          alt={variant.colorName}
+                          width={100}
+                          height={120}
+                          className="product-swatch-image"
+                        />
+                      )}
+                      {!variant.availableForSale && (
+                        <div className="product-swatch-overlay">
+                          <span className="product-swatch-overlay-text">Out of Stock</span>
+                        </div>
+                      )}
+                      <div className="product-swatch-info">
+                        <span className="product-swatch-color-name">{variant.colorName}</span>
+                        <span className="product-swatch-price">
+                          <Money data={variant.price} />
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 

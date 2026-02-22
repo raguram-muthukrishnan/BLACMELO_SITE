@@ -1,6 +1,7 @@
 /**
  * BLACMELO Product Hero - Main Product View
  * Extracted from product.css lines 0-130
+ * Updated: 2025-01-22 - Fixed section flow and z-index
  */
 
 /* ========================================
@@ -15,6 +16,8 @@
   margin: 0;
   padding: 0;
   gap: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Adjust hero height when announcement bar is visible */

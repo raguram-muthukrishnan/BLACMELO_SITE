@@ -1,14 +1,17 @@
 /**
  * Product Feature Hero Component Styles
  * Used on product pages to display product details with image
+ * Updated: 2025-01-22 - Fixed section flow and z-index
  */
 
 .product-feature-hero {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
   margin: 0;
   padding: 0;
   display: block;
+  position: relative;
+  z-index: 1;
+  clear: both;
 }
 
 .product-feature-container {
@@ -16,16 +19,18 @@
   grid-template-columns: 50% 50%;
   gap: 0;
   width: 100%;
-  height: 100%;
+  min-height: 600px;
   margin: 0;
+  position: relative;
 }
 
 .product-feature-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 60px 40px;
   background: var(--background);
+  min-height: 600px;
 }
 
 .product-feature-static-content {
@@ -57,6 +62,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 600px;
 }
 
 /* Right-side fade/blur effect */
@@ -90,12 +96,13 @@
   .product-feature-content {
     padding: 3rem 2rem;
     order: 2;
+    min-height: auto;
   }
   
   .product-feature-image {
     order: 1;
     aspect-ratio: 4/3;
-    min-height: 300px;
+    min-height: 400px;
   }
   
   /* Adjust blur effect for mobile */
@@ -119,6 +126,10 @@
   
   .product-feature-content {
     padding: 2rem 1rem;
+  }
+  
+  .product-feature-image {
+    min-height: 300px;
   }
   
   .product-feature-static-content {

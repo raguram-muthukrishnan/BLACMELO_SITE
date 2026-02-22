@@ -5,6 +5,7 @@ import { AddToCartButton } from './AddToCartButton';
 import { StarRating } from './StarRating';
 import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
+import { ColorProductSwitcher } from './ColorProductSwitcher';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface ProductImage {
@@ -56,9 +57,10 @@ interface ProductHeroProps {
   product: any;
   selectedVariant: ProductVariant;
   productOptions: ProductOption[];
+  relatedColorProducts?: any[];
 }
 
-export function ProductHero({ product, selectedVariant, productOptions }: ProductHeroProps) {
+export function ProductHero({ product, selectedVariant, productOptions, relatedColorProducts = [] }: ProductHeroProps) {
   const images = product.images?.nodes || [];
   const [params, setParams] = useSearchParams();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -357,6 +359,7 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
             <div className="hero-header">
               <div>
                 <h1 className="hero-title">{product.title}</h1>
+                <p className="hero-category">THE BLACMELO ORIGINALS</p>
               </div>
               <div className="hero-price">
                 {selectedVariant?.price && <Money data={selectedVariant.price} />}
@@ -373,8 +376,16 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
               </div>
             )}
 
-            {/* Variant Thumbnails */}
-            {product.variants?.nodes && (
+            {/* Color Product Switcher - Product-level colors */}
+            {relatedColorProducts && relatedColorProducts.length > 0 && (
+              <ColorProductSwitcher 
+                products={relatedColorProducts}
+                currentProductHandle={product.handle}
+              />
+            )}
+
+            {/* Variant Thumbnails - Only if no color products */}
+            {(!relatedColorProducts || relatedColorProducts.length === 0) && product.variants?.nodes && (
               <div className="variant-thumbnails">
                 {product.variants.nodes
                   .filter((variant: any) => variant.image)
@@ -403,8 +414,8 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
               </div>
             )}
 
-              {/* Color Selector */}
-              {colorOption && (
+              {/* Color Selector - Only show if no related color products */}
+              {!relatedColorProducts?.length && colorOption && (
                 <div className="hero-colour">
                   <div className="colour-header">
                     <div className="colour-header-left">
@@ -451,8 +462,6 @@ export function ProductHero({ product, selectedVariant, productOptions }: Produc
                   </div>
                 </div>
               )}
-
-              {/* Size Selector */}
               {sizeOption && (
                 <div style={{ marginBottom: '2rem' }}>
                   <div className="size-header">

@@ -13,7 +13,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1002; /* Above announcement bar (1001) */
   margin: 0;
   padding: 0;
   transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -43,7 +43,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   .blacmelo-header.header-menu-active {
     background: #ffffff !important;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Above blur overlay (998) and menu panel (999) to remain clickable */
+    z-index: 1002; /* Above blur overlay (998) and menu panel (999) and announcement bar (1001) to remain clickable */
   }
 }
 
@@ -81,59 +81,59 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   color: #000000 !important;
 }
 
-/* Product Page Header - Same transparent with white text */
+/* Product Page Header - Transparent with BLACK text */
 .blacmelo-header.header-product-page {
   background: transparent !important;
   box-shadow: none;
 }
 
-/* Product page header - white text by default */
+/* Product page header - BLACK text by default */
 .blacmelo-header.header-product-page .blacmelo-header-link,
 .blacmelo-header.header-product-page .blacmelo-header-icon,
 .blacmelo-header.header-product-page .blacmelo-cart-icon,
 .blacmelo-header.header-product-page .blacmelo-mobile-menu-btn,
 .blacmelo-header.header-product-page .blacmelo-mobile-search-btn {
-  color: #ffffff;
+  color: #000000 !important;
 }
 
-/* Product page header - white logo by default */
+/* Product page header - BLACK logo by default */
 .blacmelo-header.header-product-page .blacmelo-logo-image {
-  filter: brightness(0) invert(1);
+  filter: none !important;
 }
 
-/* Product page header - white underlines by default */
+/* Product page header - BLACK underlines by default */
 .blacmelo-header.header-product-page .blacmelo-header-link::after,
 .blacmelo-header.header-product-page .blacmelo-header-icon::after,
 .blacmelo-header.header-product-page .blacmelo-cart-icon::after {
-  background: #ffffff;
+  background: #000000 !important;
 }
 
-/* Product page header - stays transparent and white when scrolled */
+/* Product page header - stays transparent and black when scrolled */
 .blacmelo-header.header-product-page.header-scrolled {
   background: transparent !important;
   box-shadow: none;
 }
 
-/* Product page header - keep white text when scrolled */
+/* Product page header - keep BLACK text when scrolled */
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-header-link,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-header-icon,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-cart-icon,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-mobile-menu-btn,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-mobile-search-btn {
-  color: #ffffff;
+  color: #000000 !important;
 }
 
-/* Product page header - hover states remain white */
+/* Product page header - hover states remain BLACK */
 .blacmelo-header.header-product-page .blacmelo-header-link:hover,
 .blacmelo-header.header-product-page .blacmelo-header-icon:hover,
 .blacmelo-header.header-product-page .blacmelo-cart-icon:hover {
-  color: #ffffff;
+  color: #000000 !important;
 }
 
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-header-link:hover,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-header-icon:hover,
 .blacmelo-header.header-product-page.header-scrolled .blacmelo-cart-icon:hover {
-  color: #ffffff;
+  color: #000000 !important;
 }
 
 /* ── White Header for utility / content pages ── */
@@ -240,6 +240,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   flex: 1;
   justify-content: flex-start;
   padding-left: 10px;
+  gap: 20px;
 }
 
 /* Desktop padding: 10px */
@@ -554,6 +555,51 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   cursor: pointer;
   color: #ffffff; /* White by default */
   transition: color 0.3s ease, opacity 0.3s ease;
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+/* Menu icon wrapper for transition */
+.menu-icon-wrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Menu and close icons */
+.menu-icon,
+.close-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Default state: show menu icon */
+.blacmelo-mobile-menu-btn .menu-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.blacmelo-mobile-menu-btn .close-icon {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Open state: show close icon */
+.blacmelo-mobile-menu-btn.menu-open .menu-icon {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.blacmelo-mobile-menu-btn.menu-open .close-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
 }
 
 /* Mobile buttons stay white when scrolled */
@@ -620,6 +666,29 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     width: 24px;
     height: 24px;
     color: #ffffff; /* White by default */
+  }
+
+  /* When mobile menu is open, turn button black */
+  .blacmelo-header.mobile-menu-open .blacmelo-mobile-menu-btn {
+    color: #000000;
+  }
+
+  /* When mobile menu is open, turn all header elements black */
+  .blacmelo-header.mobile-menu-open .blacmelo-header-icon,
+  .blacmelo-header.mobile-menu-open .blacmelo-cart-icon {
+    color: #000000;
+  }
+
+  /* When mobile menu is open, turn logo black */
+  .blacmelo-header.mobile-menu-open .blacmelo-logo-image {
+    filter: none;
+  }
+
+  /* When mobile menu is open on white header pages, keep black */
+  .blacmelo-header.header-white-page.mobile-menu-open .blacmelo-mobile-menu-btn,
+  .blacmelo-header.header-white-page.mobile-menu-open .blacmelo-header-icon,
+  .blacmelo-header.header-white-page.mobile-menu-open .blacmelo-cart-icon {
+    color: #000000;
   }
 
   /* Mobile menu button stays white when scrolled */
@@ -817,4 +886,92 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
 .hover-menu-trigger:hover .blacmelo-header-link::after,
 .hover-menu-trigger .blacmelo-header-link.active::after {
   transform: scaleX(1);
+}
+
+/* Blacmelo Club Link - Special styling */
+.header-blacmelo-club {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+/* Underline for Blacmelo Club link */
+.header-blacmelo-club::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ffffff;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+}
+
+.header-blacmelo-club.active::after,
+.header-blacmelo-club:hover::after {
+  transform: scaleX(1);
+}
+
+.header-blacmelo-club:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Black text on product pages */
+.blacmelo-header.header-product-page .header-blacmelo-club {
+  color: #000000 !important;
+}
+
+.blacmelo-header.header-product-page .header-blacmelo-club::after {
+  background: #000000 !important;
+}
+
+.blacmelo-header.header-product-page .header-blacmelo-club:hover {
+  color: #000000 !important;
+}
+
+/* Black text on white pages */
+.blacmelo-header.header-white-page .header-blacmelo-club {
+  color: #000000 !important;
+}
+
+.blacmelo-header.header-white-page .header-blacmelo-club::after {
+  background: #000000 !important;
+}
+
+.blacmelo-header.header-white-page .header-blacmelo-club:hover {
+  color: #000000 !important;
+}
+
+/* Black text when menu is active */
+.blacmelo-header.header-menu-active .header-blacmelo-club {
+  color: #000000 !important;
+}
+
+.blacmelo-header.header-menu-active .header-blacmelo-club::after {
+  background: #000000 !important;
+}
+
+.blacmelo-header.header-menu-active .header-blacmelo-club:hover {
+  color: #000000 !important;
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .header-blacmelo-club {
+    display: none;
+  }
 }
