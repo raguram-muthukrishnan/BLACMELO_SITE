@@ -3,21 +3,34 @@ import { Link } from 'react-router';
 import { Image } from '@shopify/hydrogen';
 import { getRecentlyViewed, type RecentlyViewedProduct } from '~/lib/recentlyViewed';
 
+function SizeBoxes({ sizes }: { sizes: RecentlyViewedProduct['sizes'] }) {
+  if (!sizes?.length) return null;
+  return (
+    <div className="rv-size-boxes">
+      {sizes.map((s) => (
+        <span
+          key={s.label}
+          className={`rv-size-box ${!s.available ? 'rv-size-box--oos' : ''}`}
+        >
+          {s.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function RecentlyViewed() {
   const [products, setProducts] = useState<RecentlyViewedProduct[]>([]);
+  const [showSizes, setShowSizes] = useState<string | null>(null); // product id
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
   useEffect(() => {
-    // Load all recently viewed products
     const recentProducts = getRecentlyViewed();
     setProducts(recentProducts);
   }, []);
 
-  // Don't render if no products
-  if (products.length === 0) {
-    return null;
-  }
+  if (products.length === 0) return null;
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -25,11 +38,7 @@ export function RecentlyViewed() {
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-    // Smooth scroll to top of section
-    const section = document.querySelector('.recently-viewed-section');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    document.querySelector('.recently-viewed-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -38,36 +47,46 @@ export function RecentlyViewed() {
 
       <div className="product-grid">
         {currentProducts.map((product) => (
-          <Link key={product.id} to={`/products/${product.handle}`} className="product-card">
-            <div className="card-image-wrapper">
-              {product.image && (
-                <Image
-                  data={product.image}
-                  sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="card-image"
-                />
-              )}
-            </div>
-            <div className="card-info">
-              <h3 className="card-title">{product.title}</h3>
-              <div className="card-price">
-                {product.price.currencyCode} {product.price.amount}
+          <div
+            key={product.id}
+            className="rv-card group"
+            onMouseEnter={() => setShowSizes(product.id)}
+            onMouseLeave={() => setShowSizes(null)}
+          >
+            <Link to={`/products/${product.handle}`} className="rv-card-link">
+              <div className="rv-card-image-wrapper">
+                {product.image && (
+                  <Image
+                    data={product.image}
+                    sizes="(min-width: 1024px) 25vw, 50vw"
+                    className="rv-card-image"
+                  />
+                )}
+
+                {/* Size boxes — visible on hover (desktop) or toggle tap (mobile) */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className={`rv-sizes-overlay ${showSizes === product.id ? 'visible' : ''}`}>
+                    <SizeBoxes sizes={product.sizes} />
+                  </div>
+                )}
               </div>
-            </div>
-          </Link>
+
+              <div className="rv-card-info">
+                <h3 className="rv-card-title">{product.title}</h3>
+                <div className="rv-card-price">
+                  {product.price.currencyCode} {parseFloat(product.price.amount).toFixed(0)}
+                </div>
+              </div>
+            </Link>
+          </div>
         ))}
       </div>
 
       {totalPages > 1 && (
         <div className="recently-viewed-pagination">
-          <button
-            className="pagination-btn"
-            onClick={() => goToPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-          >
+          <button className="pagination-btn" onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
             PREV
           </button>
-
           <div className="pagination-numbers">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
@@ -79,12 +98,7 @@ export function RecentlyViewed() {
               </button>
             ))}
           </div>
-
-          <button
-            className="pagination-btn"
-            onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-          >
+          <button className="pagination-btn" onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>
             NEXT
           </button>
         </div>

@@ -1,8 +1,8 @@
-import {NavLink} from 'react-router';
-import {createPortal} from 'react-dom';
-import {useEffect, useState, useRef, useCallback} from 'react';
-import {ScrollArea} from '~/components/ui/scroll-area';
-import {stopLenis, startLenis} from '~/lib/lenis';
+import { NavLink } from 'react-router';
+import { createPortal } from 'react-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { ScrollArea } from '~/components/ui/scroll-area';
+import { stopLenis, startLenis } from '~/lib/lenis';
 
 interface SubMenuItem {
   name: string;
@@ -31,19 +31,19 @@ interface HoverMenuProps {
 // Arrow icon for expandable items
 function ChevronRight() {
   return (
-    <svg 
-      width="12" 
-      height="12" 
-      viewBox="0 0 12 12" 
-      fill="none" 
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="hover-menu-chevron"
     >
-      <path 
-        d="M4.5 2.5L8 6L4.5 9.5" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round" 
+      <path
+        d="M4.5 2.5L8 6L4.5 9.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
@@ -63,6 +63,7 @@ export function HoverMenu({
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const rightPanelRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -79,17 +80,17 @@ export function HoverMenu({
     if (isOpen) {
       // Stop Lenis smooth scroll
       stopLenis();
-      
+
       // Save current scroll position
       const scrollY = window.scrollY;
       const body = document.body;
-      
+
       // Store original styles
       const originalOverflow = body.style.overflow;
       const originalPosition = body.style.position;
       const originalTop = body.style.top;
       const originalWidth = body.style.width;
-      
+
       // Lock body scroll using position fixed method
       body.style.position = 'fixed';
       body.style.top = `-${scrollY}px`;
@@ -102,10 +103,10 @@ export function HoverMenu({
         body.style.top = originalTop;
         body.style.width = originalWidth;
         body.style.overflow = originalOverflow;
-        
+
         // Restore scroll position
         window.scrollTo(0, scrollY);
-        
+
         // Restart Lenis smooth scroll
         startLenis();
       };
@@ -150,9 +151,9 @@ export function HoverMenu({
     }
     return item.name;
   };
-  
+
   const menuContent = isOpen && mounted ? (
-    <div 
+    <div
       ref={menuRef}
       className="hover-menu-overlay"
       onMouseEnter={handleMouseEnter}
@@ -172,13 +173,13 @@ export function HoverMenu({
                     <ul className={`hover-menu-list ${section.isBold ? 'bold-list' : ''}`}>
                       {section.items.map((item, itemIdx) => {
                         const itemName = getItemName(item);
-                        const hasSubmenu = section.hasSubmenu && 
+                        const hasSubmenu = section.hasSubmenu &&
                           ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories'].includes(itemName);
                         const itemDescription = itemName === 'Outfits' ? 'Shop curated looks' : null;
-                        
+
                         return (
                           <li key={itemIdx} className={hasSubmenu ? 'has-submenu' : ''}>
-                            <NavLink 
+                            <NavLink
                               to={getItemLink(item, section.link)}
                               className={`hover-menu-item-link ${section.isBold ? 'bold-item' : ''}`}
                               onMouseEnter={() => hasSubmenu && setExpandedItem(itemName)}
@@ -200,7 +201,7 @@ export function HoverMenu({
               ))}
             </div>
           </ScrollArea>
-          
+
           {/* Right side - Image */}
           {menuImage && (
             <div ref={rightPanelRef} className="hover-menu-image">
@@ -222,7 +223,7 @@ export function HoverMenu({
       <NavLink prefetch="intent" to={titleLink || `/collections/${title.toLowerCase()}`} className="blacmelo-header-link">
         {title}
       </NavLink>
-      
+
       {mounted && menuContent && createPortal(menuContent, document.body)}
     </div>
   );

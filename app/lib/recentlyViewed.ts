@@ -19,6 +19,8 @@ export interface RecentlyViewedProduct {
     width?: number;
     height?: number;
   };
+  /** Available size labels, e.g. ["XS","S","M","L"] */
+  sizes?: Array<{ label: string; available: boolean }>;
   viewedAt: number;
 }
 
@@ -27,11 +29,11 @@ export interface RecentlyViewedProduct {
  */
 export function getRecentlyViewed(): RecentlyViewedProduct[] {
   if (typeof window === 'undefined') return [];
-  
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
-    
+
     const items = JSON.parse(stored) as RecentlyViewedProduct[];
     // Sort by most recent first
     return items.sort((a, b) => b.viewedAt - a.viewedAt);
@@ -46,19 +48,19 @@ export function getRecentlyViewed(): RecentlyViewedProduct[] {
  */
 export function addToRecentlyViewed(product: Omit<RecentlyViewedProduct, 'viewedAt'>): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const existing = getRecentlyViewed();
-    
+
     // Remove if already exists
     const filtered = existing.filter(item => item.id !== product.id);
-    
+
     // Add to beginning with current timestamp
     const updated = [
       { ...product, viewedAt: Date.now() },
       ...filtered,
     ].slice(0, MAX_ITEMS); // Keep only MAX_ITEMS
-    
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error('Error saving recently viewed:', error);
@@ -70,7 +72,7 @@ export function addToRecentlyViewed(product: Omit<RecentlyViewedProduct, 'viewed
  */
 export function clearRecentlyViewed(): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {

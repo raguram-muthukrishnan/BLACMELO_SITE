@@ -3,6 +3,7 @@ import { Image, Money } from '@shopify/hydrogen';
 import { useSearchParams, useLocation, useNavigate } from 'react-router';
 import { AddToCartButton } from './AddToCartButton';
 import { StarRating } from './StarRating';
+import { SizeGuideInline } from './SizeGuideModal';
 import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
 import { ColorProductSwitcher } from './ColorProductSwitcher';
@@ -153,6 +154,18 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
     }
   }, [selectedVariant, images]);
 
+  // Scroll to active index when opening fullscreen gallery
+  useEffect(() => {
+    if (isFullscreenGallery) {
+      setTimeout(() => {
+        const activeImg = document.getElementById(`fullscreen-img-${activeIndex}`);
+        if (activeImg) {
+          activeImg.scrollIntoView({ behavior: 'auto' });
+        }
+      }, 0);
+    }
+  }, [isFullscreenGallery, activeIndex]);
+
   const handleOptionChange = (name: string, value: string) => {
     const newParams = new URLSearchParams(params);
     newParams.set(name, value);
@@ -169,6 +182,16 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
+
+  // Scroll to top of right column when section changes
+  useEffect(() => {
+    if (openSection) {
+      const rightColumn = document.querySelector('.hero-right');
+      if (rightColumn) {
+        rightColumn.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [openSection]);
 
   // Helper to get metafield value or default text
   const getMetafieldValue = (namespaceKey: string, defaultText: string = '') => {
@@ -236,33 +259,10 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                   data={image}
                   sizes="100vw"
                   loading={idx < 2 ? "eager" : "lazy"}
+                  className="fullscreen-image-content"
                 />
               </div>
             ))}
-          </div>
-
-          {/* Mobile Navigation Arrows */}
-          <div className="mobile-only">
-            <button
-              className="fullscreen-nav fullscreen-prev"
-              onClick={(e) => {
-                e.stopPropagation();
-                const container = document.querySelector('.fullscreen-image-container');
-                if (container) container.scrollBy({ left: -window.innerWidth, behavior: 'smooth' });
-              }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-            </button>
-            <button
-              className="fullscreen-nav fullscreen-next"
-              onClick={(e) => {
-                e.stopPropagation();
-                const container = document.querySelector('.fullscreen-image-container');
-                if (container) container.scrollBy({ left: window.innerWidth, behavior: 'smooth' });
-              }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-            </button>
           </div>
         </div>
       )}
@@ -315,7 +315,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                     {openSection === 'shipping' && 'Shipping & Returns'}
                     {openSection === 'sizechart' && 'Size Guide'}
                   </h3>
-                  <button className="hero-expanded-close" onClick={() => setOpenSection(null)}>✕</button>
+                  <button className="expandable-icon hero-expanded-close" onClick={() => setOpenSection(null)} style={{ border: 'none', background: 'transparent', fontSize: '18px', fontWeight: 300 }}>+</button>
                 </div>
                 <div className="hero-expanded-content">
                   {openSection === 'description' && (
@@ -339,32 +339,12 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                     <div className="inner-padding" style={{ whiteSpace: 'pre-line' }}>{shippingReturns}</div>
                   )}
                   {openSection === 'sizechart' && (
-                    <div className="inner-padding">
-                      <div className="size-chart-unit-toggle">
-                        <button className="unit-btn active">CM</button>
-                        <button className="unit-btn">INCH</button>
-                      </div>
-                      <div className="size-chart-table-wrapper">
-                        <table className="size-chart-table">
-                          <thead>
-                            <tr>
-                              <th>Size</th>
-                              <th>Chest</th>
-                              <th>Waist</th>
-                              <th>Length</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr><td>XS</td><td>86-91</td><td>71-76</td><td>68</td></tr>
-                            <tr><td>S</td><td>91-96</td><td>76-81</td><td>70</td></tr>
-                            <tr><td>M</td><td>96-101</td><td>81-86</td><td>72</td></tr>
-                            <tr><td>L</td><td>101-106</td><td>86-91</td><td>74</td></tr>
-                            <tr><td>XL</td><td>106-111</td><td>91-96</td><td>76</td></tr>
-                            <tr><td>XXL</td><td>111-116</td><td>96-101</td><td>78</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    <SizeGuideInline
+                      productType={product.productType}
+                      metafields={product.metafields}
+                      title={product.title}
+                      handle={product.handle}
+                    />
                   )}
                 </div>
               </div>
@@ -458,6 +438,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                 <div style={{ marginBottom: '2rem' }}>
                   <div className="size-header">
                     <span>Select Size</span>
+                    {/* Desktop: opens takeover panel. Mobile: toggles inline accordion below */}
                     <button className="size-guide-btn" onClick={() => toggleSection('sizechart')} type="button">Size Guide</button>
                   </div>
                   <div className="hero-sizes">
@@ -472,6 +453,16 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                     })}
                   </div>
                   <div className="hero-size-note"><a href="#">Size Not In Stock?</a></div>
+
+                  {/* Mobile-only: inline size guide accordion directly below the size selector */}
+                  <div className={`mobile-only size-guide-inline-accordion ${openSection === 'sizechart' ? 'active' : ''}`}>
+                    <SizeGuideInline
+                      productType={product.productType}
+                      metafields={product.metafields}
+                      title={product.title}
+                      handle={product.handle}
+                    />
+                  </div>
                 </div>
               )}
 

@@ -1,224 +1,124 @@
-import { Link } from 'react-router';
-import { Image, Money } from '@shopify/hydrogen';
 import { useState } from 'react';
-import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
+import { useNavigate } from 'react-router';
+import { Image } from '@shopify/hydrogen';
+import { Plus } from 'lucide-react';
+import { AddToCartButton } from '~/components/AddToCartButton';
 
-// Extended product type with images and variants
-interface ProductImage {
-  id?: string | null;
-  altText?: string | null;
-  url: string;
-  width?: number | null;
-  height?: number | null;
-}
-
-interface ProductVariant {
-  id: string;
-  selectedOptions: Array<{
-    name: string;
-    value: string;
-  }>;
-}
-
-export interface ProductCardProduct {
-  id: string;
-  handle: string;
-  title: string;
-  productType?: string;
-  vendor?: string;
-  featuredImage?: ProductImage | null;
-  images?: {
-    nodes: ProductImage[];
-  };
-  variants?: {
-    nodes: ProductVariant[];
-  };
-  priceRange: {
-    minVariantPrice: {
-      amount: string;
-      currencyCode: CurrencyCode;
-    };
-    maxVariantPrice: {
-      amount: string;
-      currencyCode: CurrencyCode;
-    };
-  };
-  // Add metafield support for proper color name
-  metafields?: Array<{
-    key: string;
-    value: string;
-    namespace: string;
-  }> | null;
-}
-
-interface ProductCardProps {
-  product: ProductCardProduct;
-  loading?: 'eager' | 'lazy';
-}
-
-// Plus icon for quick add
-function PlusIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-export function ProductCard({ product, loading }: ProductCardProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+export function ProductCard({ product }: { product: any }) {
+  const variant = product.selectedOrFirstAvailableVariant?.nodes?.[0];
+  const image = variant?.image || product.images?.nodes?.[0];
+  const price = variant?.price;
   const [showSizes, setShowSizes] = useState(false);
 
-  // Get all product images, or use featured image as fallback
-  const images = product.images?.nodes || (product.featuredImage ? [product.featuredImage] : []);
-  const currentImage = images[currentImageIndex] || product.featuredImage;
-
-  // Get product variant info - extract color and size from options
-  const firstVariant = product.variants?.nodes?.[0];
-  const variantCount = product.variants?.nodes?.length || 0;
-
-  // Get color value from first variant
-  const colorOption = firstVariant?.selectedOptions?.find(
-    (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
-  );
-  const colorValue = colorOption?.value || '';
-
-  // Get proper color name from metafield if available with null safety
-  const colorMetafield = product.metafields?.filter(Boolean).find(
-    (m) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') &&
-      (m.namespace === 'custom' || m.namespace === 'category' || m.namespace?.includes('tshirt'))
-  );
-  const displayColorName = colorMetafield?.value || colorValue;
-
   // Count unique colors from variants
-  const uniqueColors = new Set(
-    product.variants?.nodes?.map(v =>
-      v.selectedOptions?.find(
-        (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
-      )?.value
-    ).filter(Boolean)
-  );
-  const colorCount = uniqueColors.size;
-  const hasMultipleColors = colorCount > 1;
+  const colorCount = product.variants?.nodes
+    ? [...new Set(product.variants.nodes
+      .map((v: any) => {
+        const colorOption = v.selectedOptions?.find((opt: any) => opt.name.toLowerCase() === 'color');
+        return colorOption?.value;
+      })
+      .filter(Boolean)
+    )].length
+    : 0;
 
-  // Get available sizes from variants
-  const availableSizes = product.variants?.nodes
-    ?.map(v => v.selectedOptions?.find(
-      (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'size'
-    )?.value)
-    .filter((size, index, arr) => size && arr.indexOf(size) === index) || [];
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    // Switch to second image on hover if available
-    if (images.length > 1) {
-      setCurrentImageIndex(1);
-    }
+  // Format price without decimals if .00
+  const formatPrice = (priceData: any) => {
+    const amount = parseFloat(priceData.amount);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: priceData.currencyCode,
+      minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setShowSizes(false);
-    // Return to first image
-    setCurrentImageIndex(0);
-  };
-
-  const handleQuickAddClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (availableSizes.length > 0) {
-      setShowSizes(!showSizes);
-    } else {
-      // Direct add to cart if no sizes
-      console.log('Quick add:', product.handle);
-    }
-  };
-
-  const handleSizeSelect = (e: React.MouseEvent, size: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // TODO: Add to cart with selected size
-    console.log('Add to cart:', product.handle, 'Size:', size);
-    setShowSizes(false);
-  };
+  const navigate = useNavigate();
 
   return (
-    <Link
-      to={`/products/${product.handle}`}
-      className="product-card"
-      prefetch="intent"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <div
+      onClick={() => navigate(`/products/${product.handle}`)}
+      className="group block cursor-pointer"
+      onMouseLeave={() => setShowSizes(false)}
     >
-      <div className="product-card-image">
-        {/* Primary Image (first) */}
-        {images[0] && (
+      {/* Image Container - 3:4 Aspect Ratio */}
+      <div className="aspect-[3/4] bg-[#F6F6F6] relative overflow-hidden mb-3">
+        {image && (
           <Image
-            data={images[0]}
-            alt={images[0].altText || product.title}
-            sizes="(min-width: 1200px) 16vw, (min-width: 768px) 25vw, 50vw"
-            loading={loading}
-            className={`product-card-img product-card-img-primary ${isHovered && images.length > 1 ? 'fade-out' : ''}`}
+            data={image}
+            alt={product.title}
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           />
         )}
 
-        {/* Secondary Image (hover) */}
-        {images[1] && (
-          <Image
-            data={images[1]}
-            alt={images[1].altText || product.title}
-            sizes="(min-width: 1200px) 16vw, (min-width: 768px) 25vw, 50vw"
-            loading="lazy"
-            className={`product-card-img product-card-img-secondary ${isHovered ? 'fade-in' : ''}`}
-          />
-        )}
-
-        {/* Size Selector - center bottom of card */}
-        {showSizes && availableSizes.length > 0 && (
-          <div className="product-card-sizes">
-            {availableSizes.map((size) => (
-              <button
-                key={size}
-                className="product-card-size-btn"
-                onClick={(e) => handleSizeSelect(e, size as string)}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Plus Icon - bottom right */}
+        {/* Quick Add Reveal Button (Mobile Only) */}
         <button
-          className={`product-card-quick-add ${isHovered ? 'visible' : ''}`}
-          onMouseEnter={() => availableSizes.length > 0 && setShowSizes(true)}
-          onMouseLeave={() => setShowSizes(false)}
-          onClick={handleQuickAddClick}
-          aria-label="Quick add to cart"
+          className={`md:hidden absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center border border-black/10 bg-white/90 backdrop-blur-sm text-black shadow-sm transition-all duration-300 z-10 ${showSizes ? 'opacity-0 pointer-events-none scale-90' : 'opacity-100 scale-100'
+            }`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowSizes(true);
+          }}
         >
-          <PlusIcon />
+          <Plus size={16} />
         </button>
-      </div>
 
-      <div className="product-card-info">
-        <div className="product-card-info-row">
-          <div className="product-card-info-left">
-            <h3 className="product-card-title">{product.title}</h3>
-            <p className="product-card-variant">
-              {displayColorName}
-              {hasMultipleColors && <span className="product-card-colors"> {colorCount} Colours</span>}
-            </p>
-          </div>
-          <div className="product-card-info-right">
-            {product.priceRange?.minVariantPrice && (
-              <span className="product-card-price">
-                <Money data={product.priceRange.minVariantPrice} />
-              </span>
-            )}
-          </div>
+        {/* Sizes Grid (Revealed on hover for Desktop, or when + clicked on Mobile) */}
+        <div
+          className={`absolute bottom-3 left-0 right-0 flex flex-wrap gap-1.5 justify-center px-2 transition-all duration-300 z-20
+            opacity-0 pointer-events-none translate-y-2 
+            md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:translate-y-0
+            ${showSizes ? '!opacity-100 !pointer-events-auto !translate-y-0' : ''}
+          `}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {product.variants?.nodes?.map((v: any) => {
+            const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
+            if (!sizeOption) return null;
+            return (
+              <AddToCartButton
+                key={v.id}
+                disabled={!v.availableForSale}
+                lines={[{ merchandiseId: v.id, quantity: 1 }]}
+                className={`text-[10px] font-semibold uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!v.availableForSale
+                    ? 'border-white/30 text-black/30 cursor-not-allowed bg-white/50 backdrop-blur-sm'
+                    : 'border-white/60 bg-white/85 backdrop-blur-md text-black hover:bg-white hover:border-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
+                  }`}
+              >
+                {sizeOption.value}
+              </AddToCartButton>
+            );
+          })}
         </div>
       </div>
-    </Link>
+
+      {/* Product Info */}
+      <div className="space-y-1">
+        <h3 className="text-[10px] uppercase tracking-tighter font-semibold leading-tight text-black">
+          {product.title}
+        </h3>
+
+        <div className="flex items-center gap-2">
+          {price && (
+            <p className="text-[10px] text-gray-500 font-medium">
+              {formatPrice(price)}
+            </p>
+          )}
+
+          {colorCount > 0 && (
+            <p className="text-[10px] text-gray-500 font-medium whitespace-nowrap">
+              • {colorCount} {colorCount === 1 ? 'Color' : 'Colors'}
+            </p>
+          )}
+        </div>
+
+        {product.vendor && (
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+            {product.vendor}
+          </p>
+        )}
+      </div>
+    </div>
   );
 }

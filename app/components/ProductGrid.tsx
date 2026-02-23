@@ -1,7 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Image, Money } from '@shopify/hydrogen';
+import { Plus } from 'lucide-react';
+import { AddToCartButton } from '~/components/AddToCartButton';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface Product {
@@ -59,6 +61,7 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsToShow, setItemsToShow] = useState(8);
     const [isMobile, setIsMobile] = useState(false);
+    const navigate = useNavigate();
 
     // Calculate which products to display
     const displayProducts = horizontalScroll
@@ -120,16 +123,6 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
         setIsHovered(false);
     };
 
-    const handleAddToCart = (e: React.MouseEvent, variantId: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // Trigger cart sidebar open - this would integrate with your cart context
-        const event = new CustomEvent('openCart', { detail: { variantId } });
-        window.dispatchEvent(event);
-        setQuickAddProduct(null);
-        setIsHovered(false);
-    };
-
     const handleViewMore = () => {
         setItemsToShow(prev => prev + 4);
     };
@@ -163,8 +156,8 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
 
                     return (
                         <div key={product.id} className="product-card">
-                            <Link to={`/products/${product.handle}`} className="card-link">
-                                <div className="card-image-wrapper">
+                            <div onClick={() => navigate(`/products/${product.handle}`)} className="card-link cursor-pointer">
+                                <div className="card-image-wrapper group relative overflow-hidden">
                                     {image && (
                                         <Image
                                             data={image}
@@ -173,59 +166,50 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
                                         />
                                     )}
 
-                                    {/* Quick Add Button */}
+                                    {/* Quick Add Reveal Button (Mobile Only) */}
                                     <button
-                                        className={`quick-add-btn ${isQuickAddOpen ? 'active' : ''}`}
+                                        className={`md:hidden absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center border border-black/10 bg-white/90 backdrop-blur-sm text-black shadow-sm transition-all duration-300 z-10 ${isQuickAddOpen ? 'opacity-0 pointer-events-none scale-90' : 'opacity-100 scale-100'}`}
                                         onMouseEnter={() => handleQuickAddHover(product.id)}
                                         onMouseLeave={handleQuickAddLeave}
                                         onClick={(e) => handleQuickAddClick(e, product.id)}
                                         aria-label="Quick add"
                                     >
-                                        <svg
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            className={`plus-icon ${isQuickAddOpen ? 'rotated' : ''}`}
-                                        >
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
+                                        <Plus size={16} />
                                     </button>
 
                                     {/* Size Selector Overlay */}
-                                    {isQuickAddOpen && sizeOption && (
-                                        <div
-                                            className="quick-add-overlay"
-                                            onClick={(e) => e.preventDefault()}
-                                            onMouseEnter={handleSizesHover}
-                                            onMouseLeave={handleSizesLeave}
-                                        >
-                                            <div className="quick-add-sizes">
-                                                {sizeOption.optionValues.map((size) => {
-                                                    const variant = product.variants?.nodes.find(v =>
-                                                        v.selectedOptions?.some(opt =>
-                                                            opt.name.toLowerCase() === 'size' && opt.value === size.name
-                                                        )
-                                                    );
-                                                    const available = variant?.availableForSale !== false;
+                                    <div
+                                        className={`absolute bottom-3 left-0 right-0 flex flex-wrap gap-1.5 justify-center px-2 transition-all duration-300 z-20 opacity-0 pointer-events-none translate-y-2 md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 ${isQuickAddOpen ? '!opacity-100 !pointer-events-auto !translate-y-0' : ''}`}
+                                        onClick={(e) => e.preventDefault()}
+                                        onMouseEnter={handleSizesHover}
+                                        onMouseLeave={handleSizesLeave}
+                                    >
+                                        {sizeOption?.optionValues.map((size) => {
+                                            const variant = product.variants?.nodes.find(v =>
+                                                v.selectedOptions?.some(opt =>
+                                                    opt.name.toLowerCase() === 'size' && opt.value === size.name
+                                                )
+                                            );
+                                            const available = variant?.availableForSale !== false;
 
-                                                    return (
-                                                        <button
-                                                            key={size.name}
-                                                            className={`size-option ${!available ? 'disabled' : ''}`}
-                                                            onClick={(e) => available && variant && handleAddToCart(e, variant.id)}
-                                                            disabled={!available}
-                                                        >
-                                                            {size.name}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
+                                            return (
+                                                <AddToCartButton
+                                                    key={size.name}
+                                                    lines={[{ merchandiseId: variant?.id || '', quantity: 1 }]}
+                                                    className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!available
+                                                        ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-white/70 backdrop-blur-md'
+                                                        : 'border-transparent bg-white/95 backdrop-blur-md text-gray-500 hover:text-black hover:border-black hover:bg-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
+                                                        }`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                    }}
+                                                    disabled={!available}
+                                                >
+                                                    {size.name}
+                                                </AddToCartButton>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                                 <div className="card-info">
                                     <h3 className="card-title">{product.title}</h3>
@@ -233,7 +217,7 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
                                         {price && <Money data={price} />}
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         </div>
                     );
                 })}

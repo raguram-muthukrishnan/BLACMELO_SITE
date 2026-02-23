@@ -3,126 +3,112 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router';
-import {useState, useRef, useEffect} from 'react';
-import type {Route} from './+types/search';
-import {Analytics, Image, Money} from '@shopify/hydrogen';
-import {Search as SearchIcon, Plus, X} from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+// @ts-ignore
+import type { Route } from './+types/search';
+import { Analytics, Image, Money } from '@shopify/hydrogen';
+import { Search as SearchIcon, Plus, X } from 'lucide-react';
 import searchStyles from '~/styles/pages/search.css?url';
+import { AddToCartButton } from '~/components/AddToCartButton';
+import { ProductCard } from '~/components/ProductCard';
 
 export const links = () => [
-  {rel: 'stylesheet', href: searchStyles},
+  { rel: 'stylesheet', href: searchStyles },
 ];
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `BLACMELO | Search`}];
+  return [{ title: `BLACMELO | Search` }];
 };
 
-export async function loader({request, context}: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const searchTerm = url.searchParams.get('q') || '';
-  const gender = url.searchParams.get('gender') || 'all';
-  const {storefront} = context;
+  const collectionHandle = url.searchParams.get('collection') || 'all';
+  const { storefront } = context;
 
   let products: any[] = [];
+  let collectionsResult: any[] = [];
   let totalProducts = 0;
 
   try {
-    // Fetch all products
-    const {products: productConnection} = await storefront.query(ALL_PRODUCTS_QUERY, {
+    // Fetch all products and collections
+    const { products: productConnection, collections: collectionConnection } = await storefront.query(ALL_PRODUCTS_AND_COLLECTIONS_QUERY, {
       variables: {
         first: 250,
       },
     });
 
     products = productConnection?.nodes || [];
-    
+    collectionsResult = collectionConnection?.nodes || [];
+
     console.log(`Fetched ${products.length} products from Shopify`);
-    
+
     // Apply search filter if search term exists
     if (searchTerm) {
       const term = searchTerm.toLowerCase().trim();
       products = products.filter((product: any) => {
         // Search in title
         if (product.title?.toLowerCase().includes(term)) return true;
-        
+
         // Search in description
         if (product.description?.toLowerCase().includes(term)) return true;
-        
+
         // Search in vendor
         if (product.vendor?.toLowerCase().includes(term)) return true;
-        
+
         // Search in product type
         if (product.productType?.toLowerCase().includes(term)) return true;
-        
+
         // Search in tags
         if (product.tags?.some((tag: string) => tag.toLowerCase().includes(term))) return true;
-        
+
         // Search in variant titles
-        if (product.variants?.nodes?.some((variant: any) => 
+        if (product.variants?.nodes?.some((variant: any) =>
           variant.title?.toLowerCase().includes(term)
         )) return true;
-        
+
         return false;
       });
-      
+
       console.log(`Filtered to ${products.length} products matching "${searchTerm}"`);
     }
-    
-    // Apply gender filter
-    if (gender !== 'all') {
+
+    // Apply collection filter
+    if (collectionHandle !== 'all') {
       products = products.filter((product: any) => {
-        return matchesGenderFilter(product, gender);
+        return product.collections?.nodes?.some((c: any) => c.handle === collectionHandle);
       });
-      console.log(`Filtered to ${products.length} products for gender: ${gender}`);
+      console.log(`Filtered to ${products.length} products for collection: ${collectionHandle}`);
     }
-    
+
     totalProducts = products.length;
   } catch (error) {
     console.error('Search error:', error);
     // Return empty results on error
     products = [];
+    collectionsResult = [];
     totalProducts = 0;
   }
 
   return {
     searchTerm,
-    gender,
+    collectionHandle,
     products,
+    collections: collectionsResult,
     totalProducts,
   };
-}
-
-/**
- * Check if product matches gender filter (for collection results)
- */
-function matchesGenderFilter(product: any, gender: string): boolean {
-  const tags = product.tags?.map((tag: string) => tag.toLowerCase()) || [];
-  const title = product.title?.toLowerCase() || '';
-  const productType = product.productType?.toLowerCase() || '';
-  
-  if (gender === 'male') {
-    return tags.includes('men') || tags.includes('man') || tags.includes('male') ||
-           title.includes('men') || title.includes('man') ||
-           productType.includes('men') || productType.includes('man');
-  } else if (gender === 'female') {
-    return tags.includes('women') || tags.includes('woman') || tags.includes('female') ||
-           title.includes('women') || title.includes('woman') ||
-           productType.includes('women') || productType.includes('woman');
-  }
-  
-  return true;
 }
 
 /**
  * Renders the /search route - REPRESENT Design System
  */
 export default function SearchPage() {
-  const {searchTerm, gender, products, totalProducts} = useLoaderData<typeof loader>();
+  const { searchTerm, collectionHandle, products, collections, totalProducts } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
-  const [selectedGender, setSelectedGender] = useState<'male' | 'female' | null>(
-    gender === 'male' ? 'male' : gender === 'female' ? 'female' : null
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(
+    collectionHandle === 'all' ? null : collectionHandle
   );
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -135,7 +121,7 @@ export default function SearchPage() {
     searchTimeoutRef.current = setTimeout(() => {
       const params = new URLSearchParams();
       if (localSearchTerm.trim()) params.set('q', localSearchTerm.trim());
-      if (selectedGender) params.set('gender', selectedGender);
+      if (selectedCollection) params.set('collection', selectedCollection);
       navigate(`/search?${params.toString()}`, { replace: true });
     }, 300); // 300ms debounce
 
@@ -144,39 +130,28 @@ export default function SearchPage() {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [localSearchTerm, selectedGender, navigate]);
+  }, [localSearchTerm, selectedCollection, navigate]);
 
   const handleClearSearch = () => {
     setLocalSearchTerm('');
     const params = new URLSearchParams();
-    if (selectedGender) params.set('gender', selectedGender);
+    if (selectedCollection) params.set('collection', selectedCollection);
     navigate(`/search?${params.toString()}`);
   };
 
-  const handleGenderToggle = (newGender: 'male' | 'female') => {
-    const updatedGender = selectedGender === newGender ? null : newGender;
-    setSelectedGender(updatedGender);
+  const handleCollectionToggle = (handle: string) => {
+    const updatedCollection = selectedCollection === handle ? null : handle;
+    setSelectedCollection(updatedCollection);
     const params = new URLSearchParams();
     if (localSearchTerm.trim()) params.set('q', localSearchTerm.trim());
-    if (updatedGender) params.set('gender', updatedGender);
+    if (updatedCollection) params.set('collection', updatedCollection);
     navigate(`/search?${params.toString()}`);
   };
 
-  const popularSearches = [
-    '247',
-    'T-Shirt',
-    'Hoodie',
-    'Jeans',
-    'Jacket',
-    'Sneakers',
-    'Cap',
-    'Shorts'
-  ];
-
   return (
-    <div className="min-h-screen bg-white pt-[63px] md:pt-[46px]">
+    <div className="min-h-screen bg-white pt-[116px] md:pt-[116px]">
       {/* Search Bar */}
-      <div className="sticky top-[63px] md:top-[46px] z-40 bg-white border-b border-gray-200">
+      <div className="sticky top-[116px] z-40 bg-white border-b border-gray-200">
         <div className="max-w-[1920px] mx-auto px-4 md:px-8 py-6">
           <div className="flex items-center gap-3">
             <SearchIcon className="text-gray-600 flex-shrink-0" size={20} />
@@ -205,12 +180,11 @@ export default function SearchPage() {
       <div className="max-w-[1920px] mx-auto px-4 md:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8">
           {/* Left Sidebar - Filters */}
-          <aside className="md:sticky md:top-[130px] md:self-start">
+          <aside className="md:sticky md:top-[180px] md:self-start">
             <SidebarFilters
-              selectedGender={selectedGender}
-              onGenderToggle={handleGenderToggle}
-              popularSearches={popularSearches}
-              onSearchClick={(term) => setLocalSearchTerm(term)}
+              collections={collections}
+              selectedCollection={selectedCollection}
+              onCollectionToggle={handleCollectionToggle}
             />
           </aside>
 
@@ -249,148 +223,51 @@ export default function SearchPage() {
         </div>
       </div>
 
-      <Analytics.SearchView data={{searchTerm, searchResults: {total: totalProducts}}} />
+      <Analytics.SearchView data={{ searchTerm, searchResults: { total: totalProducts } }} />
     </div>
   );
 }
 
-function ProductCard({product, searchTerm}: {product: any; searchTerm: string}) {
-  const variant = product.selectedOrFirstAvailableVariant?.nodes?.[0];
-  const image = variant?.image || product.images?.nodes?.[0];
-  const price = variant?.price;
-  const [isHovered, setIsHovered] = useState(false);
-  
-  // Count unique colors from variants
-  const colorCount = product.variants?.nodes
-    ? [...new Set(product.variants.nodes
-        .map((v: any) => {
-          const colorOption = v.selectedOptions?.find((opt: any) => opt.name.toLowerCase() === 'color');
-          return colorOption?.value;
-        })
-        .filter(Boolean)
-      )].length
-    : 0;
-
-  // Format price without decimals if .00
-  const formatPrice = (priceData: any) => {
-    const amount = parseFloat(priceData.amount);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: priceData.currencyCode,
-      minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-  
-  return (
-    <a
-      href={`/products/${product.handle}`}
-      className="group block"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Image Container - 3:4 Aspect Ratio */}
-      <div className="aspect-[3/4] bg-[#F6F6F6] relative overflow-hidden mb-3">
-        {image && (
-          <Image
-            data={image}
-            alt={product.title}
-            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-          />
-        )}
-        
-        {/* Quick Add Button */}
-        <button
-          className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center border border-black/5 bg-white hover:bg-black hover:text-white transition-colors opacity-0 group-hover:opacity-100"
-          onClick={(e) => {
-            e.preventDefault();
-            // Add to cart logic here
-          }}
-        >
-          <Plus size={16} />
-        </button>
-      </div>
-
-      {/* Product Info */}
-      <div className="space-y-1">
-        <h3 className="text-[10px] uppercase tracking-tighter font-semibold leading-tight text-black">
-          {product.title}
-        </h3>
-        
-        <div className="flex items-center gap-2">
-          {price && (
-            <p className="text-[10px] text-gray-500 font-medium">
-              {formatPrice(price)}
-            </p>
-          )}
-          
-          {colorCount > 0 && (
-            <p className="text-[10px] text-gray-500 font-medium">
-              • {colorCount} {colorCount === 1 ? 'Color' : 'Colors'}
-            </p>
-          )}
-        </div>
-        
-        {product.vendor && (
-          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">
-            {product.vendor}
-          </p>
-        )}
-      </div>
-    </a>
-  );
-}
 
 /**
  * Sidebar Filters Component
  */
 function SidebarFilters({
-  selectedGender,
-  onGenderToggle,
-  popularSearches,
-  onSearchClick,
+  collections,
+  selectedCollection,
+  onCollectionToggle,
 }: {
-  selectedGender: 'male' | 'female' | null;
-  onGenderToggle: (gender: 'male' | 'female') => void;
-  popularSearches: string[];
-  onSearchClick: (term: string) => void;
+  collections: any[];
+  selectedCollection: string | null;
+  onCollectionToggle: (handle: string) => void;
 }) {
-  return (
-    <div className="space-y-8">
-      {/* Gender Filter */}
-      <div>
-        <h3 className="text-[11px] uppercase tracking-wider font-semibold mb-4 text-black">
-          Gender
-        </h3>
-        <div className="space-y-3">
-          <FilterToggle
-            label="Male"
-            checked={selectedGender === 'male'}
-            onChange={() => onGenderToggle('male')}
-          />
-          <FilterToggle
-            label="Female"
-            checked={selectedGender === 'female'}
-            onChange={() => onGenderToggle('female')}
-          />
-        </div>
-      </div>
+  const [isOpen, setIsOpen] = useState(false);
 
-      {/* Popular Searches */}
-      <div>
-        <h3 className="text-[11px] uppercase tracking-wider font-semibold mb-4 text-black">
-          Popular Searches
-        </h3>
-        <div className="space-y-2">
-          {popularSearches.map((term) => (
-            <button
-              key={term}
-              onClick={() => onSearchClick(term)}
-              className="block text-[12px] font-medium text-gray-700 border-b border-transparent hover:border-black transition-all py-1 text-left w-full"
-            >
-              {term}
-            </button>
+  return (
+    <div className="space-y-4 md:space-y-8">
+      {/* Collections Filter Accordion (Mobile) / Expanded (Desktop) */}
+      <div className="border-b border-gray-200 md:border-none pb-4 md:pb-0">
+        <button
+          className="w-full flex items-center justify-between text-left md:cursor-default"
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+        >
+          <h3 className="text-[11px] uppercase tracking-wider font-semibold text-black">
+            Collections {selectedCollection && '(1)'}
+          </h3>
+          <span className="md:hidden text-[16px] font-light leading-none">
+            {isOpen ? '−' : '+'}
+          </span>
+        </button>
+
+        <div className={`mt-4 space-y-3 overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[500px]' : 'max-h-0 md:max-h-[none]'}`}>
+          {collections.map((collection) => (
+            <FilterToggle
+              key={collection.id}
+              label={collection.title}
+              checked={selectedCollection === collection.handle}
+              onChange={() => onCollectionToggle(collection.handle)}
+            />
           ))}
         </div>
       </div>
@@ -443,10 +320,17 @@ function FilterToggle({
 }
 
 /**
- * GraphQL Query to fetch all products
+ * GraphQL Query to fetch all products and collections
  */
-const ALL_PRODUCTS_QUERY = `#graphql
-  query SearchProducts($first: Int!) {
+const ALL_PRODUCTS_AND_COLLECTIONS_QUERY = `#graphql
+  query SearchProductsAndCollections($first: Int!) {
+    collections(first: 20) {
+      nodes {
+        id
+        handle
+        title
+      }
+    }
     products(first: $first) {
       nodes {
         id
@@ -456,6 +340,11 @@ const ALL_PRODUCTS_QUERY = `#graphql
         vendor
         productType
         tags
+        collections(first: 5) {
+          nodes {
+            handle
+          }
+        }
         selectedOrFirstAvailableVariant: variants(first: 1) {
           nodes {
             id
@@ -476,10 +365,11 @@ const ALL_PRODUCTS_QUERY = `#graphql
             }
           }
         }
-        variants(first: 10) {
+        variants(first: 20) {
           nodes {
             id
             title
+            availableForSale
             selectedOptions {
               name
               value

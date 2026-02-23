@@ -524,6 +524,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   padding: 16px 0;
   text-transform: uppercase;
   font-family: 'Neue Haas Grotesk', sans-serif;
@@ -531,11 +532,19 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   color: #000000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 }
 
 .expandable-icon {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 300;
+  margin-left: auto;
+  padding-left: 12px;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 /* Drop and Reveal Accordion - Mobile */
@@ -559,61 +568,131 @@
   line-height: 1.6;
 }
 
+/* ─── Mobile inline size guide (below size selector) ─────────────────────── */
+.size-guide-inline-accordion {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
+  border-top: 1px solid #e5e5e5;
+  margin-top: 12px;
+}
+
+.size-guide-inline-accordion.active {
+  max-height: 600px;
+  transition: max-height 0.45s cubic-bezier(1, 0, 1, 0);
+}
+
+/* Inside the inline accordion, override .inner-padding to not have excess indent */
+.size-guide-inline-accordion .inner-padding {
+  padding: 16px 0 8px;
+}
+
+/* Make the tables inside the inline accordion use full width */
+.size-guide-inline-accordion .size-chart-table-wrapper {
+  border-radius: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.size-guide-inline-accordion .size-chart-table {
+  font-size: 10.5px;
+  min-width: 280px;
+}
+
+.size-guide-inline-accordion .size-chart-table th,
+.size-guide-inline-accordion .size-chart-table td {
+  padding: 7px 10px;
+}
+
+/* Unit toggle inside accordion */
+.size-guide-inline-accordion .size-chart-unit-toggle {
+  margin-bottom: 12px;
+}
+
 @media (min-width: 1025px) {
   .hero-main-info.desktop-hide {
     display: none;
   }
 
+  /* Ensure images remain visible when expanded view is open */
+  .hero-product:has(.hero-expanded-view) .hero-left {
+    visibility: visible;
+  }
+
+  /* iframe-like absolute overlay for expanded view to stay strictly within hero-right */
   .hero-expanded-view {
-    display: block;
-    position: relative;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
     background: #ffffff;
+    z-index: 20;
+    padding: 80px 135px 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
     animation: fadeIn 0.3s ease;
   }
 
-  /* Hide the product image column while expanded content is showing (Desktop Takeover) */
-  .hero-product:has(.hero-expanded-view) .hero-left {
-    display: none;
-  }
-
-  /* Push hero-right down so expanded header clears the sticky site header on desktop */
+  /* When expanded view is present, avoid double scrollbars */
   .hero-product:has(.hero-expanded-view) .hero-right {
+    overflow: hidden;
     padding-top: 80px;
+    /* fallback */
   }
 
-  /* Extra offset when announcement bar is also present (+36px) */
+  /* Extra offset for announcement bar visibility */
   body:has(.dynamic-announcement-bar) .hero-product:has(.hero-expanded-view) .hero-right,
   body:has(.announcement-bar:not([hidden])) .hero-product:has(.hero-expanded-view) .hero-right {
     padding-top: 116px;
   }
+
+  body:has(.dynamic-announcement-bar) .hero-expanded-view,
+  body:has(.announcement-bar:not([hidden])) .hero-expanded-view {
+    padding-top: 116px;
+    /* match offset so overlay content drops below headers */
+  }
 }
 
 .hero-expanded-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 0 16px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0 0 20px !important;
   border-bottom: 1px solid #e5e5e5;
   margin-bottom: 24px;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  left: 0 !important;
 }
 
 .hero-expanded-close {
-  width: 32px;
-  height: 32px;
+  width: auto;
+  height: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  border-radius: 50%;
+  justify-content: flex-end;
+  background: transparent !important;
+  border-radius: 0;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s ease;
+  font-size: 16px;
+  font-weight: 300;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0;
+  flex-shrink: 0;
+  color: #000000;
+  transition: opacity 0.2s ease;
 }
 
 .hero-expanded-close:hover {
-  background: #eeeeee;
+  opacity: 0.6;
 }
 
 .hero-expanded-content {
@@ -621,6 +700,7 @@
   font-size: 12px;
   line-height: 1.6;
   color: #000000;
+  width: 100%;
 }
 
 /* Excel-like Size Chart Table */
@@ -697,11 +777,14 @@
 }
 
 .hero-expanded-header .hero-title {
-  font-size: 12px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin: 0;
+  writing-mode: horizontal-tb !important;
+  transform: none !important;
 }
 
 @keyframes fadeIn {
@@ -830,7 +913,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 12px;
+  background: #ffffff;
 }
 
 .fullscreen-image-wrapper {
@@ -842,61 +926,39 @@
   background: #ffffff;
 }
 
-.fullscreen-image-wrapper img {
+.fullscreen-image-content {
   width: 100%;
-  height: 100vh;
+  max-width: 100%;
+  height: auto;
+  min-height: 100vh;
   object-fit: contain;
   display: block;
 }
 
 @media (max-width: 768px) {
   .fullscreen-gallery {
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .fullscreen-image-container {
-    flex-direction: row;
-    height: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
   }
 
   .fullscreen-image-wrapper {
-    flex: 0 0 100%;
+    flex: 0 0 auto;
     width: 100%;
-    height: 100%;
-    scroll-snap-align: start;
+    min-height: 100vh;
+    height: auto;
   }
 
-  .fullscreen-image-wrapper img {
-    height: 100%;
+  .fullscreen-image-content {
+    height: auto;
+    min-height: 100vh;
     width: 100%;
     object-fit: contain;
-  }
-
-  .fullscreen-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.8);
-    border: none;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10002;
-    border-radius: 50%;
-  }
-
-  .fullscreen-prev {
-    left: 16px;
-  }
-
-  .fullscreen-next {
-    right: 16px;
   }
 }
 

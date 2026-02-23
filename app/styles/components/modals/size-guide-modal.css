@@ -1,114 +1,358 @@
 /**
- * BLACMELO Size Guide Modal - Product Size Chart
- * Extracted from product.css lines 810-898
+ * BLACMELO — Size Guide Modal
+ * Excel-inspired spreadsheet table design, mobile-optimised
  */
 
-/* Size Guide Modal */
+/* ─── Backdrop overlay ─────────────────────────────────────────────────────── */
 .product-size-guide-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 16px;
+  backdrop-filter: blur(2px);
 }
 
+/* ─── Close button ─────────────────────────────────────────────────────────── */
 .product-size-guide-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
   background: #ffffff;
-  border: none;
-  width: 40px;
-  height: 40px;
+  border: 1px solid #e0e0e0;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 1001;
+  transition: background 0.15s;
 }
 
+.product-size-guide-close:hover {
+  background: #f0f0f0;
+}
+
+/* ─── Modal card ────────────────────────────────────────────────────────────── */
 .product-size-guide-content {
+  position: relative;
   background: #ffffff;
   border-radius: 8px;
-  padding: 40px;
-  max-width: 600px;
+  padding: 36px 32px 28px;
+  max-width: 920px;
   width: 100%;
-  max-height: 80vh;
+  max-height: 88vh;
   overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
+/* ─── Title ─────────────────────────────────────────────────────────────────── */
 .size-guide-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 24px;
-  font-weight: 500;
-  color: #000000;
-  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 4px 0;
   text-align: center;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .size-guide-model {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px;
-  color: #666666;
+  font-size: 11px;
+  color: #888;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
+/* ─── CM / INCH unit toggle ─────────────────────────────────────────────────── */
+.size-guide-unit-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto 20px;
+  border: 1.5px solid #000;
+  border-radius: 3px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.size-guide-unit-toggle .unit-btn {
+  padding: 6px 20px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+
+.size-guide-unit-toggle .unit-btn+.unit-btn {
+  border-left: 1.5px solid #000;
+}
+
+.size-guide-unit-toggle .unit-btn.active {
+  background: #000;
+  color: #fff;
+}
+
+/* ─── Table wrapper — enables horizontal scroll on mobile ───────────────────── */
 .size-guide-table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 4px;
 }
 
+/* ─── Excel-style table ─────────────────────────────────────────────────────── */
 .size-guide-table {
   width: 100%;
   border-collapse: collapse;
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px;
+  font-size: 12.5px;
+  min-width: 360px;
+  /* prevents collapse on tiny phones */
 }
 
+/* All cells get a visible grid border */
 .size-guide-table th,
 .size-guide-table td {
-  padding: 12px 8px;
+  border: 1px solid #c8c8c8;
+  padding: 10px 14px;
   text-align: center;
-  border-bottom: 1px solid #e5e5e5;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+/* ── Header row — clean white header with black text ── */
+.size-guide-table thead tr {
+  background: #ffffff;
 }
 
 .size-guide-table th {
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 10.5px;
   color: #000000;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
+  border-color: #999;
 }
 
-.size-guide-table td {
-  color: #666666;
+/* ── Size column (first td per row) ── Excel "row header" style */
+.size-guide-table tbody td:first-child {
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #fff;
+  background: #333333;
+  letter-spacing: 0.06em;
+  border-color: #444;
 }
 
-/* Mobile Responsive */
-@media (max-width: 1024px) {
+/* ── Alternating row fill — Excel zebra stripes ── */
+.size-guide-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+.size-guide-table tbody tr:nth-child(even) {
+  background: #f4f6f8;
+}
+
+/* ── Data cells ── */
+.size-guide-table tbody td {
+  color: #222;
+  font-variant-numeric: tabular-nums;
+  border-color: #d0d0d0;
+}
+
+/* ── Hover highlight on row ── */
+.size-guide-table tbody tr:hover td {
+  background: #e8f0fe;
+}
+
+.size-guide-table tbody tr:hover td:first-child {
+  background: #1a1a1a;
+}
+
+/* ─── ProductHero inline size chart (desktop takeover panel) ────────────────── */
+.size-chart-unit-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14px;
+  border: 1.5px solid #000;
+  border-radius: 3px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.size-chart-unit-toggle .unit-btn {
+  padding: 5px 16px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+
+.size-chart-unit-toggle .unit-btn+.unit-btn {
+  border-left: 1.5px solid #000;
+}
+
+.size-chart-unit-toggle .unit-btn.active {
+  background: #000;
+  color: #fff;
+}
+
+/* Inline table uses same Excel style but slightly smaller */
+.size-chart-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 4px;
+}
+
+.size-chart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11.5px;
+  min-width: 300px;
+}
+
+.size-chart-table th,
+.size-chart-table td {
+  border: 1px solid #c8c8c8;
+  padding: 8px 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.size-chart-table thead tr {
+  background: #ffffff;
+}
+
+.size-chart-table th {
+  font-weight: 700;
+  font-size: 10px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-color: #999;
+}
+
+.size-chart-table tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+.size-chart-table tbody tr:nth-child(even) {
+  background: #f4f6f8;
+}
+
+.size-chart-table tbody td:first-child {
+  font-weight: 700;
+  color: #fff;
+  background: #333;
+  border-color: #444;
+}
+
+.size-chart-table tbody td {
+  color: #222;
+  font-variant-numeric: tabular-nums;
+}
+
+.size-chart-table tbody tr:hover td {
+  background: #e8f0fe;
+}
+
+.size-chart-table tbody tr:hover td:first-child {
+  background: #1a1a1a;
+}
+
+/* ─── Mobile ────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .product-size-guide-modal {
+    padding: 0;
+    align-items: flex-end;
+    /* slide-up sheet on mobile */
+  }
+
   .product-size-guide-content {
-    padding: 30px 20px;
-    margin: 20px;
+    padding: 24px 16px 32px;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    /* bottom-sheet feel */
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .product-size-guide-close {
+    top: 12px;
+    right: 12px;
   }
 
   .size-guide-title {
-    font-size: 20px;
+    font-size: 15px;
   }
 
-  .size-guide-table {
+  .size-guide-model {
+    font-size: 10px;
+    margin-bottom: 14px;
+  }
+
+  .size-guide-table,
+  .size-chart-table {
+    font-size: 11px;
+  }
+
+  .size-guide-table th,
+  .size-guide-table td,
+  .size-chart-table th,
+  .size-chart-table td {
+    padding: 8px 10px;
+  }
+
+  /* Scroll hint — subtle right-fade for wide tables */
+  .size-guide-table-wrapper,
+  .size-chart-table-wrapper {
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+
+  /* Remove mask once scrolled */
+  .size-guide-table-wrapper:is([data-scrolled]),
+  .size-chart-table-wrapper:is([data-scrolled]) {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+@media (max-width: 390px) {
+
+  .size-guide-table,
+  .size-chart-table {
     font-size: 10px;
   }
 
   .size-guide-table th,
-  .size-guide-table td {
-    padding: 8px 4px;
+  .size-guide-table td,
+  .size-chart-table th,
+  .size-chart-table td {
+    padding: 6px 7px;
   }
 }

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Image, Money, Pagination } from '@shopify/hydrogen';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { scrollToTop, getLenisInstance } from '~/lib/lenis';
-import type { ProductCardProduct } from './ProductCard';
+type ProductCardProduct = any;
 import { Slider } from '~/components/ui/slider';
+import { Plus } from 'lucide-react';
+import { AddToCartButton } from '~/components/AddToCartButton';
 
 // Import banner images for conditional hero
 import ss26Banner from '~/assets/home_page_banners/ss26.jpeg';
@@ -172,8 +174,8 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
       if (product.vendor) vendors.add(product.vendor);
 
       // Extract colors and sizes from variants
-      product.variants?.nodes?.forEach(variant => {
-        variant.selectedOptions.forEach(option => {
+      product.variants?.nodes?.forEach((variant: any) => {
+        variant.selectedOptions.forEach((option: any) => {
           const name = option.name.toLowerCase();
           const value = option.value;
 
@@ -234,8 +236,8 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
     // Filter by size
     if (selectedSizes.length > 0) {
       filtered = filtered.filter(product => {
-        const productSizes = product.variants?.nodes?.map(v =>
-          v.selectedOptions?.find(opt => opt.name.toLowerCase() === 'size')?.value
+        const productSizes = product.variants?.nodes?.map((v: any) =>
+          v.selectedOptions?.find((opt: any) => opt.name.toLowerCase() === 'size')?.value
         ).filter(Boolean) || [];
         return selectedSizes.some(size => productSizes.includes(size));
       });
@@ -244,11 +246,11 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
     // Filter by colour
     if (selectedColours.length > 0) {
       filtered = filtered.filter(product => {
-        const productColours = product.variants?.nodes?.map(v =>
-          v.selectedOptions?.find(opt => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour')?.value
+        const productColours = product.variants?.nodes?.map((v: any) =>
+          v.selectedOptions?.find((opt: any) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour')?.value
         ).filter(Boolean) || [];
         return selectedColours.some(colour =>
-          productColours.some(pc => pc?.toLowerCase().includes(colour.toLowerCase()))
+          productColours.some((pc: any) => pc?.toLowerCase().includes(colour.toLowerCase()))
         );
       });
     }
@@ -793,6 +795,9 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
 
 // Represent-style Product Card with Image Swap
 function RepresentProductCard({ product, viewMode }: { product: ProductCardProduct; viewMode: 'grid' | 'list' }) {
+  const [showSizes, setShowSizes] = useState(false);
+  const navigate = useNavigate();
+
   const images = product.images?.nodes || (product.featuredImage ? [product.featuredImage] : []);
   const image1 = images[0] || product.featuredImage;
   const image2 = images[1];
@@ -809,14 +814,14 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
   // Get proper color name from metafield if available
   // Check multiple possible metafield locations with null safety
   const colorMetafield = product.metafields?.filter(Boolean).find(
-    (m) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') &&
+    (m: any) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') &&
       (m.namespace === 'custom' || m.namespace === 'category' || m.namespace?.includes('tshirt'))
   );
   const displayColorName = colorMetafield?.value || colorValue;
 
   // Count unique colors from variants
   const uniqueColors = new Set(
-    product.variants?.nodes?.map(v =>
+    product.variants?.nodes?.map((v: any) =>
       v.selectedOptions?.find(
         (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
       )?.value
@@ -826,8 +831,12 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
   const hasMultipleColors = colorCount > 1;
 
   return (
-    <Link to={`/products/${product.handle}`} className="represent-product-card group">
-      <div className="represent-card-image-wrapper">
+    <div
+      onClick={() => navigate(`/products/${product.handle}`)}
+      className="represent-product-card group cursor-pointer"
+      onMouseLeave={() => setShowSizes(false)}
+    >
+      <div className="represent-card-image-wrapper relative">
         {/* Primary Image */}
         {image1 && (
           <Image
@@ -849,6 +858,48 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
             className="represent-card-image represent-card-image-secondary"
           />
         )}
+
+        {/* Quick Add Reveal Button (Mobile Only) */}
+        <button
+          className={`md:hidden absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center border border-black/10 bg-white/90 backdrop-blur-sm text-black shadow-sm transition-all duration-300 z-10 ${showSizes ? 'opacity-0 pointer-events-none scale-90' : 'opacity-100 scale-100'
+            }`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowSizes(true);
+          }}
+        >
+          <Plus size={16} />
+        </button>
+
+        {/* Sizes Grid (Revealed on hover for Desktop, or when + clicked on Mobile) */}
+        <div
+          className={`absolute bottom-3 left-0 right-0 flex flex-wrap gap-1.5 justify-center px-2 transition-all duration-300 z-20
+            opacity-0 pointer-events-none translate-y-2 
+            md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-hover:translate-y-0
+            ${showSizes ? '!opacity-100 !pointer-events-auto !translate-y-0' : ''}
+          `}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {product.variants?.nodes?.map((v: any) => {
+            const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
+            if (!sizeOption) return null;
+            return (
+              <AddToCartButton
+                key={v.id}
+                disabled={!v.availableForSale}
+                lines={[{ merchandiseId: v.id, quantity: 1 }]}
+                className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!v.availableForSale
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-white/70 backdrop-blur-md'
+                  : 'border-transparent bg-white/95 backdrop-blur-md text-gray-500 hover:text-black hover:border-black hover:bg-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
+                  }`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {sizeOption.value}
+              </AddToCartButton>
+            );
+          })}
+        </div>
       </div>
 
       <div className="represent-card-info">
@@ -871,6 +922,6 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

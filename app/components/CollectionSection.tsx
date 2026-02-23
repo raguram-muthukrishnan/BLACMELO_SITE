@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { ProductCard, type ProductCardProduct } from './ProductCard';
+import { ProductCard } from './ProductCard';
+type ProductCardProduct = any;
 
 interface MenuItem {
   id: string;
@@ -45,27 +46,26 @@ export function CollectionSection({ collection, productMenu }: CollectionSection
   return (
     <section className="collection-section">
       <h2 className="collection-section-title">{collection.title}</h2>
-      
+
       <div className="collection-section-grid">
         {products.slice(0, visibleCount).map((product) => (
           <ProductCard
             key={product.id}
             product={product}
-            loading="lazy"
           />
         ))}
       </div>
 
       <div className="collection-section-actions">
         {hasMore ? (
-          <button 
+          <button
             onClick={handleLoadMore}
             className="load-more-btn"
           >
             LOAD MORE
           </button>
         ) : (
-          <div 
+          <div
             className="view-all-dropdown"
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
@@ -75,9 +75,9 @@ export function CollectionSection({ collection, productMenu }: CollectionSection
               className="view-all-btn view-all-btn-toggle"
             >
               SEE COLLECTIONS
-              <span className={`dropdown-arrow ${showMenu ? 'open' : ''}`}>▼</span>
+              <span className={`dropdown - arrow ${showMenu ? 'open' : ''} `}>▼</span>
             </button>
-            
+
             {menuItems.length > 0 && showMenu && (
               <div className="view-all-menu">
                 {menuItems.map((item) => (
@@ -88,9 +88,9 @@ export function CollectionSection({ collection, productMenu }: CollectionSection
                     {item.items && item.items.length > 0 && (
                       <div className="view-all-submenu">
                         {item.items.map((subItem) => (
-                          <Link 
-                            key={subItem.id} 
-                            to={subItem.url} 
+                          <Link
+                            key={subItem.id}
+                            to={subItem.url}
                             className="view-all-submenu-link"
                           >
                             {subItem.title}

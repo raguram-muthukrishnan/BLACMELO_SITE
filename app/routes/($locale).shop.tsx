@@ -1,17 +1,18 @@
-import {useLoaderData, type MetaFunction} from 'react-router';
-import type {Route} from './+types/shop';
-import {getPaginationVariables} from '@shopify/hydrogen';
-import {ProductCard} from '~/components/ui/ProductCard';
+import { useLoaderData, type MetaFunction } from 'react-router';
+// @ts-ignore
+import type { Route } from './+types/shop';
+import { getPaginationVariables } from '@shopify/hydrogen';
+import { ProductCard } from '~/components/ui/ProductCard';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
 import productCardStyles from '~/styles/components/product/product-card.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: productGridStyles},
-  {rel: 'stylesheet', href: productCardStyles},
+  { rel: 'stylesheet', href: productGridStyles },
+  { rel: 'stylesheet', href: productCardStyles },
 ];
 
 export const meta: MetaFunction<typeof loader> = () => {
-  return [{title: 'Shop All Products'}];
+  return [{ title: 'Shop All Products' }];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -19,25 +20,25 @@ export async function loader(args: Route.LoaderArgs) {
     pageBy: 12,
   });
 
-  const {storefront} = args.context;
+  const { storefront } = args.context;
 
-  const {products} = await storefront.query(SHOP_QUERY, {
+  const { products } = await storefront.query(SHOP_QUERY, {
     variables: {
       ...paginationVariables,
     },
   });
 
-  return {products};
+  return { products };
 }
 
 export default function Shop() {
-  const {products} = useLoaderData<typeof loader>();
+  const { products } = useLoaderData<typeof loader>();
 
   return (
     <div className="shop-page">
       <h1>Shop All Products</h1>
       <div className="products-grid">
-        {products.nodes.map((product) => (
+        {products.nodes.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

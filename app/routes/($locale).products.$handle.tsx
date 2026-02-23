@@ -27,6 +27,7 @@ import productGridStyles from '~/styles/components/product/product-grid.css?url'
 import productCardStyles from '~/styles/components/product/product-card.css?url';
 import buttonsStyles from '~/styles/components/buttons.css?url';
 import colorProductSwitcherStyles from '~/styles/components/color-product-switcher.css?url';
+import sizeGuideStyles from '~/styles/components/modals/size-guide-modal.css?url';
 
 export const links = () => [
   { rel: 'stylesheet', href: productPageStyles },
@@ -38,6 +39,7 @@ export const links = () => [
   { rel: 'stylesheet', href: productCardStyles },
   { rel: 'stylesheet', href: buttonsStyles },
   { rel: 'stylesheet', href: colorProductSwitcherStyles },
+  { rel: 'stylesheet', href: sizeGuideStyles },
 ];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -197,6 +199,15 @@ export default function Product() {
   // Track recently viewed products and determine primary collection for breadcrumbs
   useEffect(() => {
     if (product && selectedVariant) {
+      // Build sizes list from variants
+      const sizes = (product.variants?.nodes || [])
+        .map((v: any) => {
+          const sizeOpt = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
+          if (!sizeOpt) return null;
+          return { label: sizeOpt.value, available: v.availableForSale ?? true };
+        })
+        .filter(Boolean) as Array<{ label: string; available: boolean }>;
+
       addToRecentlyViewed({
         id: product.id,
         handle: product.handle,
@@ -205,7 +216,8 @@ export default function Product() {
           amount: selectedVariant.price.amount,
           currencyCode: selectedVariant.price.currencyCode,
         },
-        image: product.featuredImage || product.images?.nodes[0],
+        image: (product.featuredImage || product.images?.nodes[0]) as any,
+        sizes: sizes.length > 0 ? sizes : undefined,
       });
     }
   }, [product, selectedVariant]);
@@ -410,6 +422,8 @@ const PRODUCT_FRAGMENT = `#graphql
       {namespace: "custom", key: "color_family"}
       {namespace: "custom", key: "color_name"}
       {namespace: "shopify", key: "category"}
+      {namespace: "custom", key: "product_type"}
+      {namespace: "custom", key: "product_category"}
     ]) {
       key
       value

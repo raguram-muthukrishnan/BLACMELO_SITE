@@ -4,14 +4,14 @@ import { Image, Money } from '@shopify/hydrogen';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 import { AddToCartButton } from './AddToCartButton';
 import { ProductCard } from './ProductCard';
-import type { ProductCardProduct } from './ProductCard';
+import { SizeGuideModal } from './SizeGuideModal';
+type ProductCardProduct = any;
 import {
   ChevronLeft,
   ChevronRight,
   Plus,
   Minus,
   Bookmark,
-  X,
   Expand,
 } from 'lucide-react';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
@@ -355,7 +355,7 @@ export function ProductPage({
                       <div className="product-swatch-info">
                         <span className="product-swatch-color-name">{variant.colorName}</span>
                         <span className="product-swatch-price">
-                          <Money data={variant.price} />
+                          <Money data={variant.price as any} />
                         </span>
                       </div>
                     </Link>
@@ -545,76 +545,13 @@ export function ProductPage({
 
       {/* Size Guide Modal */}
       {isSizeGuideOpen && (
-        <div className="product-size-guide-modal">
-          <button
-            className="product-size-guide-close"
-            onClick={() => setIsSizeGuideOpen(false)}
-            aria-label="Close size guide"
-          >
-            <X size={20} strokeWidth={1} />
-          </button>
-          <div className="product-size-guide-content">
-            <h2 className="size-guide-title">Size Guide</h2>
-            <p className="size-guide-model">MODEL: MODEL IS 184.5CM AND 72KG WEARING SIZE M</p>
-            <div className="size-guide-table-wrapper">
-              <table className="size-guide-table">
-                <thead>
-                  <tr>
-                    <th>SIZE</th>
-                    <th>CHEST WIDTH</th>
-                    <th>SLEEVE LENGTH</th>
-                    <th>FRONT LENGTH</th>
-                    <th>SHOULDER</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>XS</td>
-                    <td>59.75</td>
-                    <td>64</td>
-                    <td>69</td>
-                    <td>19.45</td>
-                  </tr>
-                  <tr>
-                    <td>S</td>
-                    <td>61</td>
-                    <td>64.5</td>
-                    <td>69.5</td>
-                    <td>19.9</td>
-                  </tr>
-                  <tr>
-                    <td>M</td>
-                    <td>63.5</td>
-                    <td>64.5</td>
-                    <td>70.5</td>
-                    <td>20.8</td>
-                  </tr>
-                  <tr>
-                    <td>L</td>
-                    <td>66.5</td>
-                    <td>65</td>
-                    <td>72</td>
-                    <td>22</td>
-                  </tr>
-                  <tr>
-                    <td>XL</td>
-                    <td>69.5</td>
-                    <td>65.5</td>
-                    <td>73.5</td>
-                    <td>23.3</td>
-                  </tr>
-                  <tr>
-                    <td>XXL</td>
-                    <td>72.5</td>
-                    <td>66</td>
-                    <td>75</td>
-                    <td>24.4</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <SizeGuideModal
+          productType={product.productType}
+          metafields={product.metafields}
+          title={product.title}
+          handle={product.handle}
+          onClose={() => setIsSizeGuideOpen(false)}
+        />
       )}
 
       {/* Recommendations Section */}

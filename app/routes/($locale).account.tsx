@@ -6,21 +6,21 @@ import {
   Outlet,
   useLoaderData,
 } from 'react-router';
-import type {Route} from './+types/account';
-import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import type { Route } from './+types/account';
+import { CUSTOMER_DETAILS_QUERY } from '~/graphql/customer-account/CustomerDetailsQuery';
 import accountStyles from '~/styles/pages/account.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: accountStyles},
+  { rel: 'stylesheet', href: accountStyles },
 ];
 
 export function shouldRevalidate() {
   return true;
 }
 
-export async function loader({context}: Route.LoaderArgs) {
-  const {customerAccount} = context;
-  const {data, errors} = await customerAccount.query(CUSTOMER_DETAILS_QUERY, {
+export async function loader({ context }: Route.LoaderArgs) {
+  const { customerAccount } = context;
+  const { data, errors } = await customerAccount.query(CUSTOMER_DETAILS_QUERY, {
     variables: {
       language: customerAccount.i18n.language,
     },
@@ -31,7 +31,7 @@ export async function loader({context}: Route.LoaderArgs) {
   }
 
   return remixData(
-    {customer: data.customer},
+    { customer: data.customer },
     {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -41,7 +41,7 @@ export async function loader({context}: Route.LoaderArgs) {
 }
 
 export default function AccountLayout() {
-  const {customer} = useLoaderData<typeof loader>();
+  const { customer } = useLoaderData<typeof loader>();
 
   const heading = customer
     ? customer.firstName
@@ -82,7 +82,7 @@ export default function AccountLayout() {
 
         {/* Main Content */}
         <main className="dashboard-main">
-          <Outlet context={{customer}} />
+          <Outlet context={{ customer }} />
         </main>
       </div>
     </div>
@@ -94,7 +94,7 @@ function AccountMenu() {
     <div className="dashboard-nav-links">
       <NavLink
         to="/account/orders"
-        className={({isActive}) =>
+        className={({ isActive }) =>
           `dashboard-nav-link ${isActive ? 'active' : ''}`
         }
       >
@@ -129,7 +129,7 @@ function AccountMenu() {
 
       <NavLink
         to="/account/profile"
-        className={({isActive}) =>
+        className={({ isActive }) =>
           `dashboard-nav-link ${isActive ? 'active' : ''}`
         }
       >
@@ -164,7 +164,7 @@ function AccountMenu() {
 
       <NavLink
         to="/account/addresses"
-        className={({isActive}) =>
+        className={({ isActive }) =>
           `dashboard-nav-link ${isActive ? 'active' : ''}`
         }
       >

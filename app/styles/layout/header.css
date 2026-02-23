@@ -84,10 +84,10 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   color: #000000 !important;
 }
 
-/* Product Page Header - Transparent with BLACK text */
+/* Product Page Header - WHITE background with BLACK text */
 .blacmelo-header.header-product-page {
-  background: transparent !important;
-  box-shadow: none;
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
 }
 
 /* Product page header - BLACK text by default */
@@ -111,10 +111,10 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   background: #000000 !important;
 }
 
-/* Product page header - stays transparent and black when scrolled */
+/* Product page header - stays WHITE and black when scrolled */
 .blacmelo-header.header-product-page.header-scrolled {
-  background: transparent !important;
-  box-shadow: none;
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
 }
 
 /* Product page header - keep BLACK text when scrolled */

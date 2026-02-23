@@ -1,9 +1,9 @@
-import {NavLink} from 'react-router';
-import {createPortal} from 'react-dom';
-import {useEffect, useState, useRef, useCallback} from 'react';
-import type {MenuConfig} from '~/lib/headerMenu';
-import {ScrollArea} from '~/components/ui/scroll-area';
-import {stopLenis, startLenis} from '~/lib/lenis';
+import { NavLink } from 'react-router';
+import { createPortal } from 'react-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import type { MenuConfig } from '~/lib/headerMenu';
+import { ScrollArea } from '~/components/ui/scroll-area';
+import { stopLenis, startLenis } from '~/lib/lenis';
 
 interface SubMenuItem {
   name: string;
@@ -30,19 +30,19 @@ interface UnifiedHoverMenuProps {
 // Arrow icon for expandable items
 function ChevronRight() {
   return (
-    <svg 
-      width="12" 
-      height="12" 
-      viewBox="0 0 12 12" 
-      fill="none" 
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="hover-menu-chevron"
     >
-      <path 
-        d="M4.5 2.5L8 6L4.5 9.5" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round" 
+      <path
+        d="M4.5 2.5L8 6L4.5 9.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
@@ -57,6 +57,7 @@ export function UnifiedHoverMenu({
   const [mounted, setMounted] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const rightPanelRef = useRef<HTMLDivElement>(null); // Added declaration for rightPanelRef
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -73,17 +74,17 @@ export function UnifiedHoverMenu({
     if (activeMenu) {
       // Stop Lenis smooth scroll
       stopLenis();
-      
+
       // Save current scroll position
       const scrollY = window.scrollY;
       const body = document.body;
-      
+
       // Store original styles
       const originalOverflow = body.style.overflow;
       const originalPosition = body.style.position;
       const originalTop = body.style.top;
       const originalWidth = body.style.width;
-      
+
       // Lock body scroll using position fixed method
       body.style.position = 'fixed';
       body.style.top = `-${scrollY}px`;
@@ -96,10 +97,10 @@ export function UnifiedHoverMenu({
         body.style.top = originalTop;
         body.style.width = originalWidth;
         body.style.overflow = originalOverflow;
-        
+
         // Restore scroll position
         window.scrollTo(0, scrollY);
-        
+
         // Restart Lenis smooth scroll
         startLenis();
       };
@@ -146,7 +147,7 @@ export function UnifiedHoverMenu({
   if (!activeMenu || !mounted) return null;
 
   const currentConfig = menuConfigs[activeMenu as keyof typeof menuConfigs];
-  
+
   // Debug logging
   console.log('🎯 UnifiedHoverMenu render:', {
     activeMenu,
@@ -155,14 +156,14 @@ export function UnifiedHoverMenu({
     configKeys: Object.keys(menuConfigs),
     sections: currentConfig?.sections?.length || 0,
   });
-  
+
   if (!currentConfig) {
     console.warn('⚠️ No config found for menu:', activeMenu);
     return null;
   }
 
   const menuContent = (
-    <div 
+    <div
       ref={menuRef}
       className="unified-hover-menu-overlay"
       onMouseEnter={handleMouseEnter}
@@ -182,13 +183,13 @@ export function UnifiedHoverMenu({
                     <ul className={`hover-menu-list ${section.isBold ? 'bold-list' : ''}`}>
                       {section.items.map((item, itemIdx) => {
                         const itemName = getItemName(item);
-                        const hasSubmenu = section.hasSubmenu && 
+                        const hasSubmenu = section.hasSubmenu &&
                           ['Clothing', 'Collections', 'Collaborations', 'Footwear', 'Accessories'].includes(itemName);
                         const itemDescription = itemName === 'Outfits' ? 'Shop curated looks' : null;
-                        
+
                         return (
                           <li key={itemIdx} className={hasSubmenu ? 'has-submenu' : ''}>
-                            <NavLink 
+                            <NavLink
                               to={getItemLink(item, section.link)}
                               className={`hover-menu-item-link ${section.isBold ? 'bold-item' : ''}`}
                               onMouseEnter={() => hasSubmenu && setExpandedItem(itemName)}
@@ -210,7 +211,7 @@ export function UnifiedHoverMenu({
               ))}
             </div>
           </ScrollArea>
-          
+
           {/* Right side - Image */}
           <div ref={rightPanelRef} className="hover-menu-image">
             <img src={currentConfig.image} alt={`${activeMenu} collection`} />

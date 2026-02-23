@@ -63,7 +63,12 @@ export default function Orders() {
   const {orders} = customer;
 
   return (
-    <div className="orders">
+    <div className="orders-page">
+      <div className="orders-header">
+        <h2 className="orders-title">Order History</h2>
+        <p className="orders-description">View and track your orders</p>
+      </div>
+      
       <OrderSearchForm currentFilters={filters} />
       <OrdersTable orders={orders} filters={filters} />
     </div>
@@ -80,11 +85,13 @@ function OrdersTable({
   const hasFilters = !!(filters.name || filters.confirmationNumber);
 
   return (
-    <div className="acccount-orders" aria-live="polite">
+    <div className="orders-table" aria-live="polite">
       {orders?.nodes.length ? (
-        <PaginatedResourceSection connection={orders}>
-          {({node: order}) => <OrderItem key={order.id} order={order} />}
-        </PaginatedResourceSection>
+        <div className="orders-list">
+          <PaginatedResourceSection connection={orders}>
+            {({node: order}) => <OrderItem key={order.id} order={order} />}
+          </PaginatedResourceSection>
+        </div>
       ) : (
         <EmptyOrders hasFilters={hasFilters} />
       )}
@@ -94,22 +101,28 @@ function OrdersTable({
 
 function EmptyOrders({hasFilters = false}: {hasFilters?: boolean}) {
   return (
-    <div>
+    <div className="empty-orders">
+      <div className="empty-orders-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="16" width="40" height="40" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <path d="M12 24h40M20 16v-4M44 16v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      </div>
       {hasFilters ? (
         <>
-          <p>No orders found matching your search.</p>
-          <br />
-          <p>
-            <Link to="/account/orders">Clear filters →</Link>
-          </p>
+          <h3 className="empty-orders-title">No orders found</h3>
+          <p className="empty-orders-text">No orders match your search criteria</p>
+          <Link to="/account/orders" className="empty-orders-link">
+            Clear filters
+          </Link>
         </>
       ) : (
         <>
-          <p>You haven&apos;t placed any orders yet.</p>
-          <br />
-          <p>
-            <Link to="/collections">Start Shopping →</Link>
-          </p>
+          <h3 className="empty-orders-title">No orders yet</h3>
+          <p className="empty-orders-text">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+          <Link to="/collections" className="empty-orders-button">
+            Continue Shopping
+          </Link>
         </>
       )}
     </div>
@@ -155,31 +168,41 @@ function OrderSearchForm({
       className="order-search-form"
       aria-label="Search orders"
     >
-      <fieldset className="order-search-fieldset">
-        <legend className="order-search-legend">Filter Orders</legend>
-
+      <div className="order-search-container">
         <div className="order-search-inputs">
-          <input
-            type="search"
-            name={ORDER_FILTER_FIELDS.NAME}
-            placeholder="Order #"
-            aria-label="Order number"
-            defaultValue={currentFilters.name || ''}
-            className="order-search-input"
-          />
-          <input
-            type="search"
-            name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
-            placeholder="Confirmation #"
-            aria-label="Confirmation number"
-            defaultValue={currentFilters.confirmationNumber || ''}
-            className="order-search-input"
-          />
+          <div className="order-search-field">
+            <label htmlFor="order-number" className="order-search-label">
+              Order #
+            </label>
+            <input
+              id="order-number"
+              type="search"
+              name={ORDER_FILTER_FIELDS.NAME}
+              placeholder="Search by order number"
+              aria-label="Order number"
+              defaultValue={currentFilters.name || ''}
+              className="order-search-input"
+            />
+          </div>
+          <div className="order-search-field">
+            <label htmlFor="confirmation-number" className="order-search-label">
+              Confirmation #
+            </label>
+            <input
+              id="confirmation-number"
+              type="search"
+              name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
+              placeholder="Search by confirmation number"
+              aria-label="Confirmation number"
+              defaultValue={currentFilters.confirmationNumber || ''}
+              className="order-search-input"
+            />
+          </div>
         </div>
 
-        <div className="order-search-buttons">
-          <button type="submit" disabled={isSearching}>
-            {isSearching ? 'Searching' : 'Search'}
+        <div className="order-search-actions">
+          <button type="submit" disabled={isSearching} className="order-search-button">
+            {isSearching ? 'Searching...' : 'Search'}
           </button>
           {hasFilters && (
             <button
@@ -189,34 +212,71 @@ function OrderSearchForm({
                 setSearchParams(new URLSearchParams());
                 formRef.current?.reset();
               }}
+              className="order-search-clear"
             >
               Clear
             </button>
           )}
         </div>
-      </fieldset>
+      </div>
     </form>
   );
 }
 
 function OrderItem({order}: {order: OrderItemFragment}) {
   const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
+  const orderDate = new Date(order.processedAt);
+  
   return (
-    <>
-      <fieldset>
-        <Link to={`/account/orders/${btoa(order.id)}`}>
-          <strong>#{order.number}</strong>
-        </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
+    <div className="order-card">
+      <div className="order-card-header">
+        <div className="order-card-info">
+          <Link to={`/account/orders/${btoa(order.id)}`} className="order-number">
+            Order #{order.number}
+          </Link>
+          <span className="order-date">
+            {orderDate.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric' 
+            })}
+          </span>
+        </div>
+        <div className="order-card-status">
+          <span className={`order-status-badge ${order.financialStatus?.toLowerCase()}`}>
+            {order.financialStatus}
+          </span>
+          {fulfillmentStatus && (
+            <span className={`order-status-badge ${fulfillmentStatus.toLowerCase()}`}>
+              {fulfillmentStatus}
+            </span>
+          )}
+        </div>
+      </div>
+      
+      <div className="order-card-body">
         {order.confirmationNumber && (
-          <p>Confirmation: {order.confirmationNumber}</p>
+          <div className="order-detail">
+            <span className="order-detail-label">Confirmation:</span>
+            <span className="order-detail-value">{order.confirmationNumber}</span>
+          </div>
         )}
-        <p>{order.financialStatus}</p>
-        {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
-      </fieldset>
-      <br />
-    </>
+        <div className="order-detail">
+          <span className="order-detail-label">Total:</span>
+          <span className="order-detail-value order-total">
+            <Money data={order.totalPrice} />
+          </span>
+        </div>
+      </div>
+      
+      <div className="order-card-footer">
+        <Link to={`/account/orders/${btoa(order.id)}`} className="order-view-link">
+          View Order Details
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
+      </div>
+    </div>
   );
 }

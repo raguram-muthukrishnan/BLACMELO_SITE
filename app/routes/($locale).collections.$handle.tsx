@@ -132,6 +132,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     variants(first: 100) {
       nodes {
         id
+        availableForSale
         selectedOptions {
           name
           value

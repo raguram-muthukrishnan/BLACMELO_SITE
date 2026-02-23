@@ -42,59 +42,101 @@ export default function AccountLayout() {
 
   const heading = customer
     ? customer.firstName
-      ? `Welcome, ${customer.firstName}`
-      : `Welcome to your account.`
+      ? `Welcome to your account`
+      : `Welcome to your account`
     : 'Account Details';
 
+  const subheading = customer?.firstName 
+    ? `${customer.firstName}${customer.lastName ? ' ' + customer.lastName : ''}`
+    : 'Manage your orders, profile, and addresses';
+
   return (
-    <div className="account">
-      <h1>{heading}</h1>
-      <br />
-      <AccountMenu />
-      <br />
-      <br />
-      <Outlet context={{customer}} />
+    <div className="account-layout">
+      <div className="account-container">
+        <div className="account-header">
+          <h1 className="account-title">{heading}</h1>
+          <p className="account-subtitle">{subheading}</p>
+        </div>
+        
+        <div className="account-content">
+          <aside className="account-sidebar">
+            <AccountMenu />
+          </aside>
+          
+          <main className="account-main">
+            <Outlet context={{customer}} />
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
 
 function AccountMenu() {
-  function isActiveStyle({
-    isActive,
-    isPending,
-  }: {
-    isActive: boolean;
-    isPending: boolean;
-  }) {
-    return {
-      fontWeight: isActive ? 'bold' : undefined,
-      color: isPending ? 'grey' : 'black',
-    };
-  }
-
   return (
-    <nav role="navigation">
-      <NavLink to="/account/orders" style={isActiveStyle}>
-        Orders &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/profile" style={isActiveStyle}>
-        &nbsp; Profile &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/addresses" style={isActiveStyle}>
-        &nbsp; Addresses &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <Logout />
+    <nav className="account-nav" role="navigation">
+      <div className="account-nav-section">
+        <h3 className="account-nav-title">ACCOUNT</h3>
+        <ul className="account-nav-list">
+          <li>
+            <NavLink 
+              to="/account/orders" 
+              className={({isActive}) => 
+                `account-nav-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <svg className="account-nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Orders
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/account/profile" 
+              className={({isActive}) => 
+                `account-nav-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <svg className="account-nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/account/addresses" 
+              className={({isActive}) => 
+                `account-nav-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <svg className="account-nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 2L2 5v6c0 3 6 5 6 5s6-2 6-5V5l-6-3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              </svg>
+              Addresses
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+      
+      <div className="account-nav-footer">
+        <Logout />
+      </div>
     </nav>
   );
 }
 
 function Logout() {
   return (
-    <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
+    <Form className="account-logout-form" method="POST" action="/account/logout">
+      <button type="submit" className="account-logout-button">
+        <svg className="account-nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Sign Out
+      </button>
     </Form>
   );
 }

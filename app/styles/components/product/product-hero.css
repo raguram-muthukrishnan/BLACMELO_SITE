@@ -132,6 +132,12 @@ body:has(.dynamic-announcement-bar) .hero-left {
   background: #ffffff;
 }
 
+/* Dynamic padding for announcement bar */
+body:has(.announcement-bar:not([hidden])) .hero-right,
+body:has(.dynamic-announcement-bar) .hero-right {
+  padding-top: 116px;
+}
+
 body:has(.announcement-bar:not([hidden])) .hero-right {
   height: calc(100vh - 36px);
 }
@@ -183,7 +189,7 @@ body:has(.dynamic-announcement-bar) .hero-right {
   /* Reset hero-right to auto height so it grows with content */
   .hero-right {
     position: relative;
-    padding: 32px 20px 40px;
+    padding: 20px 20px 40px;
     height: auto !important;
     min-height: unset;
     overflow-y: visible;
@@ -194,5 +200,6 @@ body:has(.dynamic-announcement-bar) .hero-right {
   body:has(.dynamic-announcement-bar) .hero-right {
     height: auto;
     min-height: unset;
+    padding-top: 20px;
   }
 }

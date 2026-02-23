@@ -3,19 +3,18 @@ import {
   useLoaderData,
   Link,
 } from 'react-router';
-import type {Route} from './+types/_index';
-import {Suspense} from 'react';
-import {Image} from '@shopify/hydrogen';
+import type { Route } from './+types/_index';
+import { Suspense } from 'react';
+import { Image } from '@shopify/hydrogen';
 import type {
-  FeaturedCollectionFragment,
   RecommendedProductsQuery,
 } from 'storefrontapi.generated';
-import {ProductItem} from '~/components/ProductItem';
-import {CollectionTabs} from '~/components/CollectionTabs';
-import {RecentlyViewed} from '~/components/RecentlyViewed';
+import { ProductItem } from '~/components/ProductItem';
+import { CollectionTabs } from '~/components/CollectionTabs';
+import { RecentlyViewed } from '~/components/RecentlyViewed';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [{ title: 'Hydrogen | Home' }];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -25,17 +24,17 @@ export async function loader(args: Route.LoaderArgs) {
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  return {...deferredData, ...criticalData};
+  return { ...deferredData, ...criticalData };
 }
 
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
-async function loadCriticalData({context}: Route.LoaderArgs) {
+async function loadCriticalData({ context }: Route.LoaderArgs) {
   // Fetch specific collections by handle
   const collectionHandles = ['bestseller', 'new-in', 'bottoms', 'tops'];
-  
+
   const collectionsData = await Promise.all(
     collectionHandles.map(handle =>
       context.storefront.query(COLLECTION_BY_HANDLE_QUERY, {
@@ -59,7 +58,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
  * fetched after the initial page load. If it's unavailable, the page should still 200.
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
-function loadDeferredData({context}: Route.LoaderArgs) {
+function loadDeferredData({ context }: Route.LoaderArgs) {
   const recommendedProducts = context.storefront
     .query(RECOMMENDED_PRODUCTS_QUERY)
     .catch((error: Error) => {
@@ -79,12 +78,12 @@ export default function Homepage() {
     <div className="home">
       {/* Collections with Tabs */}
       {data.collections && data.collections.length > 0 && (
-        <CollectionTabs collections={data.collections} />
+        <CollectionTabs collections={data.collections as any} />
       )}
-      
+
       {/* Recently Viewed Products */}
       <RecentlyViewed />
-      
+
       {/* Recommended Products */}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
@@ -105,8 +104,8 @@ function RecommendedProducts({
             <div className="recommended-products-grid">
               {response
                 ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
+                  <ProductItem key={product.id} product={product} />
+                ))
                 : null}
             </div>
           )}

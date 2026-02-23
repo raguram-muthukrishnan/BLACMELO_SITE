@@ -1,6 +1,6 @@
-import {Link} from 'react-router';
-import {Image, Money, Pagination} from '@shopify/hydrogen';
-import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
+import { Link } from 'react-router';
+import { Image, Money, Pagination } from '@shopify/hydrogen';
+import { urlWithTrackingParams, type RegularSearchReturn } from '~/lib/search';
 
 type SearchItems = RegularSearchReturn['result']['items'];
 type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
@@ -10,7 +10,7 @@ type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
   Pick<RegularSearchReturn, 'term'>;
 
 type SearchResultsProps = RegularSearchReturn & {
-  children: (args: SearchItems & {term: string}) => React.ReactNode;
+  children: (args: SearchItems & { term: string }) => React.ReactNode;
 };
 
 export function SearchResults({
@@ -22,7 +22,7 @@ export function SearchResults({
     return null;
   }
 
-  return children({...result.items, term});
+  return children({ ...result.items, term });
 }
 
 SearchResults.Articles = SearchResultsArticles;
@@ -42,7 +42,7 @@ function SearchResultsArticles({
     <div className="search-result">
       <h2>Articles</h2>
       <div>
-        {articles?.nodes?.map((article) => {
+        {articles?.nodes?.map((article: any) => {
           const articleUrl = urlWithTrackingParams({
             baseUrl: `/blogs/${article.handle}`,
             trackingParams: article.trackingParameters,
@@ -63,7 +63,7 @@ function SearchResultsArticles({
   );
 }
 
-function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
+function SearchResultsPages({ term, pages }: PartialSearchResult<'pages'>) {
   if (!pages?.nodes.length) {
     return null;
   }
@@ -72,7 +72,7 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
     <div className="search-result">
       <h2>Pages</h2>
       <div>
-        {pages?.nodes?.map((page) => {
+        {pages?.nodes?.map((page: any) => {
           const pageUrl = urlWithTrackingParams({
             baseUrl: `/pages/${page.handle}`,
             trackingParams: page.trackingParameters,
@@ -105,8 +105,8 @@ function SearchResultsProducts({
     <div className="search-result">
       <h2>Products</h2>
       <Pagination connection={products}>
-        {({nodes, isLoading, NextLink, PreviousLink}) => {
-          const ItemsMarkup = nodes.map((product) => {
+        {({ nodes, isLoading, NextLink, PreviousLink }) => {
+          const ItemsMarkup = nodes.map((product: any) => {
             const productUrl = urlWithTrackingParams({
               baseUrl: `/products/${product.handle}`,
               trackingParams: product.trackingParameters,

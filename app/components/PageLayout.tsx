@@ -43,7 +43,7 @@ export function PageLayout({
   const isProductPage = location.pathname.includes('/products/');
 
   // Pages that should render a white header with black text/icons
-  const whiteHeaderPaths = ['/search', '/wishlist', '/faq', '/pages/', '/policies/'];
+  const whiteHeaderPaths = ['/search', '/wishlist', '/faq', '/pages/', '/policies/', '/account'];
   const isWhiteHeaderPage = whiteHeaderPaths.some((p) =>
     location.pathname.includes(p),
   );

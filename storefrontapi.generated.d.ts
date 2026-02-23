@@ -568,7 +568,7 @@ export type MoneyProductItemCollectionFragment = Pick<
 
 export type ProductItemCollectionFragment = Pick<
   StorefrontAPI.Product,
-  'id' | 'handle' | 'title'
+  'id' | 'handle' | 'title' | 'productType' | 'vendor'
 > & {
   featuredImage?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Image, 'id' | 'altText' | 'url' | 'width' | 'height'>
@@ -580,7 +580,7 @@ export type ProductItemCollectionFragment = Pick<
   };
   variants: {
     nodes: Array<
-      Pick<StorefrontAPI.ProductVariant, 'id'> & {
+      Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'> & {
         selectedOptions: Array<
           Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
         >;
@@ -621,7 +621,10 @@ export type CollectionPageQuery = {
       image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url' | 'altText'>>;
       products: {
         nodes: Array<
-          Pick<StorefrontAPI.Product, 'id' | 'handle' | 'title'> & {
+          Pick<
+            StorefrontAPI.Product,
+            'id' | 'handle' | 'title' | 'productType' | 'vendor'
+          > & {
             featuredImage?: StorefrontAPI.Maybe<
               Pick<
                 StorefrontAPI.Image,
@@ -638,7 +641,10 @@ export type CollectionPageQuery = {
             };
             variants: {
               nodes: Array<
-                Pick<StorefrontAPI.ProductVariant, 'id'> & {
+                Pick<
+                  StorefrontAPI.ProductVariant,
+                  'id' | 'availableForSale'
+                > & {
                   selectedOptions: Array<
                     Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
                   >;
@@ -996,6 +1002,9 @@ export type ProductFragment = Pick<
   | 'encodedVariantExistence'
   | 'encodedVariantAvailability'
 > & {
+  featuredImage?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+  >;
   images: {
     nodes: Array<
       Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
@@ -1150,6 +1159,9 @@ export type ProductQuery = {
       | 'encodedVariantExistence'
       | 'encodedVariantAvailability'
     > & {
+      featuredImage?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'url' | 'altText' | 'width' | 'height'>
+      >;
       images: {
         nodes: Array<
           Pick<
@@ -1473,11 +1485,14 @@ export type ColorFamilyProductsQuery = {
   };
 };
 
-export type SearchProductsQueryVariables = StorefrontAPI.Exact<{
+export type SearchProductsAndCollectionsQueryVariables = StorefrontAPI.Exact<{
   first: StorefrontAPI.Scalars['Int']['input'];
 }>;
 
-export type SearchProductsQuery = {
+export type SearchProductsAndCollectionsQuery = {
+  collections: {
+    nodes: Array<Pick<StorefrontAPI.Collection, 'id' | 'handle' | 'title'>>;
+  };
   products: {
     nodes: Array<
       Pick<
@@ -1490,6 +1505,7 @@ export type SearchProductsQuery = {
         | 'productType'
         | 'tags'
       > & {
+        collections: {nodes: Array<Pick<StorefrontAPI.Collection, 'handle'>>};
         selectedOrFirstAvailableVariant: {
           nodes: Array<
             Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
@@ -1508,7 +1524,10 @@ export type SearchProductsQuery = {
         };
         variants: {
           nodes: Array<
-            Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+            Pick<
+              StorefrontAPI.ProductVariant,
+              'id' | 'title' | 'availableForSale'
+            > & {
               selectedOptions: Array<
                 Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
               >;
@@ -1677,6 +1696,21 @@ export type RecommendedProductsQuery = {
   };
 };
 
+export type CustomerCreateMutationVariables = StorefrontAPI.Exact<{
+  input: StorefrontAPI.CustomerCreateInput;
+}>;
+
+export type CustomerCreateMutation = {
+  customerCreate?: StorefrontAPI.Maybe<{
+    customer?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.Customer, 'id' | 'email'>
+    >;
+    customerUserErrors: Array<
+      Pick<StorefrontAPI.CustomerUserError, 'code' | 'field' | 'message'>
+    >;
+  }>;
+};
+
 export type MoneyCollectionItemFragment = Pick<
   StorefrontAPI.MoneyV2,
   'amount' | 'currencyCode'
@@ -1794,7 +1828,7 @@ interface GeneratedQueryTypes {
     return: PoliciesQuery;
     variables: PoliciesQueryVariables;
   };
-  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    productType\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 20) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        ...ProductVariant\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n    metafields(identifiers: [\n      {namespace: "custom", key: "second_description"}\n      {namespace: "custom", key: "fit"}\n      {namespace: "custom", key: "fabric_care"}\n      {namespace: "custom", key: "shipping_returns"}\n      {namespace: "custom", key: "color_family"}\n      {namespace: "custom", key: "color_name"}\n      {namespace: "shopify", key: "category"}\n    ]) {\n      key\n      value\n      namespace\n      type\n    }\n    collections(first: 5) {\n      nodes {\n        id\n        title\n        handle\n      }\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
+  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    productType\n    encodedVariantExistence\n    encodedVariantAvailability\n    featuredImage {\n      url\n      altText\n      width\n      height\n    }\n    images(first: 20) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        ...ProductVariant\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n    metafields(identifiers: [\n      {namespace: "custom", key: "second_description"}\n      {namespace: "custom", key: "fit"}\n      {namespace: "custom", key: "fabric_care"}\n      {namespace: "custom", key: "shipping_returns"}\n      {namespace: "custom", key: "color_family"}\n      {namespace: "custom", key: "color_name"}\n      {namespace: "shopify", key: "category"}\n    ]) {\n      key\n      value\n      namespace\n      type\n    }\n    collections(first: 5) {\n      nodes {\n        id\n        title\n        handle\n      }\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
     return: ProductQuery;
     variables: ProductQueryVariables;
   };
@@ -1810,9 +1844,9 @@ interface GeneratedQueryTypes {
     return: ColorFamilyProductsQuery;
     variables: ColorFamilyProductsQueryVariables;
   };
-  '#graphql\n  query SearchProducts($first: Int!) {\n    products(first: $first) {\n      nodes {\n        id\n        title\n        handle\n        description\n        vendor\n        productType\n        tags\n        selectedOrFirstAvailableVariant: variants(first: 1) {\n          nodes {\n            id\n            title\n            image {\n              url\n              altText\n              width\n              height\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n        variants(first: 10) {\n          nodes {\n            id\n            title\n            selectedOptions {\n              name\n              value\n            }\n          }\n        }\n        images(first: 1) {\n          nodes {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n': {
-    return: SearchProductsQuery;
-    variables: SearchProductsQueryVariables;
+  '#graphql\n  query SearchProductsAndCollections($first: Int!) {\n    collections(first: 20) {\n      nodes {\n        id\n        handle\n        title\n      }\n    }\n    products(first: $first) {\n      nodes {\n        id\n        title\n        handle\n        description\n        vendor\n        productType\n        tags\n        collections(first: 5) {\n          nodes {\n            handle\n          }\n        }\n        selectedOrFirstAvailableVariant: variants(first: 1) {\n          nodes {\n            id\n            title\n            image {\n              url\n              altText\n              width\n              height\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n        variants(first: 20) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n          }\n        }\n        images(first: 1) {\n          nodes {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n': {
+    return: SearchProductsAndCollectionsQuery;
+    variables: SearchProductsAndCollectionsQueryVariables;
   };
   '#graphql\n  query ShopProducts(\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) {\n    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n      nodes {\n        id\n        title\n        handle\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n': {
     return: ShopProductsQuery;
@@ -1836,7 +1870,12 @@ interface GeneratedQueryTypes {
   };
 }
 
-interface GeneratedMutationTypes {}
+interface GeneratedMutationTypes {
+  '#graphql\n  mutation customerCreate($input: CustomerCreateInput!) {\n    customerCreate(input: $input) {\n      customer {\n        id\n        email\n      }\n      customerUserErrors {\n        code\n        field\n        message\n      }\n    }\n  }\n': {
+    return: CustomerCreateMutation;
+    variables: CustomerCreateMutationVariables;
+  };
+}
 
 declare module '@shopify/hydrogen' {
   interface StorefrontQueries extends GeneratedQueryTypes {}

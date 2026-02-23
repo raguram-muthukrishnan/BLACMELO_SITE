@@ -1,7 +1,7 @@
-import {type FetcherWithComponents} from 'react-router';
-import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
-import {useAside} from '~/components/Aside';
-import {useEffect} from 'react';
+import { type FetcherWithComponents } from 'react-router';
+import { CartForm, type OptimisticCartLineInput } from '@shopify/hydrogen';
+import { useAside } from '~/components/Aside';
+import { useEffect } from 'react';
 
 export function AddToCartButton({
   analytics,
@@ -9,17 +9,19 @@ export function AddToCartButton({
   disabled,
   lines,
   onClick,
+  className,
 }: {
   analytics?: unknown;
   children: React.ReactNode;
   disabled?: boolean;
   lines: Array<OptimisticCartLineInput>;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
 }) {
-  const {open} = useAside();
+  const { open } = useAside();
 
   return (
-    <CartForm route="/cart" inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
+    <CartForm route="/cart" inputs={{ lines }} action={CartForm.ACTIONS.LinesAdd}>
       {(fetcher: FetcherWithComponents<any>) => {
         // Auto-open cart when item is added
         useEffect(() => {
@@ -39,6 +41,7 @@ export function AddToCartButton({
               type="submit"
               onClick={onClick}
               disabled={disabled ?? fetcher.state !== 'idle'}
+              className={className}
             >
               {children}
             </button>
