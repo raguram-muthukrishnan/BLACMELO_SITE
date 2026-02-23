@@ -220,14 +220,6 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             Private Access
           </NavLink>
 
-          {/* DESKTOP: Recently Viewed */}
-          <NavLink
-            prefetch="intent"
-            to="/recently-viewed"
-            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
-          >
-            Recently Viewed
-          </NavLink>
 
           {/* DESKTOP only: Search + Wishlist */}
           <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">

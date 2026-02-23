@@ -51,13 +51,6 @@ export function CartMain({ layout, cart: originalCart, newProducts = [] }: CartM
       <CartEmpty hidden={cartHasItems} layout={layout} />
       {cartHasItems ? (
         <div className="cart-details">
-          {/* FREE SHIPPING BAR */}
-          <div className="cart-free-shipping-bar">
-            <span className="cart-free-shipping-text">
-              You&apos;re $5 away from free shipping
-            </span>
-          </div>
-
           {/* Cart Items */}
           <div className="cart-items-container" aria-labelledby="cart-lines">
             <ul className="cart-items-list">

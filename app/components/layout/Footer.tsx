@@ -75,7 +75,7 @@ export function Footer({ }: FooterProps) {
           </div>
 
           <div className="footer-section">
-            <h3 className="footer-heading">Help</h3>
+            <h3 className="footer-heading">Policies</h3>
             <nav className="footer-links">
               <NavLink to="/search">Search</NavLink>
               <NavLink to="/policies/return-policy">Return and Refund Policy</NavLink>
@@ -86,7 +86,7 @@ export function Footer({ }: FooterProps) {
           </div>
 
           <div className="footer-section">
-            <h3 className="footer-heading">BRAND</h3>
+            <h3 className="footer-heading">Explore</h3>
             <nav className="footer-links">
               <NavLink to="/">Home</NavLink>
               <NavLink to="/collections/all">Shop</NavLink>
@@ -97,7 +97,7 @@ export function Footer({ }: FooterProps) {
           </div>
 
           <div className="footer-section">
-            <h3 className="footer-heading">CONTACT</h3>
+            <h3 className="footer-heading">Contact</h3>
             <div className="footer-links">
               <a href="mailto:support@blacmelo.com">support@blacmelo.com</a>
               <a href="tel:+971525648367">+971 52 5648367</a>
@@ -148,7 +148,7 @@ export function Footer({ }: FooterProps) {
                 onClick={() => toggleSection('help')}
                 aria-expanded={openSections.help}
               >
-                <span>CLIENT SERVICES</span>
+                <span>Policies</span>
                 <svg
                   className={`footer-mobile-icon ${openSections.help ? 'rotated' : ''}`}
                   width="16"
@@ -176,7 +176,7 @@ export function Footer({ }: FooterProps) {
                 onClick={() => toggleSection('company')}
                 aria-expanded={openSections.company}
               >
-                <span>COMPANY</span>
+                <span>Explore</span>
                 <svg
                   className={`footer-mobile-icon ${openSections.company ? 'rotated' : ''}`}
                   width="16"
@@ -205,7 +205,7 @@ export function Footer({ }: FooterProps) {
                 onClick={() => toggleSection('social')}
                 aria-expanded={openSections.social}
               >
-                <span>SOCIAL</span>
+                <span>Contact</span>
                 <svg
                   className={`footer-mobile-icon ${openSections.social ? 'rotated' : ''}`}
                   width="16"
