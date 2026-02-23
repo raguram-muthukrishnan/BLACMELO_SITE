@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 interface EditorialBannerProps {
   image: string;
+  mobileImage?: string;
   alt?: string;
   showOverlay?: boolean;
   overlayLabel?: string;
@@ -15,6 +16,7 @@ interface EditorialBannerProps {
 
 export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(function EditorialBanner({
   image,
+  mobileImage,
   alt = '',
   showOverlay = false,
   overlayLabel = 'NOW LIVE',
@@ -48,8 +50,9 @@ export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(
             media="(min-width: 768px)"
             srcSet={`${image} 1x, ${image} 2x`}
           />
+          {/* Mobile: use mobileImage if provided, otherwise fallback to desktop image */}
           <img
-            src={image}
+            src={mobileImage || image}
             alt={alt}
             loading="lazy"
             className="editorial-banner-image"

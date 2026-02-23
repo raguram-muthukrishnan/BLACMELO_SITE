@@ -44,7 +44,7 @@ export const categoryHardcodedLinks: Record<string, HardcodedLink[]> = {
       itemType: 'dynamic',
     },
     {
-      name: 'The Private Access',
+      name: 'Private Access',
       link: '/the-private-access',
       order: 2,
       itemType: 'dynamic',

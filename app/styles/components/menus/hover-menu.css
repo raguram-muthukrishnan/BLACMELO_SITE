@@ -160,8 +160,8 @@ body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
 
 /* ScrollArea content wrapper */
 .hover-menu-sections-content {
-  padding: 42px 30px 32px 10px;
-  /* Top padding accounts for mobile header (63px) + 4px spacing, 10px left, 30px right */
+  padding: 30px 30px 0 10px;
+  /* Reduced top padding to 30px, removed bottom padding */
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -170,21 +170,19 @@ body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
 /* Desktop: larger horizontal padding and account for desktop header height (46px) */
 @media (min-width: 1024px) {
   .hover-menu-sections-content {
-    padding: 25px 30px 32px 10px;
-    /* Top padding accounts for desktop header (46px) + 4px spacing, 10px left, 30px right */
+    padding: 30px 30px 0 10px;
+    /* Reduced top padding to 30px, removed bottom padding */
   }
 }
 
-/* When announcement bar is present, add extra top padding */
+/* When announcement bar is present, keep same 30px top padding */
 body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
-  padding-top: 78px;
-  /* Mobile: 63px header + 36px announcement + 4px spacing */
+  padding-top: 30px;
 }
 
 @media (min-width: 1024px) {
   body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
-    padding-top: 61px;
-    /* Desktop: 46px header + 36px announcement + 4px spacing */
+    padding-top: 30px;
   }
 }
 
@@ -197,16 +195,16 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
   gap: 0.5rem;
 }
 
-/* Permanent section - 40px top, 15px bottom */
+/* Permanent section - no extra padding */
 .hover-menu-section.permanent-section {
-  padding-top: 40px;
-  padding-bottom: 15px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-/* Common section - 20px top and bottom */
+/* Common section - minimal padding */
 .hover-menu-section.common-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* Category section - 20px top and bottom */
@@ -517,8 +515,8 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
 
 /* Nested panel content wrapper */
 .nested-panel-content {
-  padding: 42px 30px 32px 10px;
-  /* Match left panel padding: top/right/bottom/left */
+  padding: 30px 30px 0 10px;
+  /* Match left panel padding: 30px top, removed bottom padding */
   display: flex;
   flex-direction: column;
 }
@@ -538,21 +536,21 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
 /* Desktop: account for desktop header height */
 @media (min-width: 1024px) {
   .nested-panel-content {
-    padding: 25px 30px 32px 10px;
-    /* Match left panel desktop padding */
+    padding: 30px 30px 0 10px;
+    /* Match left panel desktop padding: 30px top, removed bottom padding */
   }
 }
 
 /* When announcement bar is present */
 body:has(.dynamic-announcement-bar) .nested-panel-content {
-  padding-top: 78px;
-  /* Match left panel: 63px header + 36px announcement + 4px spacing */
+  padding-top: 30px;
+  /* Match left panel: 30px consistent top padding */
 }
 
 @media (min-width: 1024px) {
   body:has(.dynamic-announcement-bar) .nested-panel-content {
-    padding-top: 61px;
-    /* Match left panel: 46px header + 36px announcement + 4px spacing */
+    padding-top: 30px;
+    /* Match left panel: 30px consistent top padding */
   }
 }
 
@@ -560,8 +558,7 @@ body:has(.dynamic-announcement-bar) .nested-panel-content {
 .nested-panel-list {
   list-style: none;
   margin: 0;
-  padding: 0;
-  padding-top: 20px;
+  padding: 4px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -576,7 +573,7 @@ body:has(.dynamic-announcement-bar) .nested-panel-content {
   text-decoration: none;
   transition: opacity 0.15s ease, transform 0.15s ease;
   display: block;
-  padding: 4px 0;
+  padding: 0;
 }
 
 .nested-panel-item:hover {

@@ -135,7 +135,7 @@ body:has(.dynamic-announcement-bar) .hero-left {
 /* Dynamic padding for announcement bar */
 body:has(.announcement-bar:not([hidden])) .hero-right,
 body:has(.dynamic-announcement-bar) .hero-right {
-  padding-top: 116px;
+  padding-top: 85px;
 }
 
 body:has(.announcement-bar:not([hidden])) .hero-right {

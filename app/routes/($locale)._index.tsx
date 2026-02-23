@@ -4,6 +4,7 @@ import { EditorialBanner } from '~/components/EditorialBanner';
 import { ParallaxMenu } from '~/components/ParallaxMenu';
 import bannerSS26 from '~/assets/home_page_banners/ss26.jpeg';
 import bannerSignature from '~/assets/home_page_banners/signature_jacket.png';
+import bannerSignatureMobile from '~/assets/home_page_banners/signature_jacket_mobile.jpeg';
 import bannerOriginals from '~/assets/home_page_banners/bl_originals.jpeg';
 import bannerArchive from '~/assets/home_page_banners/bl_archive.jpeg';
 import homeStyles from '~/styles/pages/home.css?url';
@@ -31,14 +32,14 @@ const COLLECTION_BANNERS: CollectionBannerConfig[] = [
     type: 'image',
     image: bannerOriginals,
     alt: 'The Blacmelo Originals',
-    linkLabel: 'THE BLACMELO ORIGINALS',
+    linkLabel: 'BLACMELO ORIGINALS',
     linkUrl: '/collections/the-blacmelo-originals',
   },
   {
     type: 'image',
     image: bannerArchive,
     alt: 'The Blacmelo Archive',
-    linkLabel: 'THE BLACMELO ARCHIVE',
+    linkLabel: 'BLACMELO ARCHIVE',
     linkUrl: '/collections/the-blacmelo-archive',
   },
 ];
@@ -85,6 +86,7 @@ export default function Homepage() {
         {/* Frame 2 - Signature Jacket */}
         <EditorialBanner
           image={bannerSignature}
+          mobileImage={bannerSignatureMobile}
           alt="BLACMELO Signature Jacket"
           showOverlay={true}
           overlayLabel="NOW LIVE"

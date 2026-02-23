@@ -206,13 +206,13 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             The Chamber
           </NavLink>
 
-          {/* DESKTOP: The Private Access */}
+          {/* DESKTOP: Private Access */}
           <NavLink
             prefetch="intent"
             to="/the-private-access"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
-            The Private Access
+            Private Access
           </NavLink>
 
           {/* DESKTOP only: Search + Wishlist */}

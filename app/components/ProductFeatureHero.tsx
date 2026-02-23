@@ -52,12 +52,14 @@ export function ProductFeatureHero({image, title, product}: ProductFeatureHeroPr
 
         {/* Right: Product Image */}
         <div className="product-feature-image">
-          <Image
-            data={image}
-            alt={title}
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="product-feature-img"
-          />
+          <div className="product-feature-img-container">
+            <Image
+              data={image}
+              alt={title}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="product-feature-img"
+            />
+          </div>
         </div>
       </div>
     </section>

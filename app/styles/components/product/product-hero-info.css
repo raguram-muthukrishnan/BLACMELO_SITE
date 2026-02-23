@@ -8,7 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   gap: 24px;
 }
 
@@ -295,7 +295,7 @@
 .hero-sizes {
   display: flex;
   gap: 0;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   flex-wrap: nowrap;
   width: 100%;
 }
@@ -389,9 +389,9 @@
 
   .hero-sizes,
   .hero-cart-container {
-    margin-left: -20px !important;
-    margin-right: -20px !important;
-    width: calc(100% + 40px) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
   }
 }
 
@@ -488,7 +488,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 40px;
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 @media (max-width: 1024px) {
@@ -522,7 +522,7 @@
 
 .expandable-section-btn {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
   padding: 16px 0;
@@ -536,15 +536,18 @@
   border: none;
   cursor: pointer;
   text-align: left;
+  gap: 12px;
 }
 
 .expandable-icon {
   font-size: 18px;
   font-weight: 300;
-  margin-left: auto;
-  padding-left: 12px;
   flex-shrink: 0;
   line-height: 1;
+}
+
+.expandable-title {
+  flex: 1;
 }
 
 /* Drop and Reveal Accordion - Mobile */
@@ -647,12 +650,12 @@
   /* Extra offset for announcement bar visibility */
   body:has(.dynamic-announcement-bar) .hero-product:has(.hero-expanded-view) .hero-right,
   body:has(.announcement-bar:not([hidden])) .hero-product:has(.hero-expanded-view) .hero-right {
-    padding-top: 116px;
+    padding-top: 85px;
   }
 
   body:has(.dynamic-announcement-bar) .hero-expanded-view,
   body:has(.announcement-bar:not([hidden])) .hero-expanded-view {
-    padding-top: 116px;
+    padding-top: 85px;
     /* match offset so overlay content drops below headers */
   }
 }
@@ -980,10 +983,18 @@
 /* Mobile Responsive */
 @media (max-width: 1024px) {
   .hero-header {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 16px;
+  }
+
+  .hero-header > div:first-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .hero-title {
@@ -994,6 +1005,7 @@
   .hero-price {
     font-size: 12px;
     line-height: 1.5;
+    flex-shrink: 0;
   }
 
   .hero-sizes {
@@ -1007,9 +1019,9 @@
   }
 
   .hero-cart-container {
-    margin-left: -20px;
-    margin-right: -20px;
-    width: calc(100% + 40px);
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
   }
 
   .swatches {

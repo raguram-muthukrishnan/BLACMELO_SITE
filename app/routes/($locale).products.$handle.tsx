@@ -218,6 +218,7 @@ export default function Product() {
         },
         image: (product.featuredImage || product.images?.nodes[0]) as any,
         sizes: sizes.length > 0 ? sizes : undefined,
+        colorFamily: colorFamily || undefined,
       });
     }
   }, [product, selectedVariant]);
@@ -287,11 +288,7 @@ export default function Product() {
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={[
         { label: 'Home', href: '/' },
-        { label: 'Shop', href: '/collections/all' },
-        ...(primaryCollection ? [{
-          label: primaryCollection.title,
-          href: `/collections/${primaryCollection.handle}`
-        }] : []),
+        { label: 'Products', href: '/collections/all' },
         { label: product.title }
       ]} />
 

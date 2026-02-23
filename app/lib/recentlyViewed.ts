@@ -21,6 +21,8 @@ export interface RecentlyViewedProduct {
   };
   /** Available size labels, e.g. ["XS","S","M","L"] */
   sizes?: Array<{ label: string; available: boolean }>;
+  /** Color family for the product */
+  colorFamily?: string;
   viewedAt: number;
 }
 

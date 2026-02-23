@@ -106,11 +106,27 @@ export function ProductCard({ product }: { product: any }) {
             </p>
           )}
 
-          {colorCount > 0 && (
-            <p className="text-[10px] text-gray-500 font-medium whitespace-nowrap">
-              • {colorCount} {colorCount === 1 ? 'Color' : 'Colors'}
-            </p>
-          )}
+          {(() => {
+            const colorFamilyMetafield = product.metafields?.find(
+              (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
+            );
+            const colorFamily = colorFamilyMetafield?.value;
+            
+            if (colorFamily) {
+              return (
+                <p className="text-[10px] text-gray-500 font-medium whitespace-nowrap">
+                  • {colorFamily}
+                </p>
+              );
+            } else if (colorCount > 0) {
+              return (
+                <p className="text-[10px] text-gray-500 font-medium whitespace-nowrap">
+                  • {colorCount} {colorCount === 1 ? 'Color' : 'Colors'}
+                </p>
+              );
+            }
+            return null;
+          })()}
         </div>
 
         {product.vendor && (

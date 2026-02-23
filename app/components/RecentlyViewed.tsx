@@ -72,10 +72,15 @@ export function RecentlyViewed() {
               </div>
 
               <div className="rv-card-info">
-                <h3 className="rv-card-title">{product.title}</h3>
-                <div className="rv-card-price">
-                  {product.price.currencyCode} {parseFloat(product.price.amount).toFixed(0)}
+                <div className="rv-card-header">
+                  <h3 className="rv-card-title">{product.title}</h3>
+                  <div className="rv-card-price">
+                    {product.price.currencyCode} {parseFloat(product.price.amount).toFixed(0)}
+                  </div>
                 </div>
+                {product.colorFamily ? (
+                  <div className="rv-card-color">{product.colorFamily}</div>
+                ) : null}
               </div>
             </Link>
           </div>

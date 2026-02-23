@@ -3,6 +3,10 @@
  */
 
 /* ─── Card layout ─────────────────────────────────────────────────────────── */
+.recently-viewed-section .product-grid {
+    gap: 9px;
+}
+
 .rv-card {
     display: flex;
     flex-direction: column;
@@ -93,6 +97,18 @@
 }
 
 /* ─── Product info below image ────────────────────────────────────────────── */
+.rv-card-info {
+    padding: 8px 0;
+}
+
+.rv-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
 .rv-card-title {
     font-family: 'Neue Haas Grotesk', sans-serif;
     font-size: 10px;
@@ -100,8 +116,9 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
     color: #000;
-    margin: 0 0 4px;
+    margin: 0;
     line-height: 1.35;
+    flex: 1;
 }
 
 .rv-card-price {
@@ -109,6 +126,17 @@
     font-size: 10px;
     font-weight: 400;
     color: #666;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.rv-card-color {
+    font-family: 'Neue Haas Grotesk', sans-serif;
+    font-size: 9px;
+    font-weight: 400;
+    color: #888;
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* ─── Pagination ──────────────────────────────────────────────────────────── */
@@ -181,8 +209,17 @@
 
 /* ─── Mobile ────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+    .recently-viewed-section {
+        padding: 0 20px 40px 20px;
+    }
+
+    .recently-viewed-section .product-grid {
+        gap: 5px;
+    }
+
     .recently-viewed-pagination {
         gap: 16px;
+        margin: 0;
     }
 
     .pagination-numbers {
