@@ -12,9 +12,9 @@ import { ScrollArea } from '~/components/ui/scroll-area';
 import { stopLenis, startLenis } from '~/lib/lenis';
 
 // Import banner images for hover effects
-import ss26Banner from '~/assets/home_page_banners/ss26.jpeg';
-import archiveBanner from '~/assets/home_page_banners/bl_archive.jpeg';
-import originalsBanner from '~/assets/home_page_banners/bl_originals.jpeg';
+import ss26Banner from '~/assets/final_banners/spring_summer.jpeg';
+import archiveBanner from '~/assets/final_banners/bl_archive.jpeg';
+import originalsBanner from '~/assets/final_banners/bl_originals.jpeg';
 
 interface DynamicHoverMenuProps {
   isActive: boolean;
