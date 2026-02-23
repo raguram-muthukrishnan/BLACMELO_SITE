@@ -78,9 +78,21 @@ export function RecentlyViewed() {
                     {product.price.currencyCode} {parseFloat(product.price.amount).toFixed(0)}
                   </div>
                 </div>
-                {product.colorFamily ? (
-                  <div className="rv-card-color">{product.colorFamily}</div>
-                ) : null}
+                {(() => {
+                  // If colorFamily exists, show it (e.g., "Midnight Blue")
+                  if (product.colorFamily) {
+                    return <div className="rv-card-color">{product.colorFamily}</div>;
+                  }
+                  // Otherwise, if colorCount exists and > 0, show count (e.g., "2 Colors")
+                  if (product.colorCount && product.colorCount > 0) {
+                    return (
+                      <div className="rv-card-color">
+                        {product.colorCount} {product.colorCount === 1 ? 'Color' : 'Colors'}
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </Link>
           </div>

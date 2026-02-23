@@ -21,8 +21,10 @@ export interface RecentlyViewedProduct {
   };
   /** Available size labels, e.g. ["XS","S","M","L"] */
   sizes?: Array<{ label: string; available: boolean }>;
-  /** Color family for the product */
+  /** Color family name or color count display */
   colorFamily?: string;
+  /** Number of color variants */
+  colorCount?: number;
   viewedAt: number;
 }
 

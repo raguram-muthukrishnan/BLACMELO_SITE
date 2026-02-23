@@ -99,6 +99,7 @@
 /* ─── Product info below image ────────────────────────────────────────────── */
 .rv-card-info {
     padding: 8px 0;
+    overflow: hidden;
 }
 
 .rv-card-header {
@@ -119,6 +120,11 @@
     margin: 0;
     line-height: 1.35;
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .rv-card-price {
@@ -137,6 +143,9 @@
     color: #888;
     margin: 0;
     line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ─── Pagination ──────────────────────────────────────────────────────────── */

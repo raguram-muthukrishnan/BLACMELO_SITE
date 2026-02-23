@@ -199,6 +199,25 @@ export default function Product() {
   // Track recently viewed products and determine primary collection for breadcrumbs
   useEffect(() => {
     if (product && selectedVariant) {
+      // Extract colorFamily from product metafields with fallback
+      const colorFamilyField = Array.isArray(product.metafields)
+        ? product.metafields.find(
+            (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
+          )
+        : null;
+      const colorFamily = colorFamilyField?.value || null;
+
+      // Count unique colors from variants
+      const colorCount = product.variants?.nodes
+        ? [...new Set(product.variants.nodes
+          .map((v: any) => {
+            const colorOption = v.selectedOptions?.find((opt: any) => opt.name.toLowerCase() === 'color');
+            return colorOption?.value;
+          })
+          .filter(Boolean)
+        )].length
+        : 0;
+
       // Build sizes list from variants
       const sizes = (product.variants?.nodes || [])
         .map((v: any) => {
@@ -219,6 +238,7 @@ export default function Product() {
         image: (product.featuredImage || product.images?.nodes[0]) as any,
         sizes: sizes.length > 0 ? sizes : undefined,
         colorFamily: colorFamily || undefined,
+        colorCount: colorCount > 0 ? colorCount : undefined,
       });
     }
   }, [product, selectedVariant]);
@@ -305,6 +325,7 @@ export default function Product() {
           compareAtPriceRange: product.compareAtPriceRange,
           variants: product.variants,
           options: product.options,
+          metafields: product.metafields,
         })) || []}
         horizontalScroll={true}
         showViewMore={true}
@@ -523,6 +544,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         identifiers: [
           {namespace: "custom", key: "color_name"}
           {namespace: "custom", key: "color"}
+          {namespace: "custom", key: "color_family"}
           {namespace: "category", key: "color"}
           {namespace: "category", key: "Color"}
         ]
@@ -610,6 +632,7 @@ const BEST_SELLERS_QUERY = `#graphql
             identifiers: [
               {namespace: "custom", key: "color_name"}
               {namespace: "custom", key: "color"}
+              {namespace: "custom", key: "color_family"}
               {namespace: "category", key: "color"}
               {namespace: "category", key: "Color"}
             ]
