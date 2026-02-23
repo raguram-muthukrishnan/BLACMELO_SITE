@@ -283,6 +283,14 @@
   object-fit: cover;
 }
 
+.represent-hero-image.ss26-hero {
+  object-position: top;
+}
+
+.represent-hero-image.originals-hero {
+  object-position: top;
+}
+
 .represent-hero-video {
   width: 100%;
   height: 100%;
@@ -326,7 +334,8 @@
 /* Controls Bar - View Toggle, Model Toggle, Filter */
 .represent-controls-bar {
   position: sticky;
-  top: 44px; /* Below header */
+  top: 44px;
+  /* Below header */
   z-index: 40;
   background: white;
   border-bottom: 1px solid #e5e5e5;
@@ -657,7 +666,8 @@
 /* Responsive - Mobile */
 @media (max-width: 768px) {
   .represent-controls-bar {
-    top: 44px; /* Mobile header height */
+    top: 44px;
+    /* Mobile header height */
     padding: 8px 16px;
   }
 

@@ -38,14 +38,14 @@ export const categoryHardcodedLinks: Record<string, HardcodedLink[]> = {
   // Explore category - fully hardcoded category with custom links
   explore: [
     {
-      name: 'The Prestige',
-      link: '/the-prestige',
+      name: 'The Chamber',
+      link: '/the-chamber',
       order: 1,
       itemType: 'dynamic',
     },
     {
-      name: 'The Vault',
-      link: '/the-vault',
+      name: 'The Private Access',
+      link: '/the-private-access',
       order: 2,
       itemType: 'dynamic',
     },

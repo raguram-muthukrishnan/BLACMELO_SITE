@@ -1,8 +1,8 @@
-import {redirect, useLoaderData} from 'react-router';
-import type {LoaderFunctionArgs, MetaFunction} from 'react-router';
-import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
-import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
+import { redirect, useLoaderData } from 'react-router';
+import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
+import { getPaginationVariables, Analytics } from '@shopify/hydrogen';
+import { redirectIfHandleIsLocalized } from '~/lib/redirect';
+import { RepresentCollectionPage } from '~/components/RepresentCollectionPage';
 // import {CollectionPage} from '~/components/CollectionPage'; // Original style
 import collectionStyles from '~/styles/pages/collection.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
@@ -11,15 +11,15 @@ import buttonsStyles from '~/styles/components/buttons.css?url';
 import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: collectionStyles},
-  {rel: 'stylesheet', href: productGridStyles},
-  {rel: 'stylesheet', href: productCardStyles},
-  {rel: 'stylesheet', href: buttonsStyles},
-  {rel: 'stylesheet', href: filterPanelStyles},
+  { rel: 'stylesheet', href: collectionStyles },
+  { rel: 'stylesheet', href: productGridStyles },
+  { rel: 'stylesheet', href: productCardStyles },
+  { rel: 'stylesheet', href: buttonsStyles },
+  { rel: 'stylesheet', href: filterPanelStyles },
 ];
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `BLACMELO | ${data?.collection?.title ?? ''}`}];
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `BLACMELO | ${data?.collection?.title ?? ''}` }];
 };
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -29,16 +29,16 @@ export async function loader(args: LoaderFunctionArgs) {
   // Await the critical data required to render initial state of the page~~
   const criticalData = await loadCriticalData(args);
 
-  return {...deferredData, ...criticalData};
+  return { ...deferredData, ...criticalData };
 }
 
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
-async function loadCriticalData({context, params, request}: LoaderFunctionArgs) {
-  const {handle} = params;
-  const {storefront} = context;
+async function loadCriticalData({ context, params, request }: LoaderFunctionArgs) {
+  const { handle } = params;
+  const { storefront } = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 30, // Load 30 products per page ~~
   });
@@ -54,9 +54,9 @@ async function loadCriticalData({context, params, request}: LoaderFunctionArgs) 
     throw redirect(`${url.pathname.replace(/\/collections\/[^/]+/, '/collections/unisex')}${url.search}`);
   }
 
-  const [{collection}] = await Promise.all([
+  const [{ collection }] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables},
+      variables: { handle, ...paginationVariables },
       // Add other queries here, so that they are loaded in parallel
     }),
   ]);
@@ -68,7 +68,7 @@ async function loadCriticalData({context, params, request}: LoaderFunctionArgs) 
   }
 
   // The API handle might be localized, so redirect to the localized handle
-  redirectIfHandleIsLocalized(request, {handle, data: collection});
+  redirectIfHandleIsLocalized(request, { handle, data: collection });
 
   return {
     collection,
@@ -80,12 +80,12 @@ async function loadCriticalData({context, params, request}: LoaderFunctionArgs) 
  * fetched after the initial page load. If it's unavailable, the page should still 200.
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
-function loadDeferredData({context}: LoaderFunctionArgs) {
+function loadDeferredData({ context }: LoaderFunctionArgs) {
   return {};
 }
 
 export default function Collection() {
-  const {collection} = useLoaderData<typeof loader>();
+  const { collection } = useLoaderData<typeof loader>();
 
   return (
     <>
@@ -111,6 +111,8 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     id
     handle
     title
+    productType
+    vendor
     featuredImage {
       id
       altText

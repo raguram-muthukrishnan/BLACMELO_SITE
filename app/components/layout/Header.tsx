@@ -1,17 +1,16 @@
-import {NavLink} from 'react-router';
-import {useState, useRef, useCallback, useEffect, Suspense} from 'react';
-import {Await, useAsyncValue} from 'react-router';
-import {useOptimisticCart, useAnalytics, type CartViewPayload} from '@shopify/hydrogen';
-import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
-import {Menu, User, ShoppingBag, Search, Bookmark, X} from 'lucide-react';
-import {DynamicHoverMenu} from '~/components/ui/DynamicHoverMenu';
+import { NavLink } from 'react-router';
+import { useState, useRef, useCallback, useEffect, Suspense } from 'react';
+import { Await, useAsyncValue } from 'react-router';
+import { useOptimisticCart, useAnalytics, type CartViewPayload } from '@shopify/hydrogen';
+import type { HeaderQuery, CartApiQueryFragment } from 'storefrontapi.generated';
+import { Menu, User, ShoppingBag, Search, Bookmark, X } from 'lucide-react';
+import { DynamicHoverMenu } from '~/components/ui/DynamicHoverMenu';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
 import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 import logoImage from '~/assets/logos/Logo.avif';
-import {useAside} from '~/components/Aside';
-import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
-import {getFallbackDynamicMenu} from '~/lib/dynamicHeaderMenu';
-import headerStyles from '~/styles/layout/header.css?url';
+import { useAside } from '~/components/Aside';
+import type { DynamicMenuConfig } from '~/lib/dynamicHeaderMenu';
+import { getFallbackDynamicMenu } from '~/lib/dynamicHeaderMenu';
 
 type HeaderProps = {
   header: HeaderQuery;
@@ -23,44 +22,26 @@ type HeaderProps = {
   womenMenuConfig?: DynamicMenuConfig;
 };
 
-export function Header({isProductPage = false, isWhiteHeaderPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart}: HeaderProps) {
+export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart }: HeaderProps) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const {open: openAside, close: closeAside, type: asideType} = useAside();
-  
-  // Track if mobile menu is open
-  const isMobileMenuOpen = asideType === 'mobile';
+  const { open: openAside, close: closeAside, type: asideType } = useAside();
 
-  // Use provided menu configs or fallback
+  const isMobileMenuOpen = asideType === 'mobile';
+  const isCartOpen = asideType === 'cart';
+
   const menMenuConfig = providedMenMenuConfig || getFallbackDynamicMenu(menuManImage);
   const womenMenuConfig = providedWomenMenuConfig || getFallbackDynamicMenu(menuWomanImage);
-  
-  // Select the appropriate menu config based on active menu
   const currentMenuConfig = activeMenu === 'blacmelo-club' ? womenMenuConfig : menMenuConfig;
 
-  // Debug logging
-  useEffect(() => {
-    console.log('🎨 Header menu configs:', {
-      menSections: menMenuConfig.sections.length,
-      womenSections: womenMenuConfig.sections.length,
-      activeMenu: activeMenu,
-    });
-  }, [menMenuConfig, womenMenuConfig, activeMenu]);
-
-  // Handle scroll to change header background
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 50);
+      setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleMenuEnter = useCallback((menu: string) => {
@@ -72,126 +53,189 @@ export function Header({isProductPage = false, isWhiteHeaderPage = false, menMen
   }, []);
 
   const handleMenuLeave = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      setActiveMenu(null);
-    }, 150);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setActiveMenu(null), 150);
   }, []);
 
   const handleTriggerEnter = useCallback((menu: string) => {
-    console.log('🖱️ Mouse entered:', menu);
     handleMenuEnter(menu);
   }, [handleMenuEnter]);
 
   const handleMobileMenuClick = () => {
-    if (isMobileMenuOpen) {
-      closeAside();
-    } else {
-      openAside('mobile');
-    }
+    if (isMobileMenuOpen || isCartOpen) closeAside();
+    else openAside('mobile');
+  };
+
+  const handleMobileSearchClick = () => {
+    if (isMobileMenuOpen || isCartOpen) closeAside();
+    openAside('search');
   };
 
   return (
-    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''} ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''} ${isMobileMenuOpen || isCartOpen ? 'mobile-menu-open' : ''}`}>
       <div className="blacmelo-header-container">
-        {/* Left Navigation */}
+
+        {/* ===== LEFT NAV ===== */}
         <nav className="blacmelo-header-left">
-          {/* Mobile Menu Button - Transforms to Close Button */}
-          <button 
-            className={`blacmelo-mobile-menu-btn ${isMobileMenuOpen ? 'menu-open' : ''}`}
-            onClick={handleMobileMenuClick}
-            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-          >
-            <span className="menu-icon-wrapper">
-              <Menu size={24} className="menu-icon" />
-              <X size={24} className="close-icon" />
-            </span>
-          </button>
-          
-          {/* Desktop Links - Only Shop and Blacmelo Club */}
+
+          {/* MOBILE — CLOSED: sandwich icon */}
+          {!(isMobileMenuOpen || isCartOpen) && (
+            <button
+              className="blacmelo-mobile-menu-btn mobile-only"
+              onClick={handleMobileMenuClick}
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+          )}
+
+          {/* MOBILE — CLOSED: search icon (2nd slot) */}
+          {!(isMobileMenuOpen || isCartOpen) && (
+            <button
+              className="blacmelo-header-icon mobile-only"
+              onClick={handleMobileSearchClick}
+              aria-label="Search"
+            >
+              <Search size={20} />
+            </button>
+          )}
+
+          {/* MOBILE — OPEN (Menu or Cart): close icon (1st slot) */}
+          {(isMobileMenuOpen || isCartOpen) && (
+            <button
+              className="blacmelo-mobile-menu-btn mobile-only"
+              onClick={handleMobileMenuClick}
+              aria-label="Close"
+            >
+              <X size={22} />
+            </button>
+          )}
+
+          {/* MOBILE — OPEN (Menu or Cart): search icon (2nd slot) */}
+          {(isMobileMenuOpen || isCartOpen) && (
+            <button
+              className="blacmelo-header-icon mobile-only"
+              onClick={handleMobileSearchClick}
+              aria-label="Search"
+            >
+              <Search size={20} />
+            </button>
+          )}
+
+          {/* MOBILE — OPEN (Menu or Cart): wishlist icon (3rd slot) */}
+          {(isMobileMenuOpen || isCartOpen) && (
+            <NavLink
+              prefetch="intent"
+              to="/wishlist"
+              className="blacmelo-header-icon mobile-only"
+              aria-label="Wishlist"
+              onClick={closeAside}
+            >
+              <Bookmark size={20} />
+            </NavLink>
+          )}
+
+          {/* DESKTOP: Man hover link */}
           <div
-            className="hover-menu-trigger"
+            className="hover-menu-trigger desktop-only"
             onMouseEnter={() => handleTriggerEnter('shop')}
           >
             <NavLink
               prefetch="intent"
               to="/collections/full-collection"
-              className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
+              className="blacmelo-header-link"
               end={false}
             >
               Man
             </NavLink>
           </div>
-          
+
+          {/* DESKTOP: Women hover link */}
           <div
-            className="hover-menu-trigger"
+            className="hover-menu-trigger desktop-only"
             onMouseEnter={() => handleTriggerEnter('blacmelo-club')}
           >
             <NavLink
               prefetch="intent"
               to="/collections/full-collection"
-              className={({isActive}) => `blacmelo-header-link ${isActive ? '' : ''}`}
+              className="blacmelo-header-link"
               end={false}
             >
               Women
             </NavLink>
           </div>
 
+          {/* DESKTOP: Blacmelo Club */}
           <NavLink
             prefetch="intent"
             to="/collections/blacmelo-club"
-            className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
+            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
             Blacmelo Club
           </NavLink>
         </nav>
 
-        {/* Center Logo */}
-        <NavLink prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
-          <img src={logoImage} alt="BLACMELO" className="blacmelo-logo-image" />
-        </NavLink>
+        {/* ===== CENTER LOGO — hidden on mobile when menu/cart is open ===== */}
+        {!(isMobileMenuOpen || isCartOpen) && (
+          <NavLink prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
+            <img src={logoImage} alt="BLACMELO" className="blacmelo-logo-image" />
+          </NavLink>
+        )}
 
-        {/* Right Navigation */}
+        {/* ===== RIGHT NAV ===== */}
         <nav className="blacmelo-header-right">
-          {/* Desktop Links */}
-          <NavLink 
-            prefetch="intent" 
-            to="/the-vault" 
-            className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
+
+          {/* MOBILE — OPEN: Man link on far right */}
+          {(isMobileMenuOpen || isCartOpen) && (
+            <NavLink
+              prefetch="intent"
+              to="/collections/full-collection"
+              className="blacmelo-header-link mobile-only mobile-man-link"
+              onClick={closeAside}
+            >
+              SHOP
+            </NavLink>
+          )}
+
+          {/* DESKTOP: The Chamber */}
+          <NavLink
+            prefetch="intent"
+            to="/the-chamber"
+            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
-            The Vault
+            The Chamber
           </NavLink>
-          <NavLink 
-            prefetch="intent" 
-            to="/the-prestige" 
-            className={({isActive}) => `blacmelo-header-link ${isActive ? 'active' : ''}`}
+
+          {/* DESKTOP: The Private Access */}
+          <NavLink
+            prefetch="intent"
+            to="/the-private-access"
+            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
-            The Prestige
+            The Private Access
           </NavLink>
-          
-          {/* Search Icon */}
-          <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon" aria-label="Search">
+
+          {/* DESKTOP only: Search + Wishlist */}
+          <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">
             <Search size={20} />
           </NavLink>
-          
-          {/* Wishlist Icon */}
-          <NavLink prefetch="intent" to="/wishlist" className="blacmelo-header-icon" aria-label="Wishlist">
+          <NavLink prefetch="intent" to="/wishlist" className="blacmelo-header-icon desktop-only" aria-label="Wishlist">
             <Bookmark size={20} />
           </NavLink>
-          
-          {/* User Icon (visible on all screens) */}
-          <NavLink prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
-            <User size={20} />
-          </NavLink>
 
-          {/* Cart Icon with Badge */}
+          {/* Account — visible on all screens but hidden on mobile when menu/cart is open */}
+          {!(isMobileMenuOpen || isCartOpen) && (
+            <NavLink prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
+              <User size={20} />
+            </NavLink>
+          )}
+
+          {/* Cart — always visible (will trigger aside on mobile too) */}
           <CartToggle cart={cart} />
         </nav>
       </div>
 
-      {/* Dynamic Hover Menu - Shows for both Shop and Blacmelo Club */}
+      {/* Desktop hover menu */}
       {(activeMenu === 'shop' || activeMenu === 'blacmelo-club') && (
         <DynamicHoverMenu
           isActive={true}
@@ -203,7 +247,7 @@ export function Header({isProductPage = false, isWhiteHeaderPage = false, menMen
   );
 }
 
-function CartToggle({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
+function CartToggle({ cart }: { cart: Promise<CartApiQueryFragment | null> }) {
   return (
     <Suspense fallback={<CartBadge count={null} />}>
       <Await resolve={cart}>
@@ -219,22 +263,26 @@ function CartBanner() {
   return <CartBadge count={cart?.totalQuantity ?? 0} />;
 }
 
-function CartBadge({count}: {count: number | null}) {
-  const {open} = useAside();
-  const {publish, shop, cart, prevCart} = useAnalytics();
+function CartBadge({ count }: { count: number | null }) {
+  const { open, close, type: asideType } = useAside();
+  const { publish, shop, cart, prevCart } = useAnalytics();
+  const isCartOpen = asideType === 'cart';
 
   return (
     <button
       className="blacmelo-cart-icon"
       onClick={(e) => {
         e.preventDefault();
-        open('cart');
-        publish('cart_viewed', {
-          cart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        } as CartViewPayload);
+        if (isCartOpen) close();
+        else {
+          open('cart');
+          publish('cart_viewed', {
+            cart,
+            prevCart,
+            shop,
+            url: window.location.href || '',
+          } as CartViewPayload);
+        }
       }}
       aria-label={`Cart with ${count ?? 0} items`}
     >

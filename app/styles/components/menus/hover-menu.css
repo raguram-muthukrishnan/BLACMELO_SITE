@@ -16,11 +16,13 @@
  */
 .hover-menu-page-overlay {
   position: fixed;
-  top: 0; /* Start from very top to cover announcement bar */
+  top: 0;
+  /* Start from very top to cover announcement bar */
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 998; /* Above announcement bar (90) and header (100), below menu (999) */
+  z-index: 998;
+  /* Above announcement bar (90) and header (100), below menu (999) */
   pointer-events: none;
 
   /* Dim layer - matches cart overlay (35% opacity) */
@@ -33,7 +35,7 @@
   /* Start invisible; transition to fully visible */
   opacity: 0;
   transition: opacity 300ms ease;
-  
+
   /* Ensure it's always rendered */
   visibility: hidden;
 }
@@ -41,7 +43,8 @@
 .hover-menu-page-overlay.is-visible {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto; /* Allow clicks to close menu */
+  pointer-events: auto;
+  /* Allow clicks to close menu */
 }
 
 /**
@@ -58,11 +61,14 @@
 /* Unified Hover Menu Overlay - Single persistent container */
 .unified-hover-menu-overlay {
   position: fixed;
-  top: 46px; /* Desktop header height */
+  top: 46px;
+  /* Desktop header height */
   left: 0;
   width: 50vw;
-  height: calc(100vh - 46px); /* Account for header */
-  z-index: 999; /* Above blur overlay (998), below header when active (1000) */
+  height: calc(100vh - 46px);
+  /* Account for header */
+  z-index: 999;
+  /* Above blur overlay (998), below header when active (1000) */
   background: white;
   pointer-events: auto;
   display: flex;
@@ -76,6 +82,7 @@
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -84,17 +91,19 @@
 
 /* Adjust for announcement bar */
 body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
-  top: calc(46px + 36px); /* Header + Announcement bar */
+  top: calc(46px + 36px);
+  /* Header + Announcement bar */
   height: calc(100vh - 46px - 36px);
 }
 
 /* Mobile adjustments */
 @media (max-width: 1023px) {
   .unified-hover-menu-overlay {
-    top: 63px; /* Mobile header height */
+    top: 63px;
+    /* Mobile header height */
     height: calc(100vh - 63px);
   }
-  
+
   body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
     top: calc(63px + 36px);
     height: calc(100vh - 63px - 36px);
@@ -121,6 +130,7 @@ body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -136,21 +146,22 @@ body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
 
 /* Base UI ScrollArea Viewport - the actual scrollable container */
 .hover-menu-sections [data-slot="scroll-area-viewport"],
-.hover-menu-sections > div {
+.hover-menu-sections>div {
   height: 100% !important;
   -webkit-overflow-scrolling: touch;
   pointer-events: auto !important;
 }
 
 /* Also target by direct child */
-.hover-menu-sections > * {
+.hover-menu-sections>* {
   height: 100%;
   pointer-events: auto !important;
 }
 
 /* ScrollArea content wrapper */
 .hover-menu-sections-content {
-  padding: 67px 30px 32px 10px; /* Top padding accounts for mobile header (63px) + 4px spacing, 10px left, 30px right */
+  padding: 42px 30px 32px 10px;
+  /* Top padding accounts for mobile header (63px) + 4px spacing, 10px left, 30px right */
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -159,18 +170,21 @@ body:has(.announcement-bar:not([hidden])) .unified-hover-menu-overlay {
 /* Desktop: larger horizontal padding and account for desktop header height (46px) */
 @media (min-width: 1024px) {
   .hover-menu-sections-content {
-    padding: 50px 30px 32px 10px; /* Top padding accounts for desktop header (46px) + 4px spacing, 10px left, 30px right */
+    padding: 25px 30px 32px 10px;
+    /* Top padding accounts for desktop header (46px) + 4px spacing, 10px left, 30px right */
   }
 }
 
 /* When announcement bar is present, add extra top padding */
 body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
-  padding-top: 103px; /* Mobile: 63px header + 36px announcement + 4px spacing */
+  padding-top: 78px;
+  /* Mobile: 63px header + 36px announcement + 4px spacing */
 }
 
 @media (min-width: 1024px) {
   body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
-    padding-top: 86px; /* Desktop: 46px header + 36px announcement + 4px spacing */
+    padding-top: 61px;
+    /* Desktop: 46px header + 36px announcement + 4px spacing */
   }
 }
 
@@ -381,20 +395,20 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
 }
 
 /* Scrollbar thumb */
-.hover-menu-sections [role="scrollbar"] > *,
-.hover-menu-nested-panel [role="scrollbar"] > * {
+.hover-menu-sections [role="scrollbar"]>*,
+.hover-menu-nested-panel [role="scrollbar"]>* {
   background-color: rgba(0, 0, 0, 0.2) !important;
   border-radius: 4px !important;
   transition: background-color 0.2s ease;
 }
 
-.hover-menu-sections:hover [role="scrollbar"] > *,
-.hover-menu-nested-panel:hover [role="scrollbar"] > * {
+.hover-menu-sections:hover [role="scrollbar"]>*,
+.hover-menu-nested-panel:hover [role="scrollbar"]>* {
   background-color: rgba(0, 0, 0, 0.35) !important;
 }
 
-.hover-menu-sections [role="scrollbar"]:hover > *,
-.hover-menu-nested-panel [role="scrollbar"]:hover > * {
+.hover-menu-sections [role="scrollbar"]:hover>*,
+.hover-menu-nested-panel [role="scrollbar"]:hover>* {
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -402,68 +416,75 @@ body:has(.dynamic-announcement-bar) .hover-menu-sections-content {
 .hover-menu-right-panel {
   flex: 1;
   overflow: hidden;
-  background: #f5f5f5;
+  background: #ffffff;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Image container - with fade transitions */
-.hover-menu-image {
+/* Media containers - unified for video and images */
+.hover-menu-media-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.hover-menu-media-container.fade-out {
+  opacity: 0;
+  animation: mediaFadeOut 0.3s ease-in-out;
+}
+
+/* Image wrapper for banners - Strictly enforced 30px padding */
+.hover-menu-image-wrapper {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+  bottom: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 67px 24px 24px 24px; /* Top padding accounts for mobile header (63px) + 4px spacing */
-  transition: opacity 0.3s ease;
 }
 
-.hover-menu-image.fade-in {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.hover-menu-image.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Desktop: account for desktop header height (46px) */
-@media (min-width: 1024px) {
-  .hover-menu-image {
-    padding: 50px 24px 24px 24px; /* Top padding accounts for desktop header (46px) + 4px spacing */
-  }
-}
-
-/* When announcement bar is present, add extra top padding */
-body:has(.dynamic-announcement-bar) .hover-menu-image {
-  padding-top: 103px; /* Mobile: 63px header + 36px announcement + 4px spacing */
-}
-
-@media (min-width: 1024px) {
-  body:has(.dynamic-announcement-bar) .hover-menu-image {
-    padding-top: 86px; /* Desktop: 46px header + 36px announcement + 4px spacing */
-  }
-}
-
-.hover-menu-image img {
+.menu-banner-img {
   width: 100%;
   height: 100%;
-  max-width: 400px;
-  max-height: 600px;
   object-fit: cover;
-  object-position: center top;
-  border-radius: 4px;
-  transition: transform 0.3s ease;
+  object-position: top;
+  display: block;
+  /* Faster, smoother dissolve to prevent flashing */
+  animation: mediaDissolve 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.hover-menu-image:hover img {
-  transform: scale(1.02);
+@keyframes mediaDissolve {
+  from {
+    opacity: 0.6;
+    /* Start from 0.6 to minimize the white flash */
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Video container - matches represent-hero style */
+.represent-hero-video-container {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.represent-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 /* Nested collections panel - shows on right when parent is hovered */
@@ -474,6 +495,7 @@ body:has(.dynamic-announcement-bar) .hover-menu-image {
   width: 100%;
   height: 100%;
   background: white;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -482,20 +504,21 @@ body:has(.dynamic-announcement-bar) .hover-menu-image {
 
 /* Base UI ScrollArea Viewport for nested panel */
 .hover-menu-nested-panel [data-slot="scroll-area-viewport"],
-.hover-menu-nested-panel > div {
+.hover-menu-nested-panel>div {
   height: 100% !important;
   -webkit-overflow-scrolling: touch;
   pointer-events: auto !important;
 }
 
-.hover-menu-nested-panel > * {
+.hover-menu-nested-panel>* {
   height: 100%;
   pointer-events: auto !important;
 }
 
 /* Nested panel content wrapper */
 .nested-panel-content {
-  padding: 67px 30px 32px 10px; /* Match left panel padding: top/right/bottom/left */
+  padding: 42px 30px 32px 10px;
+  /* Match left panel padding: top/right/bottom/left */
   display: flex;
   flex-direction: column;
 }
@@ -515,18 +538,21 @@ body:has(.dynamic-announcement-bar) .hover-menu-image {
 /* Desktop: account for desktop header height */
 @media (min-width: 1024px) {
   .nested-panel-content {
-    padding: 50px 30px 32px 10px; /* Match left panel desktop padding */
+    padding: 25px 30px 32px 10px;
+    /* Match left panel desktop padding */
   }
 }
 
 /* When announcement bar is present */
 body:has(.dynamic-announcement-bar) .nested-panel-content {
-  padding-top: 103px; /* Match left panel: 63px header + 36px announcement + 4px spacing */
+  padding-top: 78px;
+  /* Match left panel: 63px header + 36px announcement + 4px spacing */
 }
 
 @media (min-width: 1024px) {
   body:has(.dynamic-announcement-bar) .nested-panel-content {
-    padding-top: 86px; /* Match left panel: 46px header + 36px announcement + 4px spacing */
+    padding-top: 61px;
+    /* Match left panel: 46px header + 36px announcement + 4px spacing */
   }
 }
 

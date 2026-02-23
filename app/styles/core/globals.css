@@ -30,11 +30,12 @@ body {
 }
 
 /* Override reset.css main margin */
-body > main,
+body>main,
 main {
   margin: 0 !important;
   padding: 0 !important;
-  padding-top: 44px; /* Default header height */
+  padding-top: 44px;
+  /* Default header height */
   width: 100%;
   overflow-x: hidden;
 }
@@ -91,12 +92,15 @@ button {
 
 /* Hide scrollbar on homepage */
 body:has(.homepage) {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 body:has(.homepage)::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* Override any default main padding/margin */
@@ -179,4 +183,23 @@ header.blacmelo-header {
   width: 10px !important;
   height: 10px !important;
   font-size: 10px !important;
+}
+
+/* Utility - Visibility */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
 }

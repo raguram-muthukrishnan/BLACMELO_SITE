@@ -34,12 +34,22 @@ interface ColorProduct {
 interface ColorProductSwitcherProps {
   products: ColorProduct[];
   currentProductHandle: string;
+  isInWishlistState?: boolean;
+  onWishlistToggle?: () => void;
 }
 
-export function ColorProductSwitcher({ products, currentProductHandle }: ColorProductSwitcherProps) {
+export function ColorProductSwitcher({
+  products,
+  currentProductHandle,
+  isInWishlistState = false,
+  onWishlistToggle
+}: ColorProductSwitcherProps) {
   if (!products || products.length <= 1) {
     return null;
   }
+
+  const otherProducts = products.filter(product => product.handle !== currentProductHandle);
+  const currentProduct = products.find(p => p.handle === currentProductHandle) || products[0];
 
   // Check if any product has stock
   const hasAvailableStock = (product: ColorProduct) => {
@@ -52,7 +62,7 @@ export function ColorProductSwitcher({ products, currentProductHandle }: ColorPr
       if (!product.metafields || !Array.isArray(product.metafields)) {
         return product.title;
       }
-      
+
       const colorNameField = product.metafields.find(
         m => m && m.namespace === 'custom' && m.key === 'color_name'
       );
@@ -66,14 +76,27 @@ export function ColorProductSwitcher({ products, currentProductHandle }: ColorPr
   return (
     <div className="color-product-switcher">
       <div className="color-switcher-header">
-        <span className="color-switcher-label">
-          Select Colour <sup className="color-count">{products.length}</sup>
-        </span>
-        <span className="color-switcher-current">{getColorName(products.find(p => p.handle === currentProductHandle) || products[0])}</span>
+        <div className="color-switcher-left-group">
+          <span className="color-switcher-label">
+            Select Colour <sup className="color-count">{otherProducts.length}</sup>
+          </span>
+          <span className="color-switcher-current">{getColorName(currentProduct)}</span>
+        </div>
+
+        {onWishlistToggle && (
+          <button
+            className={`bookmark-btn ${isInWishlistState ? 'active' : ''}`}
+            onClick={onWishlistToggle}
+            aria-label={isInWishlistState ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <svg width="18" height="18" viewBox="0 0 16 16" fill={isInWishlistState ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+              <path d="M3 2h10v12l-5-3-5 3V2z" />
+            </svg>
+          </button>
+        )}
       </div>
       <div className="color-product-grid">
-        {products.map((product) => {
-          const isSelected = product.handle === currentProductHandle;
+        {otherProducts.map((product) => {
           const isAvailable = hasAvailableStock(product);
           const colorName = getColorName(product);
 
@@ -82,7 +105,7 @@ export function ColorProductSwitcher({ products, currentProductHandle }: ColorPr
               key={product.id}
               to={`/products/${product.handle}`}
               prefetch="intent"
-              className={`color-product-swatch ${isSelected ? 'active' : ''} ${!isAvailable ? 'out-of-stock' : ''}`}
+              className={`color-product-swatch ${!isAvailable ? 'out-of-stock' : ''}`}
               aria-label={`${colorName} - ${isAvailable ? 'Available' : 'Out of stock'}`}
             >
               {product.featuredImage && (

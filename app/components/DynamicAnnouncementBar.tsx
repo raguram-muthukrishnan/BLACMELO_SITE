@@ -1,9 +1,10 @@
 /**
- * Dynamic Announcement Bar with Ticker Animation
- * Supports multiple announcements from Shopify metafields
+ * Dynamic Announcement Bar with Center Carousel + Arrows
+ * Permanent version (no close button)
  */
 
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface AnnouncementItem {
   id: string;
@@ -17,63 +18,87 @@ interface DynamicAnnouncementBarProps {
   announcements?: AnnouncementItem[];
 }
 
-export function DynamicAnnouncementBar({announcements}: DynamicAnnouncementBarProps) {
-  const [isPaused, setIsPaused] = useState(false);
-  const tickerRef = useRef<HTMLDivElement>(null);
+export function DynamicAnnouncementBar({ announcements }: DynamicAnnouncementBarProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Default content if none provided
+  const fallbackMessages = [
+    'SECURE PAYMENTS',
+    'FREE SHIPPING',
+    'EASY RETURNS'
+  ];
 
   // Filter enabled announcements and sort by order
   const activeAnnouncements = announcements
     ?.filter(a => a.enabled)
     .sort((a, b) => a.order - b.order) || [];
 
-  // If no announcements, use fallback
-  if (activeAnnouncements.length === 0) {
-    return <FallbackAnnouncementBar />;
-  }
+  const messages = activeAnnouncements.length > 0
+    ? activeAnnouncements.map(a => a.message.toUpperCase())
+    : fallbackMessages;
 
-  // Create announcement text with separators
-  const announcementText = activeAnnouncements
-    .map(a => a.message)
-    .join('  •  ');
+  // Carousel logic
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % messages.length);
+  }, [messages.length]);
+
+  const handlePrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + messages.length) % messages.length);
+  }, [messages.length]);
+
+  // Auto-slide
+  useEffect(() => {
+    if (messages.length <= 1) return;
+    const interval = setInterval(handleNext, 2000); // Change every 2 seconds
+    return () => clearInterval(interval);
+  }, [handleNext, messages.length]);
+
+  // Always sync visibility to body class for layout awareness
+  useEffect(() => {
+    document.body.classList.add('announcement-visible');
+    document.body.classList.remove('announcement-hidden');
+
+    return () => {
+      document.body.classList.remove('announcement-visible');
+    };
+  }, []);
 
   return (
-    <div 
-      className="dynamic-announcement-bar"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      <div className="announcement-ticker-container">
-        <div 
-          ref={tickerRef}
-          className={`announcement-ticker ${isPaused ? 'paused' : ''}`}
+    <div className="dynamic-announcement-bar carousel-type">
+      <div className="announcement-carousel-container">
+        <button
+          className="announcement-nav-btn prev"
+          onClick={handlePrev}
+          aria-label="Previous announcement"
         >
-          {/* Duplicate content for seamless loop */}
-          <span className="announcement-ticker-content">
-            {announcementText}
-          </span>
-          <span className="announcement-ticker-content" aria-hidden="true">
-            {announcementText}
-          </span>
+          <ChevronLeft size={14} strokeWidth={1.5} />
+        </button>
+
+        <div className="announcement-carousel-content">
+          <div
+            className="announcement-carousel-track"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {messages.map((msg, idx) => (
+              <div key={idx} className="announcement-carousel-item">
+                {msg}
+              </div>
+            ))}
+          </div>
         </div>
+
+        <button
+          className="announcement-nav-btn next"
+          onClick={handleNext}
+          aria-label="Next announcement"
+        >
+          <ChevronRight size={14} strokeWidth={1.5} />
+        </button>
       </div>
     </div>
   );
 }
 
-// Fallback component with static announcement
 export function FallbackAnnouncementBar() {
-  return (
-    <div className="dynamic-announcement-bar">
-      <div className="announcement-ticker-container">
-        <div className="announcement-ticker">
-          <span className="announcement-ticker-content">
-            FREE SHIPPING ON ORDERS OVER $100  •  NEW ARRIVALS EVERY WEEK  •  DOWNLOAD THE APP FOR 20% OFF
-          </span>
-          <span className="announcement-ticker-content" aria-hidden="true">
-            FREE SHIPPING ON ORDERS OVER $100  •  NEW ARRIVALS EVERY WEEK  •  DOWNLOAD THE APP FOR 20% OFF
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+  return null;
 }

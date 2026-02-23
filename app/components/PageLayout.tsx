@@ -1,19 +1,18 @@
-import {Await, useLocation} from 'react-router';
-import {Suspense} from 'react';
+import { Await, useLocation } from 'react-router';
+import { Suspense } from 'react';
 import * as React from 'react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
   HeaderQuery,
 } from 'storefrontapi.generated';
-import {Aside, useAside} from '~/components/Aside';
-import {Footer} from '~/components/layout/Footer';
-import {Header} from '~/components/layout/Header';
-import {DynamicAnnouncementBar, FallbackAnnouncementBar} from '~/components/DynamicAnnouncementBar';
-import type {AnnouncementItem} from '~/components/DynamicAnnouncementBar';
-import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
-import {CartMain} from '~/components/CartMain';
-import {ScrollArea} from '~/components/ui/scroll-area';
+import { Aside, useAside } from '~/components/Aside';
+import { Footer } from '~/components/layout/Footer';
+import { Header } from '~/components/layout/Header';
+import { DynamicAnnouncementBar } from '~/components/DynamicAnnouncementBar';
+import type { AnnouncementItem } from '~/components/DynamicAnnouncementBar';
+import type { DynamicMenuConfig } from '~/lib/dynamicHeaderMenu';
+import { CartMain, type NewProduct } from '~/components/CartMain';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -24,6 +23,7 @@ interface PageLayoutProps {
   menMenuConfig?: DynamicMenuConfig | null;
   womenMenuConfig?: DynamicMenuConfig | null;
   announcements?: AnnouncementItem[];
+  newProducts?: Promise<NewProduct[]> | NewProduct[];
   children?: React.ReactNode;
 }
 
@@ -37,6 +37,7 @@ export function PageLayout({
   menMenuConfig,
   womenMenuConfig,
   announcements,
+  newProducts,
 }: PageLayoutProps) {
   const location = useLocation();
   const isProductPage = location.pathname.includes('/products/');
@@ -51,12 +52,12 @@ export function PageLayout({
     <Aside.Provider>
       {/* Dynamic Announcement Bar - Always visible */}
       <DynamicAnnouncementBar announcements={announcements} />
-      <MobileMenuAside 
-        header={header} 
+      <MobileMenuAside
+        header={header}
         publicStoreDomain={publicStoreDomain}
         menMenuConfig={menMenuConfig}
       />
-      <CartAside cart={cart} />
+      <CartAside cart={cart} newProductsPromise={newProducts} />
       {header && (
         <Header
           header={header}
@@ -68,7 +69,7 @@ export function PageLayout({
           womenMenuConfig={womenMenuConfig || undefined}
         />
       )}
-      <main style={{margin: 0, padding: 0, width: '100%'}}>{children}</main>
+      <main style={{ margin: 0, padding: 0, width: '100%' }}>{children}</main>
       <Suspense fallback={null}>
         <Await resolve={footer}>
           {(footerData) => footerData && <Footer footer={footerData} />}
@@ -88,7 +89,6 @@ function MobileMenuAside({
   menMenuConfig?: DynamicMenuConfig | null;
 }) {
   const [expandedSections, setExpandedSections] = React.useState<Set<string>>(new Set());
-  const {open} = useAside();
 
   const toggleSection = (sectionKey: string) => {
     setExpandedSections(prev => {
@@ -103,7 +103,6 @@ function MobileMenuAside({
   };
 
   if (!menMenuConfig || !menMenuConfig.sections || menMenuConfig.sections.length === 0) {
-    // Fallback if no menu config
     return (
       <Aside type="mobile" heading="MENU">
         <div className="mobile-menu-content">
@@ -121,25 +120,25 @@ function MobileMenuAside({
   // Use menu config from Shopify collections
   return (
     <Aside type="mobile" heading="MENU">
-      <ScrollArea className="mobile-menu-scroll-container">
+      <div className="mobile-menu-scroll-area">
         <div className="mobile-menu-content">
-          
+
           {/* Render sections from menu config */}
           {menMenuConfig.sections.map((section, sectionIdx) => {
             const sectionKey = `section-${sectionIdx}`;
             const sectionType = section.sectionType || 'category';
-            
-            // COMMON SECTION - Mixed permanent and dynamic items (no label, no expandable)
+
+            // COMMON SECTION (featured links at top) - no label, large bold permanent items
             if (sectionType === 'common') {
               return (
-                <div key={sectionIdx} className="mobile-menu-section common-section">
+                <div key={sectionIdx} className="mobile-menu-section featured-section common-section">
                   <ul className="mobile-menu-list">
                     {section.items?.map((item, itemIdx) => {
                       const isPermanent = item.itemType === 'permanent';
                       return (
                         <li key={itemIdx}>
-                          <a 
-                            href={item.link} 
+                          <a
+                            href={item.link}
                             className={`mobile-menu-item ${isPermanent ? 'permanent-item' : ''}`}
                           >
                             {item.name}
@@ -215,8 +214,8 @@ function MobileMenuAside({
           <div className="mobile-menu-section">
             <h3 className="mobile-menu-section-title">EXPLORE</h3>
             <ul className="mobile-menu-list">
-              <li><a href="/the-prestige" className="mobile-menu-item">The Prestige</a></li>
-              <li><a href="/the-vault" className="mobile-menu-item">The Vault</a></li>
+              <li><a href="/the-chamber" className="mobile-menu-item">The Chamber</a></li>
+              <li><a href="/the-private-access" className="mobile-menu-item">The Private Access</a></li>
               <li><a href="/products/gift-card" className="mobile-menu-item">Gift Card</a></li>
             </ul>
           </div>
@@ -229,8 +228,16 @@ function MobileMenuAside({
               <li><a href="/wishlist" className="mobile-menu-item">Wishlist</a></li>
             </ul>
           </div>
+
+          {/* Footer locale picker */}
+          <div className="mobile-menu-footer">
+            <a href="/" className="mobile-menu-locale">
+              <span className="locale-flag">🌐</span>
+              <span>EN / AED / English</span>
+            </a>
+          </div>
         </div>
-      </ScrollArea>
+      </div>
     </Aside>
   );
 }
@@ -245,12 +252,20 @@ function SearchAside() {
   );
 }
 
-function CartAside({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
+function CartAside({ cart, newProductsPromise }: { cart: Promise<CartApiQueryFragment | null>; newProductsPromise?: Promise<NewProduct[]> | NewProduct[] }) {
   return (
     <Aside type="cart" heading="YOUR CART">
       <Suspense fallback={<p>Loading cart...</p>}>
         <Await resolve={cart}>
-          {(cartData) => <CartMain cart={cartData} layout="aside" />}
+          {(cartData) => (
+            <Suspense fallback={<CartMain cart={cartData} layout="aside" newProducts={[]} />}>
+              <Await resolve={newProductsPromise || []}>
+                {(resolvedProducts: NewProduct[]) => (
+                  <CartMain cart={cartData} layout="aside" newProducts={Array.isArray(resolvedProducts) ? resolvedProducts : []} />
+                )}
+              </Await>
+            </Suspense>
+          )}
         </Await>
       </Suspense>
     </Aside>

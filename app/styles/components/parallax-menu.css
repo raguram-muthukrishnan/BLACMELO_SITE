@@ -38,15 +38,16 @@
 /* Collection Links */
 .parallax-menu-link {
   font-family: var(--font-body);
-  font-size: 32px;
+  font-size: clamp(24px, 4vw, 32px);
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: #ffffff;
   text-decoration: none;
   line-height: 1.2;
+  white-space: nowrap;
   /* Opacity is driven by JS — smooth transition for the crossfade */
-  transition: opacity 0.35s ease;
+  transition: opacity 0.35s ease, font-size 0.3s ease;
   display: block;
 }
 
@@ -89,7 +90,7 @@
   }
 
   .parallax-menu-link {
-    font-size: 24px;
+    font-size: clamp(14px, 7vw, 24px);
   }
 
   .parallax-menu-nav {
@@ -104,6 +105,6 @@
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .parallax-menu-link {
-    font-size: 28px;
+    font-size: clamp(20px, 4vw, 28px);
   }
 }

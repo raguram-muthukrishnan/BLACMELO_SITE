@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import {stopLenis, startLenis} from '~/lib/lenis';
+import { destroyLenis, recreateLenis } from '~/lib/lenis';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -14,16 +14,6 @@ type AsideContextValue = {
   close: () => void;
 };
 
-/**
- * A side bar component with Overlay
- * @example
- * ```jsx
- * <Aside type="search" heading="SEARCH">
- *  <input type="search" />
- *  ...
- * </Aside>
- * ```
- */
 export function Aside({
   children,
   heading,
@@ -33,56 +23,52 @@ export function Aside({
   type: AsideType;
   heading: React.ReactNode;
 }) {
-  const {type: activeType, close} = useAside();
+  const { type: activeType, close } = useAside();
   const expanded = type === activeType;
 
   useEffect(() => {
     const abortController = new AbortController();
 
     if (expanded) {
-      // Stop Lenis smooth scroll
-      stopLenis();
-      
-      // Save current scroll position
+      destroyLenis();
+
+      // Save scroll position so we can restore it on close
       const scrollY = window.scrollY;
-      const body = document.body;
-      
-      // Store original styles
-      const originalOverflow = body.style.overflow;
-      const originalPosition = body.style.position;
-      const originalTop = body.style.top;
-      const originalWidth = body.style.width;
-      
-      // Lock body scroll using position fixed method
-      body.style.position = 'fixed';
-      body.style.top = `-${scrollY}px`;
-      body.style.width = '100%';
-      body.style.overflow = 'hidden';
+      (document.body as any).__asideScrollY = scrollY;
+
+      // ── Touch-scroll fix (StackOverflow solution) ──────────────────────────
+      // Do NOT set overflow:hidden on html/body — that blocks touch events from
+      // reaching the scrollable <aside main> panel on iOS (the scroll-lock bug).
+      // Instead, intercept touchmove on the body and cancel it only when the
+      // touch is NOT inside a designated scroll container inside the aside.
+      const preventBodyScroll = (e: TouchEvent) => {
+        const scrollEl = (e.target as Element)?.closest?.(
+          '.overlay aside main, .mobile-menu-scroll-area',
+        );
+        if (!scrollEl) {
+          e.preventDefault();
+        }
+      };
+
+      document.body.addEventListener('touchmove', preventBodyScroll, {
+        passive: false,
+        signal: abortController.signal,
+      } as AddEventListenerOptions);
+      // ────────────────────────────────────────────────────────────────────────
 
       document.addEventListener(
         'keydown',
         function handler(event: KeyboardEvent) {
-          if (event.key === 'Escape') {
-            close();
-          }
+          if (event.key === 'Escape') close();
         },
-        {signal: abortController.signal},
+        { signal: abortController.signal },
       );
 
       return () => {
         abortController.abort();
-        
-        // Restore body styles
-        body.style.position = originalPosition;
-        body.style.top = originalTop;
-        body.style.width = originalWidth;
-        body.style.overflow = originalOverflow;
-        
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
-        
-        // Restart Lenis smooth scroll
-        startLenis();
+
+        // Recreate Lenis from scratch (restores smooth scroll)
+        recreateLenis();
       };
     } else {
       return () => {
@@ -91,10 +77,7 @@ export function Aside({
     }
   }, [close, expanded]);
 
-  // Don't render anything if not expanded to avoid layout issues
-  if (!expanded) {
-    return null;
-  }
+  if (!expanded) return null;
 
   return (
     <div
@@ -103,16 +86,23 @@ export function Aside({
       role="dialog"
       data-type={type}
     >
-      <button className="close-outside" onClick={close} />
+      {/* Clicking outside closes the aside */}
+      {type !== 'mobile' && (
+        <button className="close-outside" onClick={close} />
+      )}
+
       <aside>
+        {/* Header with close button - Show for everything except the main mobile menu panel */}
         {type !== 'mobile' && (
-          <header>
+          <header className="aside-header">
             <h3>{heading}</h3>
             <button className="close reset" onClick={close} aria-label="Close">
               ✕
             </button>
           </header>
         )}
+
+        {/* Scrollable content area */}
         <main>{children}</main>
       </aside>
     </div>
@@ -121,7 +111,7 @@ export function Aside({
 
 const AsideContext = createContext<AsideContextValue | null>(null);
 
-Aside.Provider = function AsideProvider({children}: {children: ReactNode}) {
+Aside.Provider = function AsideProvider({ children }: { children: ReactNode }) {
   const [type, setType] = useState<AsideType>('closed');
 
   return (

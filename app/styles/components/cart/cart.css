@@ -3,14 +3,35 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   background: white;
+  overflow: hidden;
 }
 
 .cart-details {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
+}
+
+/* Free Shipping Bar */
+.cart-free-shipping-bar {
+  background: #f5f5f5;
+  padding: 10px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
+}
+
+.cart-free-shipping-text {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.02em;
+  display: block;
+  text-align: center;
 }
 
 /* Empty Cart State */
@@ -63,10 +84,14 @@
 
 /* Cart Items Container */
 .cart-items-container {
-  flex: 1;
+  flex: 1 1 0;
+  /* Native iOS scroll */
   overflow-y: auto;
-  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 20px 12px;
   border-bottom: 1px solid #e5e5e5;
+  min-height: 0;
 }
 
 .cart-items-list {
@@ -95,21 +120,24 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.cart-line-item:last-child {
+  border-bottom: none;
+}
+
 .cart-line-item:first-child {
-  padding-top: 0;
+  padding-top: 16px;
 }
 
 .cart-line-content {
   display: flex;
-  gap: 16px;
+  gap: 14px;
 }
 
 .cart-line-image {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 90px;
   background: #f5f5f5;
-  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -130,12 +158,13 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .cart-line-title {
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
   color: #000;
   text-decoration: none;
   line-height: 1.4;
@@ -152,13 +181,16 @@
 }
 
 .cart-line-option {
-  font-size: 12px;
-  color: #666;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 0.01em;
 }
 
 .cart-line-price {
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
   color: #000;
   white-space: nowrap;
 }
@@ -168,21 +200,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 96px;
+  padding-left: 86px;
 }
 
 .cart-line-quantity {
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  padding: 4px;
+  border: 1px solid #e0e0e0;
+  padding: 2px;
 }
 
 .cart-quantity-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: none;
   background: white;
   cursor: pointer;
@@ -192,6 +223,7 @@
   justify-content: center;
   color: #000;
   transition: background 0.2s;
+  font-family: 'Neue Haas Grotesk', sans-serif;
 }
 
 .cart-quantity-btn:hover:not(:disabled) {
@@ -204,20 +236,22 @@
 }
 
 .cart-quantity-value {
-  min-width: 24px;
+  min-width: 20px;
   text-align: center;
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .cart-remove-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
-  color: #999;
-  padding: 4px 8px;
+  font-size: 16px;
+  color: #ccc;
+  padding: 4px 6px;
   transition: color 0.2s;
+  font-family: 'Neue Haas Grotesk', sans-serif;
 }
 
 .cart-remove-btn:hover:not(:disabled) {
@@ -229,30 +263,137 @@
   cursor: not-allowed;
 }
 
-/* Recommendations Section */
+/* ===================================
+   OTHERS ALSO BOUGHT — Horizontal Scroll
+   =================================== */
 .cart-recommendations {
-  padding: 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
 }
 
 .cart-recommendations-title {
-  font-size: 12px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.5px;
-  margin: 0 0 12px 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
   color: #000;
 }
 
-.cart-recommendations-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+.cart-recommendations-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0 12px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cart-recommendations-arrow {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: #666;
+  transition: transform 0.3s ease;
+  line-height: 1;
+}
+
+.cart-recommendations-arrow.open {
+  transform: rotate(90deg);
+}
+
+/* Horizontal scroll row */
+.cart-recommendations-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  /* Allow touch to pan horizontally */
+  touch-action: pan-x;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  cursor: grab;
+}
+
+.cart-recommendations-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual recommendation card */
+.cart-rec-item {
+  flex: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cart-rec-item:hover {
+  opacity: 0.8;
+}
+
+.cart-rec-image {
+  width: 100px;
+  height: 125px;
+  background: #f5f5f5;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cart-rec-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cart-rec-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #ebebeb;
+}
+
+.cart-rec-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0 0;
+}
+
+.cart-rec-price {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000;
+}
+
+.cart-rec-add {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.cart-rec-add:hover {
+  opacity: 0.6;
 }
 
 /* Cart Summary */
 .cart-summary-aside {
-  padding: 20px;
+  padding: 16px 20px;
   background: white;
+  flex-shrink: 0;
 }
 
 .cart-summary-page {
@@ -266,18 +407,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
+  padding: 12px 0;
   border: none;
   border-bottom: 1px solid #e5e5e5;
   background: none;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   text-align: left;
+  color: #000;
 }
 
 .cart-shipping-arrow {
-  font-size: 20px;
+  font-size: 18px;
   color: #666;
   transition: transform 0.3s ease;
 }
@@ -287,12 +431,13 @@
 }
 
 .cart-shipping-content {
-  padding: 16px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #e5e5e5;
 }
 
 .cart-shipping-content p {
-  font-size: 12px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 11px;
   color: #666666;
   line-height: 1.6;
   margin: 0;
@@ -303,16 +448,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0 8px 0;
-  font-size: 14px;
+  padding: 12px 0 6px 0;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
 }
 
 .cart-subtotal-label {
   color: #666;
+  font-weight: 400;
 }
 
 .cart-subtotal-amount {
-  font-weight: 500;
+  font-weight: 400;
   color: #000;
 }
 
@@ -321,8 +468,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  font-size: 14px;
+  padding: 6px 0;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
 }
 
 .cart-discount-label {
@@ -330,14 +478,15 @@
 }
 
 .cart-discount-amount {
-  font-weight: 500;
+  font-weight: 400;
   color: #e74c3c;
 }
 
 .cart-tax-note {
-  font-size: 11px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 10px;
   color: #999;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
 }
 
 /* Total Row */
@@ -345,52 +494,58 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  border-top: 1px solid #e5e5e5;
-  border-bottom: 1px solid #e5e5e5;
-  margin-bottom: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 14px;
 }
 
 .cart-total-label {
-  font-size: 14px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .cart-total-amount {
-  font-size: 14px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
   font-weight: 500;
   color: #000;
 }
 
 /* Checkout Button */
 .cart-checkout-actions {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .cart-checkout-button {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 16px;
+  padding: 15px 16px;
   background: #000;
   color: white;
   text-decoration: none;
-  font-size: 14px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   border: none;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .cart-checkout-button:hover {
-  background: #333;
+  background: #222;
 }
 
 .cart-checkout-lock {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 /* Payment Icons */
@@ -398,43 +553,74 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
 .payment-icon {
-  font-size: 10px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 9px;
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 3px 6px;
   background: #f5f5f5;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
+  border: 1px solid #e0e0e0;
   color: #666;
 }
 
 /* Aside Overlay Styles */
 .overlay[data-type="cart"] aside {
-  width: 420px;
+  width: 380px;
   max-width: 90vw;
 }
 
 .overlay[data-type="cart"] aside header {
-  padding: 20px;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 0 32px 0 10px;
+  /* Match desktop site header */
+  border-bottom: 1px solid #e0e0e0;
+  min-height: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .overlay[data-type="cart"] aside header {
+    height: 63px;
+    min-height: 63px;
+    padding: 0 16px;
+    /* Match mobile site header */
+    padding-top: 0;
+  }
+
+  body.announcement-visible .overlay[data-type="cart"] aside header {
+    height: 99px;
+    padding-top: 36px;
+  }
+}
+
+@media (min-width: 769px) {
+  body.announcement-visible .overlay[data-type="cart"] aside header {
+    height: 82px;
+    padding-top: 36px;
+  }
 }
 
 .overlay[data-type="cart"] aside header h3 {
-  font-size: 16px;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   margin: 0;
 }
 
 .overlay[data-type="cart"] aside main {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 60px);
+  flex: 1 1 0;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -446,10 +632,18 @@
   }
 
   .cart-line-actions {
-    padding-left: 0;
+    padding-left: 86px;
   }
+}
 
-  .cart-recommendations-grid {
-    grid-template-columns: 1fr;
-  }
+/* ===================================
+   MOBILE MENU SCROLL AREA
+   Native overflow scroll for touch devices
+   =================================== */
+.mobile-menu-scroll-area {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }

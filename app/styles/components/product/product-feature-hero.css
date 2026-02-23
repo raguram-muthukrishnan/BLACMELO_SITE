@@ -65,18 +65,7 @@
   min-height: 600px;
 }
 
-/* Right-side fade/blur effect */
-.product-feature-image::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 25%;
-  height: 100%;
-  background: linear-gradient(to left, var(--background, #f5f5f5) 0%, rgba(245, 245, 245, 0.8) 20%, rgba(245, 245, 245, 0.4) 60%, transparent 100%);
-  pointer-events: none;
-  z-index: 1;
-}
+/* Right-side fade/blur effect removed */
 
 .product-feature-img {
   width: 100%;
@@ -105,10 +94,7 @@
     min-height: 400px;
   }
 
-  /* Adjust blur effect for mobile */
-  .product-feature-image::after {
-    width: 30%;
-  }
+
 
   .product-feature-static-title {
     font-size: 1.25rem;

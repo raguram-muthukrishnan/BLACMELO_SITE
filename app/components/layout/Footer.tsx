@@ -1,15 +1,61 @@
-import {NavLink} from 'react-router';
-import {useState} from 'react';
-import type {FooterQuery} from 'storefrontapi.generated';
+import { NavLink, useFetcher } from 'react-router';
+import { useState, useEffect } from 'react';
+import type { FooterQuery } from 'storefrontapi.generated';
 import logo from '~/assets/logos/Logo.avif';
-import footerStyles from '~/styles/layout/footer.css?url';
 
 type FooterProps = {
   footer: FooterQuery;
 };
 
-export function Footer({}: FooterProps) {
-  const [openSections, setOpenSections] = useState<{[key: string]: boolean}>({});
+function NewsletterForm() {
+  const fetcher = useFetcher<any>();
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      if (fetcher.data.success) {
+        setMessage(fetcher.data.message);
+        setError(null);
+      } else if (fetcher.data.error) {
+        setError(fetcher.data.error);
+        setMessage(null);
+      }
+    }
+  }, [fetcher.data]);
+
+  return (
+    <div className="newsletter-container">
+      {message ? (
+        <p className="newsletter-success">{message}</p>
+      ) : (
+        <>
+          <fetcher.Form method="post" action="/api/newsletter" className="newsletter-form">
+            <input
+              type="email"
+              name="email"
+              placeholder="Your email"
+              className="newsletter-input"
+              aria-label="Email for newsletter"
+              required
+            />
+            <button
+              type="submit"
+              className="newsletter-button"
+              disabled={fetcher.state !== 'idle'}
+            >
+              {fetcher.state === 'idle' ? 'SUBSCRIBE' : 'SENDING...'}
+            </button>
+          </fetcher.Form>
+          {error && <p className="newsletter-error">{error}</p>}
+        </>
+      )}
+    </div>
+  );
+}
+
+export function Footer({ }: FooterProps) {
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => ({
@@ -60,28 +106,18 @@ export function Footer({}: FooterProps) {
 
           <div className="footer-section footer-newsletter">
             <h3 className="footer-heading">NEWSLETTER</h3>
-            <form className="newsletter-form">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="newsletter-input"
-                aria-label="Email for newsletter"
-              />
-              <button type="submit" className="newsletter-button">
-                SUBSCRIBE
-              </button>
-            </form>
+            <NewsletterForm />
             <div className="footer-social">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <a href="https://www.facebook.com/blacmelo" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2H10C8.89543 2 8 2.89543 8 4V8H6V12H8V20H12V12H14L15 8H12V4H15V2H12Z" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M12 2H10C8.89543 2 8 2.89543 8 4V8H6V12H8V20H12V12H14L15 8H12V4H15V2H12Z" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a href="https://www.instagram.com/blacmelo/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="2" y="2" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="1.5"/>
-                  <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/>
-                  <circle cx="15" cy="5" r="0.5" fill="currentColor"/>
+                  <rect x="2" y="2" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="15" cy="5" r="0.5" fill="currentColor" />
                 </svg>
               </a>
             </div>
@@ -98,44 +134,33 @@ export function Footer({}: FooterProps) {
 
           {/* Newsletter Signup */}
           <div className="footer-mobile-newsletter">
-            <h3 className="footer-mobile-newsletter-title">JOIN BLACMELO +</h3>
+            <h3 className="footer-mobile-newsletter-title">The Private Access</h3>
             <p className="footer-mobile-newsletter-subtitle">EARN POINTS & REWARDS ON ALL PURCHASES</p>
-            <form className="newsletter-form">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="newsletter-input"
-                aria-label="Email for newsletter"
-              />
-              <button type="submit" className="newsletter-button">
-                SUBSCRIBE
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
 
           {/* Collapsible Sections */}
           <div className="footer-mobile-sections">
             {/* Client Services */}
             <div className="footer-mobile-section">
-              <button 
+              <button
                 className="footer-mobile-toggle"
                 onClick={() => toggleSection('help')}
                 aria-expanded={openSections.help}
               >
                 <span>CLIENT SERVICES</span>
-                <svg 
+                <svg
                   className={`footer-mobile-icon ${openSections.help ? 'rotated' : ''}`}
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 16 16" 
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
                   fill="none"
                 >
-                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
               {openSections.help && (
                 <nav className="footer-mobile-links">
-                  <NavLink to="/search">Search</NavLink>
                   <NavLink to="/policies/return-policy">Return and Refund Policy</NavLink>
                   <NavLink to="/policies/shipping-policy">Shipping Policy</NavLink>
                   <NavLink to="/policies/terms-of-service">Terms of Services</NavLink>
@@ -146,20 +171,20 @@ export function Footer({}: FooterProps) {
 
             {/* Company */}
             <div className="footer-mobile-section">
-              <button 
+              <button
                 className="footer-mobile-toggle"
                 onClick={() => toggleSection('company')}
                 aria-expanded={openSections.company}
               >
                 <span>COMPANY</span>
-                <svg 
+                <svg
                   className={`footer-mobile-icon ${openSections.company ? 'rotated' : ''}`}
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 16 16" 
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
                   fill="none"
                 >
-                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
               {openSections.company && (
@@ -175,27 +200,26 @@ export function Footer({}: FooterProps) {
 
             {/* Social */}
             <div className="footer-mobile-section">
-              <button 
+              <button
                 className="footer-mobile-toggle"
                 onClick={() => toggleSection('social')}
                 aria-expanded={openSections.social}
               >
                 <span>SOCIAL</span>
-                <svg 
+                <svg
                   className={`footer-mobile-icon ${openSections.social ? 'rotated' : ''}`}
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 16 16" 
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
                   fill="none"
                 >
-                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
               {openSections.social && (
                 <div className="footer-mobile-links">
-                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
+                  <a href="https://www.facebook.com/blacmelo" target="_blank" rel="noopener noreferrer">Facebook</a>
+                  <a href="https://www.instagram.com/blacmelo/" target="_blank" rel="noopener noreferrer">Instagram</a>
                 </div>
               )}
             </div>

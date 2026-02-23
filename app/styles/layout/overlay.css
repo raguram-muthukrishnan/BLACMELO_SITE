@@ -1,121 +1,105 @@
 /**
- * BLACMELO Overlay - Aside/Modal Overlay Styles
- * Extracted from tailwind.css lines 93-222
+ * BLACMELO - Overlay & Aside Styles
+ * Handles cart, search, and mobile menu slide-in panels
  */
 
-/* Aside/Overlay Styles - Hide when not expanded */
+/* ============================================
+   BASE OVERLAY — full-screen dim + blur
+   ============================================ */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.overlay.expanded {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+  inset: 0;
+  z-index: 1100;
+  /* Hidden by default — expanded via class */
 }
 
 .overlay .close-outside {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed;
+  inset: 0;
   background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: none;
   cursor: pointer;
   width: 100%;
   height: 100%;
 }
 
+/* ============================================
+   BASE ASIDE PANEL — slides from right
+   ============================================ */
 .overlay aside {
   position: fixed;
   top: 0;
   right: 0;
-  width: var(--aside-width, 400px);
+  width: 400px;
   max-width: 90vw;
-  height: 100vh;
+  height: 100%;
+  height: 100dvh;
+  /* dynamic viewport on mobile */
   background: #ffffff;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* aside itself does NOT scroll — only <main> inside does */
+  z-index: 1101;
 }
 
-.overlay aside main {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.overlay.expanded aside {
-  transform: translateX(0);
-}
-
-/* Mobile menu — full-screen overlay, slides from left, positioned below header */
-@media (max-width: 768px) {
-  .overlay[data-type="mobile"] aside {
-    width: 100vw;
-    max-width: 100vw;
-    box-shadow: none;
-    left: 0;
-    right: auto;
-    top: 0;
-    height: 100vh;
-    transform: translateX(-100%);
-    padding-top: 63px;
-  }
-
-  .overlay[data-type="mobile"].expanded aside {
-    transform: translateX(0);
-  }
-
-  /* When announcement bar is visible, adjust padding */
-  body:has(.announcement-bar:not([hidden])) .overlay[data-type="mobile"] aside {
-    padding-top: 99px;
-  }
-
-  .overlay[data-type="mobile"] .close-outside {
-    display: none;
-  }
-}
-
-/* Cart aside - should appear above announcement bar */
-.overlay[data-type="cart"] aside {
-  z-index: 1002;
-}
-
-.overlay aside header {
+/* ============================================
+   ASIDE HEADER — fixed top bar (cart/search)
+   ============================================ */
+.overlay aside header,
+.aside-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 32px 0 10px;
+  /* Match desktop site header: left 10px, right 32px */
   border-bottom: 1px solid #e0e0e0;
   flex-shrink: 0;
-  min-height: 60px;
+  min-height: 52px;
+  height: 52px;
+  /* Fixed height on desktop */
   background: #ffffff;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+
+  .overlay aside header,
+  .aside-header {
+    height: 63px;
+    /* Match REPRESENT site header height (mobile) */
+    min-height: 63px;
+    padding: 0 16px;
+    /* Match mobile site header: left/right 16px */
+    padding-top: 0;
+  }
+
+  body.announcement-visible .overlay aside header,
+  body.announcement-visible .aside-header {
+    height: 99px;
+    /* 36px bar + 63px header */
+    padding-top: 36px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  body.announcement-visible .overlay aside header,
+  body.announcement-visible .aside-header {
+    height: 82px;
+    /* 36px bar + 46px header (desktop) */
+    padding-top: 36px;
+  }
 }
 
 .overlay aside header h3 {
   margin: 0;
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #000000;
@@ -124,66 +108,123 @@
 .overlay aside header .close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 18px;
   line-height: 1;
   color: #000000;
   cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease;
-  font-weight: 300;
 }
 
 .overlay aside header .close:hover {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
+/* ============================================
+   ASIDE MAIN — the scrollable content area
+   THIS is what scrolls on touch devices
+   ============================================ */
 .overlay aside main {
   flex: 1;
+  /* Native touch scroll — critical for iOS */
   overflow-y: auto;
-  padding: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Allow vertical pan gestures to scroll — prevents iOS from swallowing touch events */
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
+  /* Give scroll enough room */
+  min-height: 0;
 }
 
-/* Cart aside header alignment - match announcement bar padding */
-.overlay[data-type="cart"] aside header {
-  padding: 0 32px;
-  min-height: 60px;
+/* ============================================
+   MOBILE MENU ASIDE — slides from LEFT, full width
+   Starts BELOW the header so the header stays visible
+   ============================================ */
+.overlay[data-type="mobile"] {
+  /* No dim backdrop for mobile menu - just the white panel */
+  background: transparent;
 }
 
-/* Search Aside */
-.search-aside-content {
-  padding: 20px;
+.overlay[data-type="mobile"] .close-outside {
+  display: none;
+  /* mobile menu doesn't have an outside click close */
 }
 
-.search-aside-content p {
-  font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 0.9rem;
-  color: #666666;
+.overlay[data-type="mobile"] aside {
+  right: auto;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+  box-shadow: none;
+  /* Full screen height starting from 0 — header sits on top via z-index */
+  top: 0;
+  height: 100%;
+  height: 100dvh;
 }
 
-/* Adjust main content spacing when announcement bar is visible */
-body:has(.announcement-bar:not([hidden])) main {
-  padding-top: 80px !important; /* Announcement bar (36px) + Header (44px) */
+/* Push down even when announcement is hidden to clear the header */
+.overlay[data-type="mobile"] aside main {
+  padding-top: 63px;
 }
 
-/* Remove padding for product pages - hero should touch top */
-body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
-  padding-top: 0 !important;
+/* When announcement bar is visible, push down more */
+body.announcement-visible .overlay[data-type="mobile"] aside main {
+  padding-top: 99px;
+  /* 36px announcement + 63px header */
 }
 
+.overlay[data-type="mobile"] aside main {
+  padding-top: 0;
+  /* no extra padding needed since aside already starts below header */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* When announcement bar is hidden */
+body.announcement-hidden .overlay[data-type="mobile"] aside main {
+  padding-top: 0;
+}
+
+/* ============================================
+   CART ASIDE — fixed width
+   ============================================ */
+.overlay[data-type="cart"] aside {
+  width: 380px;
+  max-width: 95vw;
+}
+
+.desktop-only-header {
+  display: flex !important;
+}
+
+/* CartMain flex layout */
+.overlay[data-type="cart"] aside main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* CartMain manages its own scroll layout */
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
 @media (max-width: 768px) {
-  body:has(.announcement-bar:not([hidden])) main {
-    padding-top: 80px !important;
+
+  /* Ensure cart aside header is consistent on mobile */
+  .overlay[data-type="cart"] aside header {
+    display: flex !important;
   }
 
-  /* Remove padding for product pages on mobile too */
-  body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
-    padding-top: 0 !important;
+  .overlay[data-type="cart"] aside main {
+    padding-top: 0;
+    /* Header handles its own spacing now */
   }
 }

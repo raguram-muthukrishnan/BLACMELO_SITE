@@ -4,12 +4,17 @@
  * Uses existing unified-hover-menu CSS classes
  */
 
-import {NavLink} from 'react-router';
-import {createPortal} from 'react-dom';
-import {useEffect, useState, useRef, useCallback} from 'react';
-import type {DynamicMenuConfig} from '~/lib/dynamicHeaderMenu';
-import {ScrollArea} from '~/components/ui/scroll-area';
-import {stopLenis, startLenis} from '~/lib/lenis';
+import { NavLink } from 'react-router';
+import { createPortal } from 'react-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import type { DynamicMenuConfig } from '~/lib/dynamicHeaderMenu';
+import { ScrollArea } from '~/components/ui/scroll-area';
+import { stopLenis, startLenis } from '~/lib/lenis';
+
+// Import banner images for hover effects
+import ss26Banner from '~/assets/home_page_banners/ss26.jpeg';
+import archiveBanner from '~/assets/home_page_banners/bl_archive.jpeg';
+import originalsBanner from '~/assets/home_page_banners/bl_originals.jpeg';
 
 interface DynamicHoverMenuProps {
   isActive: boolean;
@@ -24,6 +29,7 @@ export function DynamicHoverMenu({
 }: DynamicHoverMenuProps) {
   const [mounted, setMounted] = useState(false);
   const [hoveredParent, setHoveredParent] = useState<any>(null);
+  const [hoveredItemMedia, setHoveredItemMedia] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [overlayElement, setOverlayElement] = useState<HTMLDivElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -51,17 +57,17 @@ export function DynamicHoverMenu({
     if (isActive) {
       // Stop Lenis smooth scroll
       stopLenis();
-      
+
       // Save current scroll position
       const scrollY = window.scrollY;
       const body = document.body;
-      
+
       // Store original styles
       const originalOverflow = body.style.overflow;
       const originalPosition = body.style.position;
       const originalTop = body.style.top;
       const originalWidth = body.style.width;
-      
+
       // Lock body scroll using position fixed method
       body.style.position = 'fixed';
       body.style.top = `-${scrollY}px`;
@@ -74,10 +80,10 @@ export function DynamicHoverMenu({
         body.style.top = originalTop;
         body.style.width = originalWidth;
         body.style.overflow = originalOverflow;
-        
+
         // Restore scroll position
         window.scrollTo(0, scrollY);
-        
+
         // Restart Lenis smooth scroll
         startLenis();
       };
@@ -87,11 +93,11 @@ export function DynamicHoverMenu({
   // Toggle overlay visibility class to drive the CSS opacity transition
   useEffect(() => {
     const el = overlayElement;
-    
+
     if (!el) {
       return;
     }
-    
+
     // Defer one frame so the element is painted before the transition starts
     const raf = requestAnimationFrame(() => {
       el.classList.toggle('is-visible', isActive);
@@ -135,6 +141,20 @@ export function DynamicHoverMenu({
     }, 200);
   }, []);
 
+  // Handle item hover for media changes
+  const handleItemHover = useCallback((itemName: string) => {
+    const name = itemName.toLowerCase();
+    if (name.includes('spring summer') || name.includes('ss26')) {
+      setHoveredItemMedia(ss26Banner);
+    } else if (name.includes('archive')) {
+      setHoveredItemMedia(archiveBanner);
+    } else if (name.includes('originals')) {
+      setHoveredItemMedia(originalsBanner);
+    } else {
+      setHoveredItemMedia(null);
+    }
+  }, []);
+
   // Keep panel open when entering it
   const handleNestedPanelEnter = useCallback(() => {
     if (hoverTimeoutRef.current) {
@@ -156,15 +176,21 @@ export function DynamicHoverMenu({
   // Helper to render menu item with optional children
   const renderMenuItem = (item: any, itemIdx: number, itemClass: string) => {
     const hasChildren = item.children && item.children.length > 0;
-    
+
     return (
-      <li 
-        key={itemIdx} 
+      <li
+        key={itemIdx}
         className={hasChildren ? 'has-children' : ''}
-        onMouseEnter={() => hasChildren && handleParentEnter(item)}
-        onMouseLeave={() => hasChildren && handleParentLeave()}
+        onMouseEnter={() => {
+          if (hasChildren) handleParentEnter(item);
+          handleItemHover(item.name);
+        }}
+        onMouseLeave={() => {
+          if (hasChildren) handleParentLeave();
+          setHoveredItemMedia(null);
+        }}
       >
-        <NavLink 
+        <NavLink
           to={item.link}
           className={itemClass}
         >
@@ -187,9 +213,9 @@ export function DynamicHoverMenu({
 
   // Overlay element - always rendered when mounted
   const overlayEl = (
-    <div 
-      ref={overlayRef} 
-      className="hover-menu-page-overlay" 
+    <div
+      ref={overlayRef}
+      className="hover-menu-page-overlay"
       aria-hidden="true"
     />
   );
@@ -210,28 +236,28 @@ export function DynamicHoverMenu({
             <div className="hover-menu-sections-content">
               {menuConfig.sections.map((section, idx) => {
                 const sectionType = section.sectionType || (section.isPermanent ? 'permanent' : 'category');
-                
+
                 // Permanent section - render items in a list
                 if (sectionType === 'permanent') {
                   return (
                     <div key={idx} className="hover-menu-section permanent-section">
                       <ul className="hover-menu-list permanent-list">
-                        {section.items.map((item, itemIdx) => 
+                        {section.items.map((item, itemIdx) =>
                           renderMenuItem(item, itemIdx, 'hover-menu-item-link permanent-item')
                         )}
                       </ul>
                     </div>
                   );
                 }
-                
+
                 // Common section - can have mixed item types
                 if (sectionType === 'common') {
                   return (
                     <div key={idx} className="hover-menu-section common-section">
                       <ul className="hover-menu-list common-list">
                         {section.items.map((item, itemIdx) => {
-                          const itemClass = item.itemType === 'permanent' 
-                            ? 'hover-menu-item-link permanent-item' 
+                          const itemClass = item.itemType === 'permanent'
+                            ? 'hover-menu-item-link permanent-item'
                             : 'hover-menu-item-link dynamic-item';
                           return renderMenuItem(item, itemIdx, itemClass);
                         })}
@@ -239,7 +265,7 @@ export function DynamicHoverMenu({
                     </div>
                   );
                 }
-                
+
                 // Category section - has title and items
                 return (
                   <div key={idx} className="hover-menu-section category-section">
@@ -247,7 +273,7 @@ export function DynamicHoverMenu({
                       <h3 className="hover-menu-section-title">{section.label}</h3>
                     )}
                     <ul className="hover-menu-list category-list">
-                      {section.items.map((item, itemIdx) => 
+                      {section.items.map((item, itemIdx) =>
                         renderMenuItem(item, itemIdx, 'hover-menu-item-link dynamic-item')
                       )}
                     </ul>
@@ -256,21 +282,24 @@ export function DynamicHoverMenu({
               })}
             </div>
           </ScrollArea>
-          
+
           {/* Right side - Image or Nested Menu */}
           <div className="hover-menu-right-panel">
-            {/* Image */}
-            {menuConfig.image && (
-              <div 
-                className={`hover-menu-image ${hoveredParent ? 'fade-out' : 'fade-in'}`}
-              >
-                <img src={menuConfig.image} alt="Menu" />
+            {/* Base Image or Hovered Banner */}
+            <div className={`hover-menu-media-container ${hoveredParent ? 'fade-out' : ''}`}>
+              <div className="hover-menu-image-wrapper">
+                <img
+                  src={hoveredItemMedia || menuConfig.image}
+                  alt="Menu Banner"
+                  className="menu-banner-img"
+                  key={hoveredItemMedia || menuConfig.image}
+                />
               </div>
-            )}
-            
+            </div>
+
             {/* Nested Collections Panel */}
             {hoveredParent && (
-              <ScrollArea 
+              <ScrollArea
                 className="hover-menu-nested-panel fade-in"
                 onMouseEnter={handleNestedPanelEnter}
                 onMouseLeave={handleNestedPanelLeave}
@@ -279,7 +308,7 @@ export function DynamicHoverMenu({
                   <ul className="nested-panel-list">
                     {hoveredParent.children.map((child: any, childIdx: number) => (
                       <li key={childIdx}>
-                        <NavLink 
+                        <NavLink
                           to={child.link}
                           className="nested-panel-item"
                         >

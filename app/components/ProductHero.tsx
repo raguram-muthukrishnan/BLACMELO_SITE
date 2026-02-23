@@ -171,8 +171,14 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
   };
 
   // Helper to get metafield value or default text
-  const getMetafieldValue = (key: string, defaultText: string) => {
-    const metafield = product.metafields?.find((m: any) => m?.key === key);
+  const getMetafieldValue = (namespaceKey: string, defaultText: string = '') => {
+    const parts = namespaceKey.split('.');
+    const namespace = parts.length > 1 ? parts[0] : 'custom';
+    const key = parts.length > 1 ? parts[1] : parts[0];
+
+    const metafield = product.metafields?.find((m: any) =>
+      m?.namespace === namespace && m?.key === key
+    );
     return metafield?.value || defaultText;
   };
 
@@ -210,55 +216,59 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
   return (
     <>
       {isFullscreenGallery && (
-        <div className="fullscreen-gallery">
+        <div className="fullscreen-gallery" data-lenis-prevent>
           <button
             className="fullscreen-close"
             onClick={() => setIsFullscreenGallery(false)}
             aria-label="Close gallery"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            ✕
           </button>
+
           <div className="fullscreen-image-container">
-            <Image
-              data={images[activeIndex]}
-              sizes="100vw"
-              style={{ maxHeight: '100vh', width: 'auto' }}
-            />
-          </div>
-          <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 10 }}>
-            {images.map((_: any, idx: number) => (
-              <button
-                key={idx}
-                onClick={() => setActiveIndex(idx)}
-                style={{ width: 10, height: 10, borderRadius: '50%', background: idx === activeIndex ? 'white' : 'gray', border: 'none' }}
-              />
+            {images.map((image: any, idx: number) => (
+              <div
+                key={image.id || idx}
+                className="fullscreen-image-wrapper"
+                id={`fullscreen-img-${idx}`}
+              >
+                <Image
+                  data={image}
+                  sizes="100vw"
+                  loading={idx < 2 ? "eager" : "lazy"}
+                />
+              </div>
             ))}
+          </div>
+
+          {/* Mobile Navigation Arrows */}
+          <div className="mobile-only">
+            <button
+              className="fullscreen-nav fullscreen-prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                const container = document.querySelector('.fullscreen-image-container');
+                if (container) container.scrollBy({ left: -window.innerWidth, behavior: 'smooth' });
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <button
+              className="fullscreen-nav fullscreen-next"
+              onClick={(e) => {
+                e.stopPropagation();
+                const container = document.querySelector('.fullscreen-image-container');
+                if (container) container.scrollBy({ left: window.innerWidth, behavior: 'smooth' });
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
           </div>
         </div>
       )}
 
       <section className="hero-product">
         <div className="hero-left">
-          {/* Thumbnails (Desktop) */}
-          <div className="hero-thumbnails">
-            {images.map((image: any, index: number) => (
-              <div
-                key={image.id || index}
-                className={`hero-thumbnail-item ${index === activeIndex ? 'active' : ''}`}
-                onClick={() => setActiveIndex(index)}
-              >
-                <Image
-                  data={image}
-                  alt={image.altText || `Thumbnail ${index + 1}`}
-                  sizes="100px"
-                />
-              </div>
-            ))}
-          </div>
-
           {/* Main Stage */}
           <div className="hero-image-container">
             {images.map((image: any, index: number) => (
@@ -293,73 +303,84 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
         </div>
 
         <div className="hero-right">
-          {openSection ? (
-            // Expanded Content View
-            <div className="hero-expanded-view">
-              <div className="hero-expanded-header">
-                <h2 className="hero-expanded-title">
-                  {openSection === 'description' ? 'Product Details' :
-                    openSection === 'fit' ? 'Fit' :
-                      openSection === 'fabric' ? 'Fabric Care' :
-                        openSection === 'sizechart' ? 'Size Guide' :
-                          'Shipping & Returns'}
-                </h2>
-                <button
-                  className="hero-expanded-close"
-                  onClick={() => setOpenSection(null)}
-                  aria-label="Close"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
+          <div className="hero-right-content">
+            {/* Desktop-Only Takeover View */}
+            {openSection && (
+              <div className="hero-expanded-view desktop-only">
+                <div className="hero-expanded-header">
+                  <h3 className="hero-title">
+                    {openSection === 'description' && 'Product Details'}
+                    {openSection === 'fit' && 'Fit'}
+                    {openSection === 'fabric' && 'Fabric Care'}
+                    {openSection === 'shipping' && 'Shipping & Returns'}
+                    {openSection === 'sizechart' && 'Size Guide'}
+                  </h3>
+                  <button className="hero-expanded-close" onClick={() => setOpenSection(null)}>✕</button>
+                </div>
+                <div className="hero-expanded-content">
+                  {openSection === 'description' && (
+                    <div className="inner-padding" style={{ whiteSpace: 'pre-line' }}>{secondDescription}</div>
+                  )}
+                  {openSection === 'fit' && (
+                    <div className="inner-padding" style={{ whiteSpace: 'pre-line' }}>{fitInfo}</div>
+                  )}
+                  {openSection === 'fabric' && (
+                    <div className="inner-padding" style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                      {fabricCare.split('\n').map((line: string, idx: number) => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                          return <div key={idx} style={{ paddingLeft: '1rem', marginBottom: '0.4rem' }}>{trimmedLine}</div>;
+                        }
+                        return trimmedLine ? <div key={idx} style={{ marginBottom: '0.4rem' }}>{trimmedLine}</div> : <br key={idx} />;
+                      })}
+                    </div>
+                  )}
+                  {openSection === 'shipping' && (
+                    <div className="inner-padding" style={{ whiteSpace: 'pre-line' }}>{shippingReturns}</div>
+                  )}
+                  {openSection === 'sizechart' && (
+                    <div className="inner-padding">
+                      <div className="size-chart-unit-toggle">
+                        <button className="unit-btn active">CM</button>
+                        <button className="unit-btn">INCH</button>
+                      </div>
+                      <div className="size-chart-table-wrapper">
+                        <table className="size-chart-table">
+                          <thead>
+                            <tr>
+                              <th>Size</th>
+                              <th>Chest</th>
+                              <th>Waist</th>
+                              <th>Length</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>XS</td><td>86-91</td><td>71-76</td><td>68</td></tr>
+                            <tr><td>S</td><td>91-96</td><td>76-81</td><td>70</td></tr>
+                            <tr><td>M</td><td>96-101</td><td>81-86</td><td>72</td></tr>
+                            <tr><td>L</td><td>101-106</td><td>86-91</td><td>74</td></tr>
+                            <tr><td>XL</td><td>106-111</td><td>91-96</td><td>76</td></tr>
+                            <tr><td>XXL</td><td>111-116</td><td>96-101</td><td>78</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="hero-expanded-content">
-                {openSection === 'description' && (
-                  <div style={{ whiteSpace: 'pre-line' }}>
-                    {secondDescription}
-                  </div>
-                )}
-                {openSection === 'fit' && (
-                  <div style={{ whiteSpace: 'pre-line' }}>
-                    {fitInfo}
-                  </div>
-                )}
-                {openSection === 'fabric' && (
-                  <div style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
-                    {fabricCare.split('\n').map((line: string, idx: number) => {
-                      const trimmedLine = line.trim();
-                      if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                        return <div key={idx} style={{ paddingLeft: '1rem', marginBottom: '0.5rem' }}>{trimmedLine}</div>;
-                      }
-                      return trimmedLine ? <div key={idx} style={{ marginBottom: '0.5rem' }}>{trimmedLine}</div> : <br key={idx} />;
-                    })}
-                  </div>
-                )}
-                {openSection === 'sizechart' && (
-                  <div className="size-chart-container">
-                    <img
-                      src="/app/assets/size_chart.jpeg"
-                      alt="Size Chart"
-                      className="size-chart-image"
-                    />
-                  </div>
-                )}
-                {openSection === 'shipping' && (
-                  <div style={{ whiteSpace: 'pre-line' }}>
-                    {shippingReturns}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            // Normal Form View
-            <>
+            )}
+
+            {/* Main Product Info - Always visible on mobile, hidden on desktop during takeover */}
+            <div className={`hero-main-info ${openSection ? 'desktop-hide' : ''}`}>
               <div className="hero-header">
                 <div>
                   <h1 className="hero-title">{product.title}</h1>
-                  <p className="hero-category">THE BLACMELO ORIGINALS</p>
+                  <p className="hero-category">
+                    {getMetafieldValue('shopify.category') ||
+                      product.productType ||
+                      product.collections?.nodes?.[0]?.title ||
+                      ''}
+                  </p>
                 </div>
                 <div className="hero-price">
                   {selectedVariant?.price && <Money data={selectedVariant.price} />}
@@ -376,219 +397,93 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                 </div>
               )}
 
-              {/* Color Product Switcher - Product-level colors */}
-              {relatedColorProducts && relatedColorProducts.length > 0 && (
-                <ColorProductSwitcher
-                  products={relatedColorProducts}
-                  currentProductHandle={product.handle}
-                />
-              )}
-
-              {/* Variant Thumbnails — color thumbnails for 2+ colors, product image for 1 color */}
+              {/* Color section logic */}
               {(() => {
-                // Skip if ColorProductSwitcher is already handling colors
-                if (relatedColorProducts && relatedColorProducts.length > 0) return null;
+                const colorOptionName = colorOption?.name || 'Color';
+                const colorMetafield = getMetafieldValue('color_name');
+                let currentColor = currentOptions[colorOptionName] || colorMetafield;
 
-                // Helper: extract color value from a variant's selectedOptions
-                const getColorValue = (variant: any): string =>
-                  variant.selectedOptions?.find(
-                    (opt: any) =>
-                      opt.name.toLowerCase() === 'color' ||
-                      opt.name.toLowerCase() === 'colour'
-                  )?.value || '';
-
-                // Helper: extract color option name (e.g. "Color" vs "Colour")
-                const getColorOptionName = (variant: any): string =>
-                  variant.selectedOptions?.find(
-                    (opt: any) =>
-                      opt.name.toLowerCase() === 'color' ||
-                      opt.name.toLowerCase() === 'colour'
-                  )?.name || 'Color';
-
-                // Build a Map: colorValue → first variant with that color that has an image
-                const colorVariantMap = new Map<string, any>();
-                for (const variant of (product.variants?.nodes || [])) {
-                  const color = getColorValue(variant);
-                  // Skip variants with no color option (size-only variants)
-                  if (!color) continue;
-                  // Only use the first variant we find for each color, and it must have an image
-                  if (!colorVariantMap.has(color) && variant.image) {
-                    colorVariantMap.set(color, variant);
-                  }
+                if (!currentColor && product.title.includes(' - ')) {
+                  currentColor = product.title.split(' - ').pop();
                 }
 
-                const uniqueColorVariants = Array.from(colorVariantMap.values());
+                if (!currentColor) currentColor = 'Standard';
 
-                // ── MULTI-COLOR: one clickable thumbnail per unique color ──
-                if (uniqueColorVariants.length >= 2) {
-                  const currentColorValue = selectedVariant?.selectedOptions?.find(
-                    (opt: any) =>
-                      opt.name.toLowerCase() === 'color' ||
-                      opt.name.toLowerCase() === 'colour'
-                  )?.value || '';
-
+                if (relatedColorProducts && relatedColorProducts.length > 0) {
                   return (
-                    <div className="variant-thumbnails">
-                      {uniqueColorVariants.map((variant: any) => {
-                        const variantColor = getColorValue(variant);
-                        const colorOptName = getColorOptionName(variant);
-                        const isSelected = variantColor === currentColorValue;
-
-                        return (
-                          <div
-                            key={variant.id}
-                            className={`variant-thumb ${isSelected ? 'selected' : ''}`}
-                            title={variantColor}
-                            onClick={() => {
-                              // Navigate to this color only — don't carry over size
-                              const newParams = new URLSearchParams();
-                              newParams.set(colorOptName, variantColor);
-                              setParams(newParams, { preventScrollReset: true, replace: true });
-                            }}
-                          >
-                            <Image
-                              data={variant.image}
-                              alt={variantColor || variant.title}
-                              sizes="60px"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <ColorProductSwitcher
+                      products={relatedColorProducts}
+                      currentProductHandle={product.handle}
+                      isInWishlistState={isInWishlistState}
+                      onWishlistToggle={handleWishlistToggle}
+                    />
                   );
                 }
 
-                // ── SINGLE-COLOR (or no color option): show first product image as thumbnail ──
-                const firstImage =
-                  product.images?.nodes?.[0] ||
-                  selectedVariant?.image ||
-                  product.featuredImage;
-
-                if (!firstImage) return null;
+                const colorValues = colorOption?.optionValues || [];
+                const hasMultipleColors = colorValues.length > 1;
 
                 return (
-                  <div className="variant-thumbnails">
-                    <div className="variant-thumb selected" title={product.title}>
-                      <Image
-                        data={firstImage}
-                        alt={product.title}
-                        sizes="60px"
-                      />
+                  <div className="hero-colour">
+                    <div className="colour-header">
+                      <div className="colour-header-left">
+                        <span>Colour {hasMultipleColors && <sup className="color-count">{colorValues.length}</sup>}</span>
+                        <span className="colour-name">{currentColor}</span>
+                      </div>
+                      <button className={`bookmark-btn ${isInWishlistState ? 'active' : ''}`} onClick={handleWishlistToggle}>
+                        <svg width="18" height="18" viewBox="0 0 16 16" fill={isInWishlistState ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+                          <path d="M3 2h10v12l-5-3-5 3V2z" />
+                        </svg>
+                      </button>
                     </div>
+                    {hasMultipleColors && (
+                      <div className="swatches">
+                        {colorValues.map((value) => {
+                          const isSelected = currentOptions[colorOptionName] === value.name;
+                          const swatchUrl = value.swatch?.image?.previewImage?.url;
+                          const swatchColor = value.swatch?.color;
+                          return (
+                            <div key={value.name} className={`swatch-wrapper ${isSelected ? 'active' : ''}`} onClick={() => handleOptionChange(colorOptionName, value.name)}>
+                              {swatchUrl ? <img src={swatchUrl} alt={value.name} className="swatch-image" /> : swatchColor ? <div className="swatch-image" style={{ backgroundColor: swatchColor }} /> : <div className="swatch-image" style={{ background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>{value.name}</div>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
 
-              {/* Color Selector - Only show if no related color products */}
-              {!relatedColorProducts?.length && colorOption && (
-                <div className="hero-colour">
-                  <div className="colour-header">
-                    <div className="colour-header-left">
-                      <span>Select {colorOption.name}</span>
-                      <span className="colour-name">{currentOptions[colorOption.name]}</span>
-                    </div>
-                    <button
-                      className={`bookmark-btn ${isInWishlistState ? 'active' : ''}`}
-                      onClick={handleWishlistToggle}
-                      aria-label={isInWishlistState ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill={isInWishlistState ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
-                        <path d="M3 2h10v12l-5-3-5 3V2z" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="swatches">
-                    {colorOption.optionValues.map((value) => {
-                      const isSelected = currentOptions[colorOption.name] === value.name;
-                      const swatchUrl = value.swatch?.image?.previewImage?.url;
-                      const swatchColor = value.swatch?.color;
-
-                      return (
-                        <div
-                          key={value.name}
-                          className={`swatch-wrapper ${isSelected ? 'active' : ''}`}
-                          onClick={() => handleOptionChange(colorOption.name, value.name)}
-                        >
-                          {swatchUrl ? (
-                            <img src={swatchUrl} alt={value.name} className="swatch-image" />
-                          ) : swatchColor ? (
-                            <div className="swatch-image" style={{ backgroundColor: swatchColor }} />
-                          ) : (
-                            <button
-                              className={`size-btn ${isSelected ? 'selected' : ''}`}
-                              style={{ width: 'auto', padding: '0 15px' }}
-                            >
-                              {value.name}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
               {sizeOption && (
                 <div style={{ marginBottom: '2rem' }}>
                   <div className="size-header">
                     <span>Select Size</span>
-                    <button
-                      className="size-guide-btn"
-                      onClick={() => toggleSection('sizechart')}
-                      type="button"
-                    >
-                      Size Guide
-                    </button>
+                    <button className="size-guide-btn" onClick={() => toggleSection('sizechart')} type="button">Size Guide</button>
                   </div>
                   <div className="hero-sizes">
                     {sizeOption.optionValues.map((value) => {
                       const isSelected = currentOptions[sizeOption.name] === value.name;
                       const available = isOptionAvailable(sizeOption.name, value.name);
-
                       return (
-                        <button
-                          key={value.name}
-                          className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
-                          onClick={() => available && handleOptionChange(sizeOption.name, value.name)}
-                          disabled={!available}
-                        >
+                        <button key={value.name} className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`} onClick={() => available && handleOptionChange(sizeOption.name, value.name)} disabled={!available}>
                           {value.name}
                         </button>
                       );
                     })}
                   </div>
-                  <div className="hero-size-note">
-                    <a href="#" style={{ fontSize: '11px', textDecoration: 'underline', color: '#666' }}>Size Not In Stock?</a>
-                  </div>
+                  <div className="hero-size-note"><a href="#">Size Not In Stock?</a></div>
                 </div>
               )}
 
-              {/* Add To Cart - Full Width */}
+              {/* Add To Cart */}
               <div className="hero-cart-container">
                 <AddToCartButton
                   lines={selectedVariant ? [{ merchandiseId: selectedVariant.id, quantity: 1 }] : []}
                   disabled={!selectedVariant || !selectedVariant.availableForSale || !currentOptions[sizeOption?.name || '']}
-                  analytics={{
-                    products: [
-                      {
-                        productGid: product.id,
-                        variantGid: selectedVariant?.id,
-                        name: product.title,
-                        variantName: selectedVariant?.title,
-                        brand: product.vendor,
-                        price: selectedVariant?.price.amount,
-                        quantity: 1,
-                      },
-                    ],
-                    totalValue: parseFloat(selectedVariant?.price.amount || '0'),
-                  }}
+                  analytics={{ products: [{ productGid: product.id, variantGid: selectedVariant?.id, name: product.title, variantName: selectedVariant?.title, brand: product.vendor, price: selectedVariant?.price.amount, quantity: 1 }], totalValue: parseFloat(selectedVariant?.price.amount || '0') }}
                 >
                   <div className={`hero-cta ${!selectedVariant?.availableForSale ? 'disabled' : ''}`}>
-                    {!selectedVariant?.availableForSale
-                      ? 'SOLD OUT'
-                      : !currentOptions[sizeOption?.name || '']
-                        ? 'SELECT A SIZE'
-                        : 'ADD TO CART'
-                    }
+                    {!selectedVariant?.availableForSale ? 'SOLD OUT' : !currentOptions[sizeOption?.name || ''] ? 'SELECT A SIZE' : 'ADD TO CART'}
                   </div>
                 </AddToCartButton>
               </div>
@@ -609,47 +504,56 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                 </div>
               </div>
 
-              {/* Expandable Sections - 2x2 Grid Layout */}
+              {/* Expandable Sections (Accordion for Mobile) */}
               <div className="hero-expandable-sections">
-                <button
-                  className="expandable-section-btn"
-                  onClick={() => toggleSection('description')}
-                  type="button"
-                >
-                  <span className="expandable-icon">+</span>
-                  <span className="expandable-title">Product Details</span>
-                </button>
+                <div className={`accordion-item ${openSection === 'description' ? 'active' : ''}`}>
+                  <button className="expandable-section-btn" onClick={() => toggleSection('description')} type="button">
+                    <span className="expandable-title">Product Details</span>
+                    <span className="expandable-icon">{openSection === 'description' ? '−' : '+'}</span>
+                  </button>
+                  <div className="accordion-content mobile-only">
+                    <div className="inner-padding">{secondDescription}</div>
+                  </div>
+                </div>
 
-                <button
-                  className="expandable-section-btn"
-                  onClick={() => toggleSection('fit')}
-                  type="button"
-                >
-                  <span className="expandable-icon">+</span>
-                  <span className="expandable-title">Fit</span>
-                </button>
+                <div className={`accordion-item ${openSection === 'fit' ? 'active' : ''}`}>
+                  <button className="expandable-section-btn" onClick={() => toggleSection('fit')} type="button">
+                    <span className="expandable-title">Fit</span>
+                    <span className="expandable-icon">{openSection === 'fit' ? '−' : '+'}</span>
+                  </button>
+                  <div className="accordion-content mobile-only">
+                    <div className="inner-padding">{fitInfo}</div>
+                  </div>
+                </div>
 
-                <button
-                  className="expandable-section-btn"
-                  onClick={() => toggleSection('fabric')}
-                  type="button"
-                >
-                  <span className="expandable-icon">+</span>
-                  <span className="expandable-title">Fabric Care</span>
-                </button>
+                <div className={`accordion-item ${openSection === 'fabric' ? 'active' : ''}`}>
+                  <button className="expandable-section-btn" onClick={() => toggleSection('fabric')} type="button">
+                    <span className="expandable-title">Fabric Care</span>
+                    <span className="expandable-icon">{openSection === 'fabric' ? '−' : '+'}</span>
+                  </button>
+                  <div className="accordion-content mobile-only">
+                    <div className="inner-padding" style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                      {fabricCare.split('\n').map((line: string, idx: number) => (
+                        <div key={idx} style={{ marginBottom: '0.4rem' }}>{line}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-                <button
-                  className="expandable-section-btn"
-                  onClick={() => toggleSection('shipping')}
-                  type="button"
-                >
-                  <span className="expandable-icon">+</span>
-                  <span className="expandable-title">Shipping & Returns</span>
-                </button>
+                <div className={`accordion-item ${openSection === 'shipping' ? 'active' : ''}`}>
+                  <button className="expandable-section-btn" onClick={() => toggleSection('shipping')} type="button">
+                    <span className="expandable-title">Shipping & Returns</span>
+                    <span className="expandable-icon">{openSection === 'shipping' ? '−' : '+'}</span>
+                  </button>
+                  <div className="accordion-content mobile-only">
+                    <div className="inner-padding">{shippingReturns}</div>
+                  </div>
+                </div>
               </div>
-            </>
-          )}
+            </div>
+          </div>
         </div>
+
       </section>
     </>
   );

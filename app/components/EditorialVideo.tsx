@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState, forwardRef, useCallback} from 'react';
-import {Link} from 'react-router';
+import { useEffect, useRef, useState, forwardRef, useCallback } from 'react';
+import { Link } from 'react-router';
 
 interface EditorialVideoProps {
   video: string;
@@ -23,11 +23,11 @@ export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(fu
   overlayTitle = 'COLLECTION',
   primaryButtonText = 'SHOP NOW',
   primaryButtonLink = '#',
-  secondaryButtonText = 'DISCOVER STORY',
-  secondaryButtonLink = '#',
+  secondaryButtonText,
+  secondaryButtonLink,
 }, forwardedRef) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const internalRef = useRef<HTMLDivElement>(null);
+  const internalRef = useRef<HTMLDivElement | null>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   // Merge refs
@@ -37,7 +37,7 @@ export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(fu
       if (typeof forwardedRef === 'function') {
         forwardedRef(node);
       } else if (forwardedRef) {
-        forwardedRef.current = node;
+        (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
       }
     },
     [forwardedRef]
@@ -61,7 +61,7 @@ export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(fu
           }
         });
       },
-      {threshold: [0.5]}
+      { threshold: [0.5] }
     );
 
     observer.observe(internalRef.current);
@@ -75,7 +75,7 @@ export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(fu
     <section
       ref={setRefs}
       className="editorial-banner"
-      style={{height: '100vh', minHeight: '600px', position: 'relative'}}
+      style={{ height: '100vh', minHeight: '600px', position: 'relative' }}
     >
       <div className="editorial-banner-media">
         {/* Video Only */}
@@ -102,9 +102,11 @@ export const EditorialVideo = forwardRef<HTMLDivElement, EditorialVideoProps>(fu
               <Link to={primaryButtonLink} className="banner-overlay-btn">
                 {primaryButtonText}
               </Link>
-              <Link to={secondaryButtonLink} className="banner-overlay-btn">
-                {secondaryButtonText}
-              </Link>
+              {secondaryButtonText && secondaryButtonLink && (
+                <Link to={secondaryButtonLink} className="banner-overlay-btn">
+                  {secondaryButtonText}
+                </Link>
+              )}
             </div>
           </div>
         </div>

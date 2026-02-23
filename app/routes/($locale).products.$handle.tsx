@@ -1,6 +1,6 @@
 import { redirect, useLoaderData, Link } from 'react-router';
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -29,20 +29,20 @@ import buttonsStyles from '~/styles/components/buttons.css?url';
 import colorProductSwitcherStyles from '~/styles/components/color-product-switcher.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: productPageStyles},
-  {rel: 'stylesheet', href: productHeroStyles},
-  {rel: 'stylesheet', href: productHeroInfoStyles},
-  {rel: 'stylesheet', href: productFeatureHeroStyles},
-  {rel: 'stylesheet', href: breadcrumbStyles},
-  {rel: 'stylesheet', href: productGridStyles},
-  {rel: 'stylesheet', href: productCardStyles},
-  {rel: 'stylesheet', href: buttonsStyles},
-  {rel: 'stylesheet', href: colorProductSwitcherStyles},
+  { rel: 'stylesheet', href: productPageStyles },
+  { rel: 'stylesheet', href: productHeroStyles },
+  { rel: 'stylesheet', href: productHeroInfoStyles },
+  { rel: 'stylesheet', href: productFeatureHeroStyles },
+  { rel: 'stylesheet', href: breadcrumbStyles },
+  { rel: 'stylesheet', href: productGridStyles },
+  { rel: 'stylesheet', href: productCardStyles },
+  { rel: 'stylesheet', href: buttonsStyles },
+  { rel: 'stylesheet', href: colorProductSwitcherStyles },
 ];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    { title: `Hydrogen | ${data?.product.title ?? ''}` },
+    { title: `${data?.product.title ?? ''} | BLACMELO | The Missing Piece of Luxury` },
     {
       rel: 'canonical',
       href: `/products/${data?.product.handle}`,
@@ -83,7 +83,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   // Get color_family metafield to fetch related color products
   // Safely find color_family metafield with null checks
   let colorFamily: string | undefined;
-  
+
   if (Array.isArray(product.metafields)) {
     const colorFamilyField = product.metafields.find(
       (m: any) => {
@@ -91,7 +91,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
         return m.namespace === 'custom' && m.key === 'color_family';
       }
     );
-    
+
     colorFamily = colorFamilyField?.value;
   }
 
@@ -102,16 +102,16 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     try {
       // Escape special characters in the search query
       const escapedColorFamily = colorFamily.replace(/[:"]/g, '\\$&');
-      
+
       const result = await storefront.query(COLOR_FAMILY_PRODUCTS_QUERY, {
-        variables: { 
+        variables: {
           query: `metafields.custom.color_family:"${escapedColorFamily}"`,
-          first: 20 
+          first: 20
         },
       });
-      
+
       relatedColorProducts = result?.products?.nodes || [];
-      
+
       // Additional filter to ensure exact match (Shopify search can be fuzzy)
       relatedColorProducts = relatedColorProducts.filter((p: any) => {
         const pColorFamily = p.metafields?.find(
@@ -133,14 +133,13 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   // Fetch best sellers collection - try multiple possible handles
   let bestSellersCollection = null;
   const possibleHandles = ['best-seller', 'best-sellers', 'bestseller', 'bestsellers'];
-  
+
   for (const handle of possibleHandles) {
     try {
       const result = await storefront.query(BEST_SELLERS_QUERY, {
         variables: { handle },
       });
-      console.log(`[Best Sellers] Trying handle: ${handle}`, result);
-      if (result?.collection?.products?.nodes?.length > 0) {
+      if (result?.collection?.products?.nodes?.length) {
         bestSellersCollection = result.collection;
         console.log(`[Best Sellers] Found collection with handle: ${handle}, products:`, result.collection.products.nodes.length);
         break;
@@ -195,7 +194,7 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  // Track recently viewed products
+  // Track recently viewed products and determine primary collection for breadcrumbs
   useEffect(() => {
     if (product && selectedVariant) {
       addToRecentlyViewed({
@@ -210,6 +209,18 @@ export default function Product() {
       });
     }
   }, [product, selectedVariant]);
+
+  // Determine the best collection for breadcrumbs
+  const primaryCollection = useMemo(() => {
+    if (!product.collections?.nodes?.length) return null;
+
+    // Prioritize collections that aren't 'all' or 'best-sellers'
+    const curatedCollections = product.collections.nodes.filter(
+      (c: any) => !['all', 'best-sellers', 'new-arrivals', 'frontpage'].includes(c.handle)
+    );
+
+    return curatedCollections[0] || product.collections.nodes[0];
+  }, [product.collections]);
 
   // Transform best sellers for ProductCard
   const transformedBestSellers = bestSellers?.map((product: any) => ({
@@ -233,7 +244,7 @@ export default function Product() {
       <ProductHero
         product={product}
         selectedVariant={selectedVariant}
-        productOptions={productOptions}
+        productOptions={productOptions as any}
         relatedColorProducts={relatedColorProducts}
       />
       <Analytics.ProductView
@@ -264,17 +275,17 @@ export default function Product() {
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={[
         { label: 'Home', href: '/' },
-        { label: 'Products', href: '/products' },
-        ...(product.collections?.nodes?.[0] ? [{
-          label: product.collections.nodes[0].title,
-          href: `/collections/${product.collections.nodes[0].handle}`
+        { label: 'Shop', href: '/collections/all' },
+        ...(primaryCollection ? [{
+          label: primaryCollection.title,
+          href: `/collections/${primaryCollection.handle}`
         }] : []),
         { label: product.title }
       ]} />
 
       <ProductGrid
-        title="BEST SELLERS"
-        products={transformedBestSellers.length > 0 ? transformedBestSellers : recommendations?.slice(0, 8).map((product: any) => ({
+        title="SIMILAR PRODUCTS"
+        products={recommendations?.map((product: any) => ({
           id: product.id,
           handle: product.handle,
           title: product.title,
@@ -286,6 +297,8 @@ export default function Product() {
           variants: product.variants,
           options: product.options,
         })) || []}
+        horizontalScroll={true}
+        showViewMore={true}
       />
 
       <RecentlyViewed />
@@ -342,6 +355,12 @@ const PRODUCT_FRAGMENT = `#graphql
     productType
     encodedVariantExistence
     encodedVariantAvailability
+    featuredImage {
+      url
+      altText
+      width
+      height
+    }
     images(first: 20) {
       nodes {
         id

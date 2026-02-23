@@ -1,5 +1,5 @@
-import {useEffect, useRef} from 'react';
-import {Link} from 'react-router';
+import { useEffect, useRef } from 'react';
+import { Link } from 'react-router';
 
 interface BannerLink {
   label: string;
@@ -11,7 +11,7 @@ interface ParallaxMenuProps {
   links: BannerLink[];
 }
 
-export function ParallaxMenu({bannerRefs, links}: ParallaxMenuProps) {
+export function ParallaxMenu({ bannerRefs, links }: ParallaxMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export function ParallaxMenu({bannerRefs, links}: ParallaxMenuProps) {
       rafId = requestAnimationFrame(updatePosition);
     };
 
-    window.addEventListener('scroll', handleScroll, {passive: true});
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updatePosition);
     updatePosition(); // Initial positioning
 
@@ -130,7 +130,7 @@ export function ParallaxMenu({bannerRefs, links}: ParallaxMenuProps) {
             </Link>
           ))}
         </nav>
-        <Link to="/collections" className="parallax-menu-discover">
+        <Link to="/collections/new-arrival" className="parallax-menu-discover">
           <span>DISCOVER</span>
           <svg
             width="16"

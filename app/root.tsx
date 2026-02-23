@@ -1,5 +1,5 @@
-import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
-import {useJudgeme} from '@judgeme/shopify-hydrogen';
+import { Analytics, getShopAnalytics, useNonce } from '@shopify/hydrogen';
+import { useJudgeme } from '@judgeme/shopify-hydrogen';
 import {
   Outlet,
   useRouteError,
@@ -11,9 +11,9 @@ import {
   ScrollRestoration,
   useRouteLoaderData,
 } from 'react-router';
-import type {Route} from './+types/root';
-import favicon from '~/assets/favicon.png';
-import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import type { Route } from './+types/root';
+import favicon from '~/assets/icon_2.png';
+import { FOOTER_QUERY, HEADER_QUERY } from '~/lib/fragments';
 // Core styles (loaded globally)
 import resetStyles from '~/styles/reset.css?url';
 import fontsStyles from '~/styles/core/fonts.css?url';
@@ -36,14 +36,16 @@ import scrollbarStyles from '~/styles/components/scrollbar.css?url';
 import hoverMenuStyles from '~/styles/components/menus/hover-menu.css?url';
 import mobileMenuStyles from '~/styles/components/menus/mobile-menu.css?url';
 import cartStyles from '~/styles/components/cart/cart.css?url';
+import recentlyViewedStyles from '~/styles/components/recently-viewed.css?url';
+
 
 // Component-specific and page-specific styles are now imported in their respective components/routes
-import {PageLayout} from './components/PageLayout';
-import {LenisProvider} from '~/components/smooth-scroll/LenisProvider';
-import {DYNAMIC_HEADER_MENU_QUERY} from '~/graphql/DynamicHeaderMenuQuery';
-import {ANNOUNCEMENT_BAR_QUERY} from '~/graphql/AnnouncementBarQuery';
-import {parseDynamicHeaderMenu} from '~/lib/dynamicHeaderMenu';
-import {parseAnnouncementBar, getFallbackAnnouncements} from '~/lib/announcementBar';
+import { PageLayout } from './components/PageLayout';
+import { LenisProvider } from '~/components/smooth-scroll/LenisProvider';
+import { DYNAMIC_HEADER_MENU_QUERY } from '~/graphql/DynamicHeaderMenuQuery';
+import { ANNOUNCEMENT_BAR_QUERY } from '~/graphql/AnnouncementBarQuery';
+import { parseDynamicHeaderMenu } from '~/lib/dynamicHeaderMenu';
+import { parseAnnouncementBar, getFallbackAnnouncements } from '~/lib/announcementBar';
 import menuManImage from '~/assets/menu/menu_man.jpeg';
 import menuWomanImage from '~/assets/menu/menu_woman.jpeg';
 
@@ -91,27 +93,30 @@ export function links() {
       rel: 'preconnect',
       href: 'https://shop.app',
     },
-    {rel: 'icon', type: 'image/png', href: favicon},
+    { rel: 'icon', type: 'image/png', href: favicon },
+    { rel: 'apple-touch-icon', href: favicon },
+    { rel: 'shortcut icon', href: favicon },
     // Core styles (loaded globally)
-    {rel: 'stylesheet', href: resetStyles},
-    {rel: 'stylesheet', href: fontsStyles},
-    {rel: 'stylesheet', href: themeStyles},
-    {rel: 'stylesheet', href: tailwindCss},
-    {rel: 'stylesheet', href: globalsStyles},
+    { rel: 'stylesheet', href: resetStyles },
+    { rel: 'stylesheet', href: fontsStyles },
+    { rel: 'stylesheet', href: themeStyles },
+    { rel: 'stylesheet', href: tailwindCss },
+    { rel: 'stylesheet', href: globalsStyles },
     // Utility styles (loaded globally)
-    {rel: 'stylesheet', href: animationsStyles},
-    {rel: 'stylesheet', href: responsiveStyles},
-    {rel: 'stylesheet', href: typographyStyles},
-    {rel: 'stylesheet', href: customSpacingStyles},
+    { rel: 'stylesheet', href: animationsStyles },
+    { rel: 'stylesheet', href: responsiveStyles },
+    { rel: 'stylesheet', href: typographyStyles },
+    { rel: 'stylesheet', href: customSpacingStyles },
     // Layout styles (loaded globally since layout appears on all pages)
-    {rel: 'stylesheet', href: headerStyles},
-    {rel: 'stylesheet', href: footerStyles},
-    {rel: 'stylesheet', href: overlayStyles},
-    {rel: 'stylesheet', href: announcementBarStyles},
-    {rel: 'stylesheet', href: scrollbarStyles},
-    {rel: 'stylesheet', href: hoverMenuStyles},
-    {rel: 'stylesheet', href: mobileMenuStyles},
-    {rel: 'stylesheet', href: cartStyles},
+    { rel: 'stylesheet', href: headerStyles },
+    { rel: 'stylesheet', href: footerStyles },
+    { rel: 'stylesheet', href: overlayStyles },
+    { rel: 'stylesheet', href: announcementBarStyles },
+    { rel: 'stylesheet', href: scrollbarStyles },
+    { rel: 'stylesheet', href: hoverMenuStyles },
+    { rel: 'stylesheet', href: mobileMenuStyles },
+    { rel: 'stylesheet', href: cartStyles },
+    { rel: 'stylesheet', href: recentlyViewedStyles },
   ];
 }
 
@@ -122,7 +127,7 @@ export async function loader(args: Route.LoaderArgs) {
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  const {storefront, env} = args.context;
+  const { storefront, env } = args.context;
 
   return {
     ...deferredData,
@@ -147,8 +152,8 @@ export async function loader(args: Route.LoaderArgs) {
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
-async function loadCriticalData({context}: Route.LoaderArgs) {
-  const {storefront} = context;
+async function loadCriticalData({ context }: Route.LoaderArgs) {
+  const { storefront } = context;
 
   const [header, dynamicMenuData, announcementData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
@@ -183,12 +188,12 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
   console.log('✅ Women menu config built with', womenMenuConfig.sections.length, 'sections');
 
   // Parse announcement data
-  const announcements = announcementData 
+  const announcements = announcementData
     ? parseAnnouncementBar(announcementData)
     : getFallbackAnnouncements();
   console.log('📢 Announcements loaded:', announcements.length);
 
-  return {header, menMenuConfig, womenMenuConfig, announcements};
+  return { header, menMenuConfig, womenMenuConfig, announcements };
 }
 
 /**
@@ -196,8 +201,8 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
  * fetched after the initial page load. If it's unavailable, the page should still 200.
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
-function loadDeferredData({context}: Route.LoaderArgs) {
-  const {storefront, customerAccount, cart} = context;
+function loadDeferredData({ context }: Route.LoaderArgs) {
+  const { storefront, customerAccount, cart } = context;
 
   // defer the footer query (below the fold)
   const footer = storefront
@@ -212,10 +217,24 @@ function loadDeferredData({context}: Route.LoaderArgs) {
       console.error(error);
       return null;
     });
+
+  // Fetch newly added products for cart recommendations
+  const newProducts = storefront
+    .query(NEW_PRODUCTS_QUERY, {
+      cache: storefront.CacheShort(),
+      variables: { first: 8 },
+    })
+    .then((data: any) => data?.products?.nodes || [])
+    .catch((error: Error) => {
+      console.error('Error fetching new products:', error);
+      return [];
+    });
+
   return {
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
+    newProducts,
     judgeme: {
       shopDomain: (context.env as any).JUDGEME_SHOP_DOMAIN || '',
       publicToken: (context.env as any).JUDGEME_PUBLIC_TOKEN || '',
@@ -225,7 +244,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
   };
 }
 
-export function Layout({children}: {children?: React.ReactNode}) {
+export function Layout({ children }: { children?: React.ReactNode }) {
   const nonce = useNonce();
 
   return (
@@ -261,13 +280,24 @@ export default function App() {
       consent={data.consent}
     >
       <LenisProvider>
-        <PageLayout {...data}>
+        <PageLayout
+          header={data.header}
+          cart={data.cart}
+          isLoggedIn={data.isLoggedIn}
+          footer={data.footer}
+          publicStoreDomain={data.publicStoreDomain}
+          menMenuConfig={data.menMenuConfig}
+          womenMenuConfig={data.womenMenuConfig}
+          announcements={data.announcements}
+          newProducts={data.newProducts}
+        >
           <Outlet />
         </PageLayout>
       </LenisProvider>
     </Analytics.Provider>
   );
 }
+
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -293,3 +323,29 @@ export function ErrorBoundary() {
     </div>
   );
 }
+
+const NEW_PRODUCTS_QUERY = `#graphql
+  query NewProducts($first: Int!, $country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: CREATED_AT, reverse: true) {
+      nodes {
+        id
+        title
+        handle
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+` as const;
+

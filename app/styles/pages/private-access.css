@@ -1,0 +1,72 @@
+/**
+ * BLACMELO Private Access Page — Coming Soon
+ */
+
+.private-access-page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.private-access-hero-banner {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.private-access-hero-overlay {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.private-access-hero-subtitle {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0 0 20px 0;
+  opacity: 0.7;
+}
+
+.private-access-hero-title {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .private-access-hero-banner {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .private-access-hero-title {
+    font-size: 2.5rem;
+  }
+
+  .private-access-hero-subtitle {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .private-access-hero-title {
+    font-size: 2rem;
+  }
+}

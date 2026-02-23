@@ -1,166 +1,225 @@
 /**
- * BLACMELO Mobile Menu - Full Screen Overlay (Represent-style)
+ * BLACMELO Mobile Menu — Full-screen slide-in panel
+ * Matches design reference: bold featured links, small gray category labels, regular category items
  */
 
 /* ==========================================
-   Mobile Menu Header (No Close Button)
+   SCROLL AREA — wraps all scrollable content
    ========================================== */
-.mobile-menu-header {
-  padding: 20px 32px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-shrink: 0;
-}
-
-.mobile-menu-header h3 {
-  font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #000000;
-  margin: 0;
-}
-
-/* ==========================================
-   Mobile Menu Scroll Container
-   ========================================== */
-.mobile-menu-scroll-container {
-  height: 100%;
+.mobile-menu-scroll-area {
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* iOS native momentum scroll */
+  overscroll-behavior: contain;
+  /* Ensure touch events can propagate for scrolling */
+  touch-action: pan-y;
 }
 
 /* ==========================================
-   Mobile Menu Content
+   CONTENT WRAPPER
    ========================================== */
 .mobile-menu-content {
-  padding: 44px 32px 40px; /* Extra top padding to replace header space */
+  padding: 16px 24px 48px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
   min-height: 100%;
+  background: #ffffff;
 }
 
-/* Section container */
+/* ==========================================
+   FEATURED / "PERMANENT" LINKS
+   Large bold text at top — e.g. "New Arrivals", "Bestsellers"
+   ========================================== */
+.mobile-menu-section.featured-section {
+  margin-bottom: 28px;
+}
+
+.mobile-menu-item.permanent-item {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  display: block;
+  padding: 5px 0;
+  line-height: 1.25;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-menu-item.permanent-item:hover,
+.mobile-menu-item.permanent-item:active {
+  opacity: 0.5;
+}
+
+/* ==========================================
+   CATEGORY SECTION — with small label
+   ========================================== */
 .mobile-menu-section {
   display: flex;
   flex-direction: column;
   gap: 0;
+  margin-bottom: 20px;
 }
 
-/* Common section - no title, mixed item types */
-.mobile-menu-section.common-section {
-  margin-bottom: 0;
-  padding-bottom: 8px;
-}
-
-/* Category section - with title */
 .mobile-menu-section.category-section {
-  margin-bottom: 0;
+  margin-bottom: 20px;
 }
 
-/* Section titles — bold uppercase labels */
+/* Small uppercase gray label — "MAN", "WOMAN", "EXPLORE" */
 .mobile-menu-section-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #000000;
-  margin: 0 0 16px 0;
+  letter-spacing: 0.1em;
+  color: #999999;
+  /* Gap specifically between the label and the first link below it */
+  margin: 0 0 8px 0;
   padding: 0;
 }
 
-/* Section divider */
-.mobile-menu-divider {
-  width: 100%;
-  height: 1px;
-  background: #e0e0e0;
-  margin: 8px 0 16px 0;
-}
-
-/* Link list */
+/* ==========================================
+   LINK LIST
+   ========================================== */
 .mobile-menu-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-/* Menu items — clean, spacious links */
+/* Standard category item — "Shop All Mens", "Clothing", etc. */
 .mobile-menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 12px 0;
-  background: none;
-  border: none;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 15px;
   font-weight: 400;
   color: #000000;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  /* Vertical rhythm: 8px top + 8px bottom gives clean rows without excess whitespace */
+  padding: 8px 0;
+  background: none;
+  border: none;
   cursor: pointer;
   text-align: left;
-  transition: opacity 0.2s ease;
-  line-height: 1.3;
+  line-height: 1.2;
   letter-spacing: -0.01em;
+  transition: opacity 0.15s ease;
 }
 
 .mobile-menu-item:hover,
 .mobile-menu-item:active {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-/* Permanent / bold items — key navigation */
-.mobile-menu-item.permanent-item {
-  font-weight: 600;
-  font-size: 16px;
-  padding: 14px 0;
-}
-
-.mobile-menu-item svg {
-  color: #cccccc;
+/* ==========================================
+   DIVIDER LINE
+   ========================================== */
+.mobile-menu-divider {
+  width: 100%;
+  height: 1px;
+  background: #ebebeb;
+  /* Top margin creates breathing room after the last link before the divider */
+  margin: 4px 0 20px 0;
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
 }
 
-/* Nested items — sub-collections under a parent */
+/* Section gap */
+.mobile-menu-section+.mobile-menu-section {
+  margin-top: 0;
+}
+
+/* ==========================================
+   EXPANDABLE ITEMS (+ button)
+   ========================================== */
+.mobile-menu-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobile-menu-item-wrapper .mobile-menu-item {
+  flex: 1;
+}
+
+.mobile-menu-expand-btn {
+  background: none;
+  border: none;
+  padding: 8px 0 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaaaaa;
+  flex-shrink: 0;
+}
+
+.mobile-menu-expand-btn:hover {
+  color: #000000;
+}
+
+.mobile-menu-expand-btn .expand-icon {
+  transition: transform 0.2s ease;
+}
+
+.mobile-menu-expand-btn .expand-icon.expanded {
+  transform: rotate(45deg);
+}
+
+/* ==========================================
+   NESTED ITEMS — sub-collections
+   ========================================== */
 .mobile-menu-nested-list {
   list-style: none;
-  margin: 4px 0 0 0;
-  padding: 0 0 0 20px;
+  margin: 0 0 4px 0;
+  padding: 0 0 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border-left: 1px solid #f0f0f0;
+  border-left: 1px solid #eeeeee;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 800px;
+  }
 }
 
 .mobile-menu-item.nested-item {
   font-size: 14px;
   font-weight: 400;
-  color: #666666;
-  padding: 6px 0 6px 12px;
-  letter-spacing: -0.01em;
+  color: #555555;
+  padding: 6px 0;
 }
 
-.mobile-menu-item.nested-item:hover,
-.mobile-menu-item.nested-item:active {
+.mobile-menu-item.nested-item:hover {
   color: #000000;
   opacity: 1;
 }
 
-/* Mobile Menu Footer */
+/* ==========================================
+   FOOTER — locale picker
+   ========================================== */
 .mobile-menu-footer {
-  padding: 16px 32px 32px;
-  border-top: 1px solid #e5e5e5;
-  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid #ebebeb;
 }
 
 .mobile-menu-locale {
@@ -174,85 +233,18 @@
   font-size: 13px;
   color: #666666;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .locale-flag {
   font-size: 1.1rem;
 }
 
-/* Hide mobile menu on desktop — Aside handles this via overlay */
+/* ==========================================
+   DESKTOP: hide mobile overlay trigger
+   ========================================== */
 @media (min-width: 769px) {
   .mobile-menu-overlay {
     display: none;
   }
-}
-
-/* Expandable Menu Items */
-.mobile-menu-item-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
-}
-
-.mobile-menu-item-wrapper .mobile-menu-item {
-  flex: 1;
-  padding-right: 0;
-}
-
-.mobile-menu-expand-btn {
-  background: none;
-  border: none;
-  padding: 12px 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000000;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  margin: 0;
-}
-
-.mobile-menu-expand-btn:hover {
-  opacity: 0.6;
-}
-
-.mobile-menu-expand-btn .expand-icon {
-  transition: transform 0.25s ease;
-  stroke-width: 2;
-}
-
-.mobile-menu-expand-btn .expand-icon.expanded {
-  transform: rotate(45deg);
-}
-
-/* Nested list animation */
-.mobile-menu-nested-list {
-  overflow: hidden;
-  animation: slideDown 0.25s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-    margin-top: 0;
-  }
-  to {
-    opacity: 1;
-    max-height: 600px;
-    margin-top: 4px;
-  }
-}
-
-/* Ensure proper spacing between sections */
-.mobile-menu-section + .mobile-menu-section {
-  margin-top: 0;
-}
-
-/* Add subtle separation between common and category sections */
-.mobile-menu-section.common-section + .mobile-menu-section.category-section {
-  margin-top: 8px;
 }

@@ -8,17 +8,31 @@
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background-color: #000000;
+}
+
+/* Ensure global main margin doesn't affect homepage without disturbing static pages */
+.homepage-container {
+  width: 100%;
+}
+
+.homepage-container main {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
 }
 
 /* Editorial Banner - Full Screen Layout */
 .editorial-banner {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 600px;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100vh !important;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block;
 }
 
 .editorial-banner-media {
@@ -41,10 +55,14 @@
 
 .editorial-banner-image {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border: none !important;
+  transform: scale(1.1);
+  transform-origin: center center;
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .editorial-banner-video {
@@ -336,7 +354,8 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .editorial-banner {
-    height: 100svh; /* Small viewport height for mobile */
+    height: 100svh;
+    /* Small viewport height for mobile */
   }
 
   .editorial-banner-title {
@@ -365,6 +384,7 @@
     gap: 1rem;
   }
 }
+
 /* Banner Overlay - Bottom Center Design */
 .banner-overlay {
   position: absolute;
@@ -375,7 +395,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 40px 60px;
+  padding: 0 40px 70px;
   pointer-events: none;
 }
 
@@ -384,14 +404,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   max-width: 800px;
   width: 100%;
 }
 
 .banner-overlay-label {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 16px;
+  font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -402,7 +422,7 @@
 
 .banner-overlay-title {
   font-family: var(--font-body);
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -412,60 +432,91 @@
 }
 
 .banner-overlay-subtitle {
-  display: none; /* Hidden as per screenshot design */
+  display: none;
+  /* Hidden as per screenshot design */
 }
 
 .banner-overlay-buttons {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 4px;
   pointer-events: auto;
 }
 
 .banner-overlay-btn {
-  padding: 14px 32px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 28px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #ffffff;
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.banner-overlay-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.8);
 }
 
 /* Mobile responsive for banner overlay */
 @media (max-width: 768px) {
   .banner-overlay {
-    padding: 0 20px 40px;
+    padding: 0 20px 70px;
+    justify-content: flex-start;
+  }
+
+  .banner-overlay-content {
+    align-items: flex-start;
+    text-align: left;
+    max-width: 100%;
+    gap: 12px;
   }
 
   .banner-overlay-label {
-    font-size: 9px;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
   }
 
   .banner-overlay-title {
-    font-size: 28px;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.2;
   }
 
   .banner-overlay-buttons {
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
     width: 100%;
-    align-items: center;
+    margin-top: 12px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    pointer-events: auto;
   }
 
   .banner-overlay-btn {
-    padding: 12px 24px;
-    font-size: 10px;
-    width: 100%;
-    max-width: 280px;
-    text-align: center;
+    padding: 14px 24px;
+    font-size: 12px;
+    font-weight: 400;
+    width: fit-content;
+    max-width: none;
+    text-align: left;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.6);
+    border: 0.5px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   }
 }
 

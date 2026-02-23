@@ -124,7 +124,7 @@ body:has(.dynamic-announcement-bar) .hero-left {
 /* Hero Right - Product Details */
 .hero-right {
   position: relative;
-  padding: 60px 170px 40px;
+  padding: 80px 135px 40px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;

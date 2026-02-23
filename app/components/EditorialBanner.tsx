@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState, forwardRef} from 'react';
-import {Link} from 'react-router';
+import { useEffect, useRef, useState, forwardRef } from 'react';
+import { Link } from 'react-router';
 
 interface EditorialBannerProps {
   image: string;
@@ -21,14 +21,13 @@ export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(
   overlayTitle = 'COLLECTION',
   primaryButtonText = 'SHOP NOW',
   primaryButtonLink = '#',
-  secondaryButtonText = 'DISCOVER STORY',
-  secondaryButtonLink = '#',
+  secondaryButtonText,
+  secondaryButtonLink,
 }, ref) {
   return (
     <section
       ref={ref}
       className="editorial-banner"
-      style={{height: '100vh', minHeight: '600px', position: 'relative'}}
     >
       <div className="editorial-banner-media">
         {/* Image Only */}
@@ -68,9 +67,11 @@ export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(
               <Link to={primaryButtonLink} className="banner-overlay-btn">
                 {primaryButtonText}
               </Link>
-              <Link to={secondaryButtonLink} className="banner-overlay-btn">
-                {secondaryButtonText}
-              </Link>
+              {secondaryButtonText && secondaryButtonLink && (
+                <Link to={secondaryButtonLink} className="banner-overlay-btn">
+                  {secondaryButtonText}
+                </Link>
+              )}
             </div>
           </div>
         </div>

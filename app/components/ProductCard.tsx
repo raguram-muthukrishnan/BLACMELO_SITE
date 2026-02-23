@@ -1,7 +1,7 @@
-import {Link} from 'react-router';
-import {Image, Money} from '@shopify/hydrogen';
-import {useState} from 'react';
-import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
+import { Link } from 'react-router';
+import { Image, Money } from '@shopify/hydrogen';
+import { useState } from 'react';
+import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 // Extended product type with images and variants
 interface ProductImage {
@@ -24,6 +24,8 @@ export interface ProductCardProduct {
   id: string;
   handle: string;
   title: string;
+  productType?: string;
+  vendor?: string;
   featuredImage?: ProductImage | null;
   images?: {
     nodes: ProductImage[];
@@ -58,55 +60,55 @@ interface ProductCardProps {
 function PlusIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-export function ProductCard({product, loading}: ProductCardProps) {
+export function ProductCard({ product, loading }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
-  
+
   // Get all product images, or use featured image as fallback
   const images = product.images?.nodes || (product.featuredImage ? [product.featuredImage] : []);
   const currentImage = images[currentImageIndex] || product.featuredImage;
-  
+
   // Get product variant info - extract color and size from options
   const firstVariant = product.variants?.nodes?.[0];
   const variantCount = product.variants?.nodes?.length || 0;
-  
+
   // Get color value from first variant
   const colorOption = firstVariant?.selectedOptions?.find(
-    (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+    (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
   );
   const colorValue = colorOption?.value || '';
-  
+
   // Get proper color name from metafield if available with null safety
   const colorMetafield = product.metafields?.filter(Boolean).find(
-    (m) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') && 
-           (m.namespace === 'custom' || m.namespace === 'category' || m.namespace?.includes('tshirt'))
+    (m) => m && (m.key === 'color_name' || m.key === 'color' || m.key === 'Color') &&
+      (m.namespace === 'custom' || m.namespace === 'category' || m.namespace?.includes('tshirt'))
   );
   const displayColorName = colorMetafield?.value || colorValue;
-  
+
   // Count unique colors from variants
   const uniqueColors = new Set(
-    product.variants?.nodes?.map(v => 
+    product.variants?.nodes?.map(v =>
       v.selectedOptions?.find(
-        (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+        (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
       )?.value
     ).filter(Boolean)
   );
   const colorCount = uniqueColors.size;
   const hasMultipleColors = colorCount > 1;
-  
+
   // Get available sizes from variants
   const availableSizes = product.variants?.nodes
     ?.map(v => v.selectedOptions?.find(
-      (opt: {name: string; value: string}) => opt.name.toLowerCase() === 'size'
+      (opt: { name: string; value: string }) => opt.name.toLowerCase() === 'size'
     )?.value)
     .filter((size, index, arr) => size && arr.indexOf(size) === index) || [];
-  
+
   const handleMouseEnter = () => {
     setIsHovered(true);
     // Switch to second image on hover if available
@@ -114,7 +116,7 @@ export function ProductCard({product, loading}: ProductCardProps) {
       setCurrentImageIndex(1);
     }
   };
-  
+
   const handleMouseLeave = () => {
     setIsHovered(false);
     setShowSizes(false);
@@ -140,7 +142,7 @@ export function ProductCard({product, loading}: ProductCardProps) {
     console.log('Add to cart:', product.handle, 'Size:', size);
     setShowSizes(false);
   };
-  
+
   return (
     <Link
       to={`/products/${product.handle}`}
@@ -160,7 +162,7 @@ export function ProductCard({product, loading}: ProductCardProps) {
             className={`product-card-img product-card-img-primary ${isHovered && images.length > 1 ? 'fade-out' : ''}`}
           />
         )}
-        
+
         {/* Secondary Image (hover) */}
         {images[1] && (
           <Image
@@ -171,7 +173,7 @@ export function ProductCard({product, loading}: ProductCardProps) {
             className={`product-card-img product-card-img-secondary ${isHovered ? 'fade-in' : ''}`}
           />
         )}
-        
+
         {/* Size Selector - center bottom of card */}
         {showSizes && availableSizes.length > 0 && (
           <div className="product-card-sizes">
@@ -186,9 +188,9 @@ export function ProductCard({product, loading}: ProductCardProps) {
             ))}
           </div>
         )}
-        
+
         {/* Plus Icon - bottom right */}
-        <button 
+        <button
           className={`product-card-quick-add ${isHovered ? 'visible' : ''}`}
           onMouseEnter={() => availableSizes.length > 0 && setShowSizes(true)}
           onMouseLeave={() => setShowSizes(false)}
@@ -198,7 +200,7 @@ export function ProductCard({product, loading}: ProductCardProps) {
           <PlusIcon />
         </button>
       </div>
-      
+
       <div className="product-card-info">
         <div className="product-card-info-row">
           <div className="product-card-info-left">

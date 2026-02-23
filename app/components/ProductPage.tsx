@@ -1,10 +1,10 @@
-import {useState, useRef, useEffect} from 'react';
-import {Link, useNavigate} from 'react-router';
-import {Image, Money} from '@shopify/hydrogen';
-import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
-import {AddToCartButton} from './AddToCartButton';
-import {ProductCard} from './ProductCard';
-import type {ProductCardProduct} from './ProductCard';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { Image, Money } from '@shopify/hydrogen';
+import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
+import { AddToCartButton } from './AddToCartButton';
+import { ProductCard } from './ProductCard';
+import type { ProductCardProduct } from './ProductCard';
 import {
   ChevronLeft,
   ChevronRight,
@@ -98,32 +98,32 @@ export function ProductPage({
       handle: product.handle,
       title: product.title,
       price: `$${selectedVariant.price.amount}`,
-      compareAtPrice: selectedVariant.compareAtPrice 
+      compareAtPrice: selectedVariant.compareAtPrice
         ? `$${selectedVariant.compareAtPrice.amount}`
         : undefined,
       image: selectedVariant.image?.url || images[0]?.url,
       availableForSale: selectedVariant.availableForSale ?? true,
       vendor: product.vendor,
     };
-    
+
     toggleWishlist(wishlistItem);
     setIsInWishlistState(!isInWishlistState);
   };
   const [activeTab, setActiveTab] = useState('SUGGESTED');
-  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const galleryRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  
+
   const images = product.images?.nodes || [];
   const totalImages = images.length;
   const currentImage = images[currentImageIndex] || selectedVariant?.image;
-  
+
   // Extract sizes and colors from options
   const sizeOption = productOptions?.find(opt => opt.name.toLowerCase() === 'size');
   const colorOption = productOptions?.find(opt => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour');
-  
+
   const sizes = sizeOption?.optionValues || [];
   const currentColor = selectedVariant?.selectedOptions?.find(
     opt => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
@@ -143,18 +143,18 @@ export function ProductPage({
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
-    
+
     if (isLeftSwipe && currentImageIndex < totalImages - 1) {
       setCurrentImageIndex(prev => prev + 1);
     }
     if (isRightSwipe && currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
     }
-    
+
     setTouchStart(0);
     setTouchEnd(0);
   };
@@ -170,7 +170,7 @@ export function ProductPage({
 
   // Toggle expandable sections
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({...prev, [section]: !prev[section]}));
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
   // Check if size is available
@@ -222,7 +222,7 @@ export function ProductPage({
         description: 'Designed to be worn by everyone, every day.'
       }
     ];
-    
+
     if (description && description.length > 50) {
       return [
         {
@@ -232,7 +232,7 @@ export function ProductPage({
         ...defaultFeatures.slice(1)
       ];
     }
-    
+
     return defaultFeatures;
   };
 
@@ -242,17 +242,17 @@ export function ProductPage({
     <div className="product-page">
       {/* REPRESENT Style: Full-width vertical image stack + Sticky sidebar */}
       <section className="product-container-represent">
-        
+
         {/* LEFT: Full-Width Vertical Image Stack (Desktop) / Image Carousel (Mobile) */}
         <div className="product-images-stack">
           {/* Mobile Image Carousel */}
-          <div 
+          <div
             className="product-mobile-carousel"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="product-carousel-track" style={{transform: `translateX(-${currentImageIndex * 100}%)`}}>
+            <div className="product-carousel-track" style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}>
               {images.map((image: ProductImage, idx: number) => (
                 <div key={image.id || idx} className="product-carousel-slide">
                   <Image
@@ -293,11 +293,11 @@ export function ProductPage({
             </div>
           ))}
         </div>
-        
+
         {/* RIGHT: Sticky Product Details Sidebar */}
         <div className="product-sidebar-sticky">
           <div className="product-sidebar-content">
-            
+
             {/* Title and Price */}
             <div className="product-header-row">
               <h1 className="product-title-main">{product.title}</h1>
@@ -313,7 +313,7 @@ export function ProductPage({
                   Select Colour <sup className="product-option-sup">{colorVariants.length}</sup>
                 </div>
                 <div className="product-color-current">{currentColor || 'Select a color'}</div>
-                <button 
+                <button
                   className={`product-bookmark-btn ${isInWishlistState ? 'active' : ''}`}
                   onClick={handleWishlistToggle}
                   aria-label={isInWishlistState ? "Remove from wishlist" : "Save to wishlist"}
@@ -325,7 +325,7 @@ export function ProductPage({
                 {colorVariants.map((variant) => {
                   const isSelected = isColorSelected(variant.colorValue, selectedVariant);
                   const variantUrl = buildVariantUrl(product.handle, variant.colorValue, colorOption?.name || 'Color');
-                  
+
                   return (
                     <Link
                       key={variant.id}
@@ -369,7 +369,7 @@ export function ProductPage({
               <p className="product-model-text">
                 Model is 184.5cm and 72kg wearing size M
               </p>
-              <button 
+              <button
                 className="product-size-guide-link"
                 onClick={() => setIsSizeGuideOpen(true)}
               >
@@ -426,7 +426,7 @@ export function ProductPage({
             <div className="product-benefits-list">
               <div className="product-benefit-row">
                 <span className="benefit-icon-box">💎</span>
-                <span className="benefit-text">EARN 410 PRESTIGE POINTS</span>
+                <span className="benefit-text">EARN 410 PRIVATE ACCESS POINTS</span>
               </div>
               <div className="product-benefit-row">
                 <span className="benefit-icon-box">📦</span>
@@ -442,7 +442,7 @@ export function ProductPage({
             <div className="product-expandable-sections">
               {/* Product Details */}
               <div className="product-expandable-item">
-                <button 
+                <button
                   className="product-expandable-trigger"
                   onClick={() => toggleSection('details')}
                 >
@@ -451,7 +451,7 @@ export function ProductPage({
                 </button>
                 {expandedSections.details && (
                   <div className="product-expandable-content">
-                    <div dangerouslySetInnerHTML={{__html: product.descriptionHtml || product.description || ''}} />
+                    <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml || product.description || '' }} />
                   </div>
                 )}
               </div>
@@ -459,7 +459,7 @@ export function ProductPage({
               {/* Fabric Care */}
               {product.metafields?.find((m: any) => m.key === 'fabric_care')?.value && (
                 <div className="product-expandable-item">
-                  <button 
+                  <button
                     className="product-expandable-trigger"
                     onClick={() => toggleSection('fabric_care')}
                   >
@@ -490,7 +490,7 @@ export function ProductPage({
 
               {/* Shipping & Returns */}
               <div className="product-expandable-item">
-                <button 
+                <button
                   className="product-expandable-trigger"
                   onClick={() => toggleSection('shipping')}
                 >
@@ -546,7 +546,7 @@ export function ProductPage({
       {/* Size Guide Modal */}
       {isSizeGuideOpen && (
         <div className="product-size-guide-modal">
-          <button 
+          <button
             className="product-size-guide-close"
             onClick={() => setIsSizeGuideOpen(false)}
             aria-label="Close size guide"

@@ -48,22 +48,24 @@ interface ProductGridProps {
     title?: string;
     products: Product[];
     tabs?: string[];
+    horizontalScroll?: boolean;
+    showViewMore?: boolean;
 }
 
-export function ProductGrid({ title, products, tabs }: ProductGridProps) {
+export function ProductGrid({ title, products, tabs, horizontalScroll = false, showViewMore = false }: ProductGridProps) {
     const [activeTab, setActiveTab] = useState(tabs ? tabs[0] : null);
     const [quickAddProduct, setQuickAddProduct] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsToShow, setItemsToShow] = useState(8);
     const [isMobile, setIsMobile] = useState(false);
-    
-    const itemsPerPage = 8; // Even number that works for both desktop (4 cols) and mobile (2 cols)
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-    
+
     // Calculate which products to display
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const displayProducts = products.slice(startIndex, endIndex);
+    const displayProducts = horizontalScroll
+        ? products.slice(0, itemsToShow)
+        : products.slice((currentPage - 1) * 8, currentPage * 8);
+
+    const hasMore = products.length > itemsToShow;
 
     // Detect mobile
     useEffect(() => {
@@ -128,14 +130,14 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
         setIsHovered(false);
     };
 
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        // Scroll to top of section
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    const handleViewMore = () => {
+        setItemsToShow(prev => prev + 4);
     };
 
+    const totalPages = Math.ceil(products.length / 8);
+
     return (
-        <section className="section-styled">
+        <section className={`section-styled ${horizontalScroll ? 'horizontal-mode' : ''}`}>
             {title && <h2 className="section-title">{title}</h2>}
 
             {tabs && (
@@ -152,7 +154,7 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
                 </div>
             )}
 
-            <div className="product-grid">
+            <div className={`product-grid ${horizontalScroll ? 'horizontal-scroll' : ''}`}>
                 {displayProducts.map((product) => {
                     const price = product.variants?.nodes[0]?.price || product.priceRange?.minVariantPrice;
                     const image = product.featuredImage || product.images?.nodes[0];
@@ -170,21 +172,21 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
                                             className="card-image"
                                         />
                                     )}
-                                    
+
                                     {/* Quick Add Button */}
-                                    <button 
+                                    <button
                                         className={`quick-add-btn ${isQuickAddOpen ? 'active' : ''}`}
                                         onMouseEnter={() => handleQuickAddHover(product.id)}
                                         onMouseLeave={handleQuickAddLeave}
                                         onClick={(e) => handleQuickAddClick(e, product.id)}
                                         aria-label="Quick add"
                                     >
-                                        <svg 
-                                            width="16" 
-                                            height="16" 
-                                            viewBox="0 0 24 24" 
-                                            fill="none" 
-                                            stroke="currentColor" 
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
                                             strokeWidth="2"
                                             className={`plus-icon ${isQuickAddOpen ? 'rotated' : ''}`}
                                         >
@@ -195,16 +197,16 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
 
                                     {/* Size Selector Overlay */}
                                     {isQuickAddOpen && sizeOption && (
-                                        <div 
-                                            className="quick-add-overlay" 
+                                        <div
+                                            className="quick-add-overlay"
                                             onClick={(e) => e.preventDefault()}
                                             onMouseEnter={handleSizesHover}
                                             onMouseLeave={handleSizesLeave}
                                         >
                                             <div className="quick-add-sizes">
                                                 {sizeOption.optionValues.map((size) => {
-                                                    const variant = product.variants?.nodes.find(v => 
-                                                        v.selectedOptions?.some(opt => 
+                                                    const variant = product.variants?.nodes.find(v =>
+                                                        v.selectedOptions?.some(opt =>
                                                             opt.name.toLowerCase() === 'size' && opt.value === size.name
                                                         )
                                                     );
@@ -235,32 +237,40 @@ export function ProductGrid({ title, products, tabs }: ProductGridProps) {
                         </div>
                     );
                 })}
+
+                {horizontalScroll && showViewMore && hasMore && (
+                    <div className="view-more-container">
+                        <button className="view-more-btn" onClick={handleViewMore}>
+                            VIEW MORE
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {!horizontalScroll && totalPages > 1 && (
                 <div className="pagination">
-                    <button 
+                    <button
                         className="pagination-btn"
-                        onClick={() => handlePageChange(currentPage - 1)}
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
                         &lt;
                     </button>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
                             key={page}
                             className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
-                            onClick={() => handlePageChange(page)}
+                            onClick={() => setCurrentPage(page)}
                         >
                             {page}
                         </button>
                     ))}
-                    
-                    <button 
+
+                    <button
                         className="pagination-btn"
-                        onClick={() => handlePageChange(currentPage + 1)}
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
                     >
                         &gt;
