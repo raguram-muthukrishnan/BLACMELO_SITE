@@ -127,32 +127,27 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     }
   }
 
-  // Fetch recommendations with actual product ID
-  const { productRecommendations: recommendations } = await storefront.query(RECOMMENDED_PRODUCTS_QUERY, {
-    variables: { productId: product.id },
-  }).catch(() => ({ productRecommendations: [] }));
+  // Fetch new arrivals collection for similar products
+  let newArrivalsCollection = null;
+  const newArrivalsHandles = ['new-arrivals', 'new-arrival', 'newarrivals'];
 
-  // Fetch best sellers collection - try multiple possible handles
-  let bestSellersCollection = null;
-  const possibleHandles = ['best-seller', 'best-sellers', 'bestseller', 'bestsellers'];
-
-  for (const handle of possibleHandles) {
+  for (const handle of newArrivalsHandles) {
     try {
-      const result = await storefront.query(BEST_SELLERS_QUERY, {
+      const result = await storefront.query(NEW_ARRIVALS_QUERY, {
         variables: { handle },
       });
       if (result?.collection?.products?.nodes?.length) {
-        bestSellersCollection = result.collection;
-        console.log(`[Best Sellers] Found collection with handle: ${handle}, products:`, result.collection.products.nodes.length);
+        newArrivalsCollection = result.collection;
+        console.log(`[New Arrivals] Found collection with handle: ${handle}, products:`, result.collection.products.nodes.length);
         break;
       }
     } catch (error) {
-      console.error(`[Best Sellers] Error fetching collection with handle ${handle}:`, error);
+      console.error(`[New Arrivals] Error fetching collection with handle ${handle}:`, error);
     }
   }
 
-  const bestSellers = bestSellersCollection?.products?.nodes || [];
-  console.log('[Best Sellers] Final bestSellers array:', bestSellers.length, bestSellers);
+  const newArrivals = newArrivalsCollection?.products?.nodes || [];
+  console.log('[New Arrivals] Final newArrivals array:', newArrivals.length, newArrivals);
 
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });
@@ -160,8 +155,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   return {
     product,
     relatedColorProducts,
-    recommendations: recommendations || [],
-    bestSellers,
+    newArrivals,
   };
 }
 
@@ -178,7 +172,7 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product, relatedColorProducts, recommendations, bestSellers } = useLoaderData<typeof loader>();
+  const { product, relatedColorProducts, newArrivals } = useLoaderData<typeof loader>();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -247,30 +241,13 @@ export default function Product() {
   const primaryCollection = useMemo(() => {
     if (!product.collections?.nodes?.length) return null;
 
-    // Prioritize collections that aren't 'all' or 'best-sellers'
+    // Prioritize collections that aren't 'all' or 'new-arrivals'
     const curatedCollections = product.collections.nodes.filter(
-      (c: any) => !['all', 'best-sellers', 'new-arrivals', 'frontpage'].includes(c.handle)
+      (c: any) => !['all', 'new-arrivals', 'frontpage'].includes(c.handle)
     );
 
     return curatedCollections[0] || product.collections.nodes[0];
   }, [product.collections]);
-
-  // Transform best sellers for ProductCard
-  const transformedBestSellers = bestSellers?.map((product: any) => ({
-    id: product.id,
-    handle: product.handle,
-    title: product.title,
-    vendor: product.vendor,
-    featuredImage: product.featuredImage,
-    images: product.images,
-    priceRange: product.priceRange,
-    compareAtPriceRange: product.compareAtPriceRange,
-    variants: product.variants,
-    options: product.options,
-  })) || [];
-
-  console.log('[Product Page] bestSellers:', bestSellers);
-  console.log('[Product Page] transformedBestSellers:', transformedBestSellers);
 
   return (
     <>
@@ -314,7 +291,7 @@ export default function Product() {
 
       <ProductGrid
         title="SIMILAR PRODUCTS"
-        products={recommendations?.map((product: any) => ({
+        products={newArrivals?.map((product: any) => ({
           id: product.id,
           handle: product.handle,
           title: product.title,
@@ -557,8 +534,8 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
 ` as const;
 
-const BEST_SELLERS_QUERY = `#graphql
-  query BestSellersCollection(
+const NEW_ARRIVALS_QUERY = `#graphql
+  query NewArrivalsCollection(
     $handle: String!
     $country: CountryCode
     $language: LanguageCode

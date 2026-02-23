@@ -12,7 +12,7 @@ function SizeBoxes({ sizes }: { sizes: RecentlyViewedProduct['sizes'] }) {
           key={s.label}
           className={`rv-size-box ${!s.available ? 'rv-size-box--oos' : ''}`}
         >
-          {s.label}
+          {s.label === '2XL' ? 'XXL' : s.label}
         </span>
       ))}
     </div>

@@ -86,7 +86,7 @@ export function ProductCard({ product }: { product: any }) {
                     : 'border-white/60 bg-white/85 backdrop-blur-md text-black hover:bg-white hover:border-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
                   }`}
               >
-                {sizeOption.value}
+                {sizeOption.value === '2XL' ? 'XXL' : sizeOption.value}
               </AddToCartButton>
             );
           })}

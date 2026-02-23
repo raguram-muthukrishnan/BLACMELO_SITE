@@ -15,36 +15,41 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  padding-top: 44px;
   gap: 0;
   position: relative;
   z-index: 1;
 }
 
-/* Adjust hero height when announcement bar is visible */
+/* Adjust hero padding when announcement bar is visible */
 body:has(.announcement-bar:not([hidden])) .hero-product {
-  height: calc(100vh - 36px);
-  margin-top: 36px;
+  padding-top: 80px;
 }
 
 body:has(.dynamic-announcement-bar) .hero-product {
-  height: calc(100vh - 36px);
-  margin-top: 36px;
+  padding-top: 80px;
 }
 
 /* Hero Left - Image Gallery */
 .hero-left {
   position: relative;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   background: #f5f5f5;
 }
 
-body:has(.announcement-bar:not([hidden])) .hero-left {
-  height: calc(100vh - 36px);
-}
+/* Desktop only - extend container to fill top space behind header */
+@media (min-width: 1025px) {
+  .hero-left {
+    height: calc(100% + 44px);
+    margin-top: -44px;
+  }
 
-body:has(.dynamic-announcement-bar) .hero-left {
-  height: calc(100vh - 36px);
+  body:has(.announcement-bar:not([hidden])) .hero-left,
+  body:has(.dynamic-announcement-bar) .hero-left {
+    height: calc(100% + 80px);
+    margin-top: -80px;
+  }
 }
 
 /* Thumbnails - Hidden */
@@ -124,26 +129,12 @@ body:has(.dynamic-announcement-bar) .hero-left {
 /* Hero Right - Product Details */
 .hero-right {
   position: relative;
-  padding: 80px 135px 40px;
+  padding: 18px 135px 40px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  height: 100vh;
+  height: 100%;
   background: #ffffff;
-}
-
-/* Dynamic padding for announcement bar */
-body:has(.announcement-bar:not([hidden])) .hero-right,
-body:has(.dynamic-announcement-bar) .hero-right {
-  padding-top: 85px;
-}
-
-body:has(.announcement-bar:not([hidden])) .hero-right {
-  height: calc(100vh - 36px);
-}
-
-body:has(.dynamic-announcement-bar) .hero-right {
-  height: calc(100vh - 36px);
 }
 
 /* Mobile Responsive */

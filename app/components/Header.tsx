@@ -31,7 +31,7 @@ export function Header({
       </NavLink>
       <NavLink 
         prefetch="intent" 
-        to="/collections/blacmelo-club" 
+        to="/blacmelo-club" 
         className="header-blacmelo-club"
         style={activeLinkStyle}
       >

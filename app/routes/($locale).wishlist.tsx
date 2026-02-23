@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import type { MetaFunction } from 'react-router';
 import { getWishlist, removeFromWishlist, type WishlistItem } from '~/lib/wishlist';
+import { ProductCard } from '~/components/ProductCard';
 import wishlistStyles from '~/styles/pages/wishlist.css?url';
+import productCardStyles from '~/styles/components/product/product-card.css?url';
 
 export const links = () => [
   { rel: 'stylesheet', href: wishlistStyles },
+  { rel: 'stylesheet', href: productCardStyles },
 ];
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'My Wishlist | REPRESENT' },
+    { title: 'My Wishlist | BLACMELO' },
     { description: 'View your saved items' },
   ];
 };
@@ -49,6 +52,11 @@ export default function Wishlist() {
 
   return (
     <div className="wishlist-container">
+      <div className="wishlist-header">
+        <h1 className="wishlist-title">MY WISHLIST</h1>
+        <span className="wishlist-count">{wishlistItems.length} {wishlistItems.length === 1 ? 'ITEM' : 'ITEMS'}</span>
+      </div>
+
       {wishlistItems.length === 0 ? (
         <div className="wishlist-empty">
           <p className="wishlist-empty-text">Your wishlist is empty</p>
@@ -57,84 +65,65 @@ export default function Wishlist() {
           </Link>
         </div>
       ) : (
-        <div className="wishlist-items">
-          {wishlistItems.map((item) => (
-            <WishlistItemCard 
-              key={item.id} 
-              item={item} 
-              onRemove={handleRemove}
-            />
-          ))}
+        <div className="wishlist-grid">
+          {wishlistItems.map((item) => {
+            // Transform wishlist item to product format for ProductCard
+            const transformedProduct = {
+              id: item.id,
+              handle: item.handle,
+              title: item.title,
+              vendor: item.vendor,
+              featuredImage: item.image ? {
+                url: item.image,
+                altText: item.title,
+              } : null,
+              images: item.image ? {
+                nodes: [{
+                  url: item.image,
+                  altText: item.title,
+                }]
+              } : { nodes: [] },
+              selectedOrFirstAvailableVariant: {
+                nodes: [{
+                  price: {
+                    amount: item.price.replace(/[^0-9.]/g, ''),
+                    currencyCode: 'USD',
+                  },
+                  compareAtPrice: item.compareAtPrice ? {
+                    amount: item.compareAtPrice.replace(/[^0-9.]/g, ''),
+                    currencyCode: 'USD',
+                  } : null,
+                  availableForSale: item.availableForSale,
+                }]
+              },
+              variants: {
+                nodes: [{
+                  id: item.id,
+                  availableForSale: item.availableForSale,
+                  selectedOptions: [],
+                  price: {
+                    amount: item.price.replace(/[^0-9.]/g, ''),
+                    currencyCode: 'USD',
+                  },
+                }]
+              },
+            };
+
+            return (
+              <div key={item.id} className="wishlist-item-wrapper">
+                <ProductCard product={transformedProduct} />
+                <button
+                  className="wishlist-remove-btn"
+                  onClick={() => handleRemove(item.id)}
+                  aria-label="Remove from wishlist"
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
-    </div>
-  );
-}
-
-interface WishlistItemCardProps {
-  item: WishlistItem;
-  onRemove: (productId: string) => void;
-}
-
-function WishlistItemCard({ item, onRemove }: WishlistItemCardProps) {
-  return (
-    <div className="wishlist-item">
-      <div className="wishlist-item-image-container">
-        <Link to={`/products/${item.handle}`}>
-          {item.image ? (
-            <img 
-              src={item.image} 
-              alt={item.title}
-              className="wishlist-item-image"
-              loading="lazy"
-            />
-          ) : (
-            <div className="wishlist-item-image-placeholder" />
-          )}
-        </Link>
-      </div>
-
-      <div className="wishlist-item-details">
-        <Link to={`/products/${item.handle}`} className="wishlist-item-title">
-          {item.title}
-        </Link>
-        
-        {item.vendor && (
-          <p className="wishlist-item-vendor">{item.vendor}</p>
-        )}
-
-        <div className="wishlist-item-price-container">
-          <span className="wishlist-item-price">{item.price}</span>
-          {item.compareAtPrice && (
-            <span className="wishlist-item-compare-price">{item.compareAtPrice}</span>
-          )}
-        </div>
-
-        <div className="wishlist-item-actions">
-          {item.availableForSale ? (
-            <Link 
-              to={`/products/${item.handle}`}
-              className="wishlist-item-add-to-cart"
-            >
-              ADD TO CART
-            </Link>
-          ) : (
-            <button 
-              className="wishlist-item-add-to-cart disabled"
-              disabled
-            >
-              OUT OF STOCK
-            </button>
-          )}
-          
-          <button
-            className="wishlist-item-remove"
-            onClick={() => onRemove(item.id)}
-          >
-            REMOVE
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

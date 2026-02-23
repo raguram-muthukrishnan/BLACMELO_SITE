@@ -216,6 +216,7 @@ function MobileMenuAside({
             <ul className="mobile-menu-list">
               <li><a href="/the-chamber" className="mobile-menu-item">The Chamber</a></li>
               <li><a href="/the-private-access" className="mobile-menu-item">Private Access</a></li>
+              <li><a href="/recently-viewed" className="mobile-menu-item">Recently Viewed</a></li>
               <li><a href="/products/gift-card" className="mobile-menu-item">Gift Card</a></li>
             </ul>
           </div>

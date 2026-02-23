@@ -458,18 +458,24 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   top: 36px;
 }
 
-/* Desktop: Show white background when menu is active */
+/* Desktop: No background when menu is active by default */
 @media (min-width: 769px) {
   .blacmelo-header.header-menu-active {
+    background: transparent !important;
+    box-shadow: none;
+  }
+  
+  /* Add white background only when menu items are hovered */
+  .blacmelo-header.header-menu-active.header-menu-hovered {
     background: rgba(255, 255, 255, 1) !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   }
 }
 
-/* Mobile: Keep white background */
+/* Mobile: Keep transparent background */
 @media (max-width: 768px) {
   .blacmelo-header.header-menu-active {
-    background: rgba(255, 255, 255, 1) !important;
+    background: transparent !important;
   }
 }
 

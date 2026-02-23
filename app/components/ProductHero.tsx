@@ -447,7 +447,7 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                       const available = isOptionAvailable(sizeOption.name, value.name);
                       return (
                         <button key={value.name} className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`} onClick={() => available && handleOptionChange(sizeOption.name, value.name)} disabled={!available}>
-                          {value.name}
+                          {value.name === '2XL' ? 'XXL' : value.name}
                         </button>
                       );
                     })}

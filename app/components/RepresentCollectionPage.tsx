@@ -895,7 +895,7 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
                   }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                {sizeOption.value}
+                {sizeOption.value === '2XL' ? 'XXL' : sizeOption.value}
               </AddToCartButton>
             );
           })}

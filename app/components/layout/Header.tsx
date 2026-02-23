@@ -25,6 +25,7 @@ type HeaderProps = {
 export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMenuConfig: providedMenMenuConfig, womenMenuConfig: providedWomenMenuConfig, cart }: HeaderProps) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuItemHovered, setIsMenuItemHovered] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { open: openAside, close: closeAside, type: asideType } = useAside();
 
@@ -61,6 +62,10 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
     handleMenuEnter(menu);
   }, [handleMenuEnter]);
 
+  const handleMenuItemHover = useCallback((isHovered: boolean) => {
+    setIsMenuItemHovered(isHovered);
+  }, []);
+
   const handleMobileMenuClick = () => {
     if (isMobileMenuOpen || isCartOpen) closeAside();
     else openAside('mobile');
@@ -72,7 +77,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
   };
 
   return (
-    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''} ${isMobileMenuOpen || isCartOpen ? 'mobile-menu-open' : ''}`}>
+    <header className={`blacmelo-header ${activeMenu ? 'header-menu-active' : ''} ${isScrolled ? 'header-scrolled' : ''} ${isProductPage ? 'header-product-page' : ''} ${isWhiteHeaderPage ? 'header-white-page' : ''} ${isMobileMenuOpen || isCartOpen ? 'mobile-menu-open' : ''} ${isMenuItemHovered ? 'header-menu-hovered' : ''}`}>
       <div className="blacmelo-header-container">
 
         {/* ===== LEFT NAV ===== */}
@@ -168,7 +173,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           {/* DESKTOP: Blacmelo Club */}
           <NavLink
             prefetch="intent"
-            to="/collections/blacmelo-club"
+            to="/blacmelo-club"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
             Blacmelo Club
@@ -215,6 +220,15 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             Private Access
           </NavLink>
 
+          {/* DESKTOP: Recently Viewed */}
+          <NavLink
+            prefetch="intent"
+            to="/recently-viewed"
+            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
+          >
+            Recently Viewed
+          </NavLink>
+
           {/* DESKTOP only: Search + Wishlist */}
           <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">
             <Search size={20} />
@@ -241,6 +255,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           isActive={true}
           menuConfig={currentMenuConfig}
           onMouseLeave={handleMenuLeave}
+          onMenuItemHover={handleMenuItemHover}
         />
       )}
     </header>

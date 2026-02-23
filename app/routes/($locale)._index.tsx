@@ -3,9 +3,9 @@ import { useRef, useCallback } from 'react';
 import { EditorialBanner } from '~/components/EditorialBanner';
 import { ParallaxMenu } from '~/components/ParallaxMenu';
 import bannerSS26 from '~/assets/home_page_banners/ss26.jpeg';
-import bannerSignature from '~/assets/home_page_banners/signature_jacket.png';
-import bannerSignatureMobile from '~/assets/home_page_banners/signature_jacket_mobile.jpeg';
 import bannerOriginals from '~/assets/home_page_banners/bl_originals.jpeg';
+import bannerOriginalsDesktop from '~/assets/home_page_banners/Originals_desktop.jpg.jpeg';
+import bannerSignatureMobile from '~/assets/home_page_banners/signature_jacket_mobile.jpeg';
 import bannerArchive from '~/assets/home_page_banners/bl_archive.jpeg';
 import homeStyles from '~/styles/pages/home.css?url';
 import parallaxMenuStyles from '~/styles/components/parallax-menu.css?url';
@@ -16,7 +16,7 @@ export const links = () => [
 ];
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: "BLACMELO | Spring Summer '26" }];
+  return [{ title: "BLACMELO - The Missing Piece of Luxury" }];
 };
 
 /**
@@ -30,7 +30,7 @@ export const meta: Route.MetaFunction = () => {
 const COLLECTION_BANNERS: CollectionBannerConfig[] = [
   {
     type: 'image',
-    image: bannerOriginals,
+    image: bannerOriginalsDesktop,
     alt: 'The Blacmelo Originals',
     linkLabel: 'BLACMELO ORIGINALS',
     linkUrl: '/collections/the-blacmelo-originals',
@@ -85,12 +85,12 @@ export default function Homepage() {
 
         {/* Frame 2 - Signature Jacket */}
         <EditorialBanner
-          image={bannerSignature}
+          image={bannerOriginals}
           mobileImage={bannerSignatureMobile}
           alt="BLACMELO Signature Jacket"
           showOverlay={true}
           overlayLabel="NOW LIVE"
-          overlayTitle="SIGNATURE JACKET"
+          overlayTitle="THE SIGNATURE JACKET"
           primaryButtonText="SHOP NOW"
           primaryButtonLink="/products/the-signature-jacket?Size=XS"
         />

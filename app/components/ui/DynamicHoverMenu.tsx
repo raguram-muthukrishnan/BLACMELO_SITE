@@ -20,12 +20,14 @@ interface DynamicHoverMenuProps {
   isActive: boolean;
   menuConfig: DynamicMenuConfig;
   onMouseLeave: () => void;
+  onMenuItemHover?: (isHovered: boolean) => void;
 }
 
 export function DynamicHoverMenu({
   isActive,
   menuConfig,
   onMouseLeave,
+  onMenuItemHover,
 }: DynamicHoverMenuProps) {
   const [mounted, setMounted] = useState(false);
   const [hoveredParent, setHoveredParent] = useState<any>(null);
@@ -184,10 +186,12 @@ export function DynamicHoverMenu({
         onMouseEnter={() => {
           if (hasChildren) handleParentEnter(item);
           handleItemHover(item.name);
+          onMenuItemHover?.(true);
         }}
         onMouseLeave={() => {
           if (hasChildren) handleParentLeave();
           setHoveredItemMedia(null);
+          onMenuItemHover?.(false);
         }}
       >
         <NavLink
