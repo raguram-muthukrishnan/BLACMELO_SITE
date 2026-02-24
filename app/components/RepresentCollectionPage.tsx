@@ -4,15 +4,24 @@ import { Image, Money, Pagination } from '@shopify/hydrogen';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { scrollToTop, getLenisInstance } from '~/lib/lenis';
+import { sortSizeLabels } from '~/lib/sortSizes';
 type ProductCardProduct = any;
 import { Slider } from '~/components/ui/slider';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
 
 // Import banner images for conditional hero
-import ss26Banner from '~/assets/home_page_banners/ss26.jpeg';
-import archiveBanner from '~/assets/home_page_banners/bl_archive.jpeg';
-import originalsBanner from '~/assets/home_page_banners/bl_originals.jpeg';
+import ss26Banner from '~/assets/final_banners/spring_summer.jpeg';
+import archiveBanner from '~/assets/final_banners/bl_archive.jpeg';
+import originalsBanner from '~/assets/final_banners/bl_originals.jpeg';
+
+// Import final banners for fallback
+import fallBack1 from '~/assets/final_banners/spring_summer.jpeg';
+import fallBack2 from '~/assets/final_banners/the_signature_jacket_desktop.jpeg';
+import fallBack3 from '~/assets/final_banners/bl_originals.jpeg';
+import fallBack4 from '~/assets/final_banners/bl_archive.jpeg';
+
+const FALLBACK_BANNERS = [fallBack1, fallBack2, fallBack3, fallBack4];
 
 const COLOR_HEX_MAP: { [key: string]: string } = {
   white: '#FFFFFF',
@@ -101,11 +110,9 @@ function FilterIcon() {
 
 export function RepresentCollectionPage({ collection }: RepresentCollectionPageProps) {
   const gridRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showModel, setShowModel] = useState(false);
-  const [videoSrc, setVideoSrc] = useState<string>('');
   const [filterOpen, setFilterOpen] = useState(false);
 
   // Filter states
@@ -293,24 +300,8 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
   // Reset scroll position when component mounts
   useEffect(() => {
     scrollToTop(true);
-  }, []);
-
-  useEffect(() => {
     setIsClient(true);
-    // Dynamically import video on client side only
-    import('~/assets/banner images/vid 1.mp4').then((module) => {
-      setVideoSrc(module.default);
-    });
   }, []);
-
-  // Auto-play video when component mounts
-  useEffect(() => {
-    if (videoRef.current && videoSrc) {
-      videoRef.current.play().catch(() => {
-        // Autoplay failed, user interaction required
-      });
-    }
-  }, [videoSrc]);
 
   useEffect(() => {
     if (!isClient || !gridRef.current) return;
@@ -377,19 +368,17 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
               );
             }
 
-            return videoSrc ? (
-              <video
-                ref={videoRef}
-                className="represent-hero-video"
-                loop
-                muted
-                playsInline
-                autoPlay
-              >
-                <source src={videoSrc} type="video/mp4" />
-              </video>
-            ) : (
-              <div className="represent-hero-placeholder" />
+            // Fallback: Pick a stable "random" image from FALLBACK_BANNERS based on handle
+            const hash = handle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const fallbackIndex = hash % FALLBACK_BANNERS.length;
+            const fallbackImage = FALLBACK_BANNERS[fallbackIndex];
+
+            return (
+              <img
+                src={fallbackImage}
+                alt={collection.title}
+                className={`represent-hero-image fallback-hero fallback-hero-${fallbackIndex + 1}`}
+              />
             );
           })()
         )}
@@ -881,24 +870,30 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
           `}
           onClick={(e) => e.stopPropagation()}
         >
-          {product.variants?.nodes?.map((v: any) => {
-            const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
-            if (!sizeOption) return null;
-            return (
+          {(() => {
+            const rawSizes = (product.variants?.nodes || []).map((v: any) => {
+              const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
+              if (!sizeOption) return null;
+              return { label: sizeOption.value, available: v.availableForSale ?? true, variantId: v.id };
+            }).filter(Boolean) as Array<{ label: string; available: boolean; variantId: string }>;
+
+            const sortedSizes = sortSizeLabels(rawSizes);
+
+            return sortedSizes.map((sizeEntry) => (
               <AddToCartButton
-                key={v.id}
-                disabled={!v.availableForSale}
-                lines={[{ merchandiseId: v.id, quantity: 1 }]}
-                className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!v.availableForSale
+                key={sizeEntry.variantId}
+                disabled={!sizeEntry.available}
+                lines={[{ merchandiseId: sizeEntry.variantId, quantity: 1 }]}
+                className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!sizeEntry.available
                   ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-white/70 backdrop-blur-md'
                   : 'border-transparent bg-white/95 backdrop-blur-md text-gray-500 hover:text-black hover:border-black hover:bg-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
                   }`}
                 onClick={(e) => e.stopPropagation()}
               >
-                {sizeOption.value === '2XL' ? 'XXL' : sizeOption.value}
+                {sizeEntry.label === '2XL' ? 'XXL' : sizeEntry.label}
               </AddToCartButton>
-            );
-          })}
+            ));
+          })()}
         </div>
       </div>
 

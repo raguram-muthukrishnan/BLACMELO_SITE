@@ -85,10 +85,18 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   color: #000000 !important;
 }
 
-/* Product Page Header - WHITE background with BLACK text */
+/* Product Page Header - TRANSPARENT background with BLACK text */
 .blacmelo-header.header-product-page {
-  background: #ffffff !important;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  background: transparent !important;
+  box-shadow: none;
+}
+
+/* Product page header - WHITE when menu is active */
+@media (min-width: 769px) {
+  .blacmelo-header.header-product-page.header-menu-active {
+    background: #ffffff !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  }
 }
 
 /* Product page header - BLACK text by default */
@@ -112,7 +120,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   background: #000000 !important;
 }
 
-/* Product page header - stays WHITE and black when scrolled */
+/* Product page header - turns WHITE when scrolled, elements stay black */
 .blacmelo-header.header-product-page.header-scrolled {
   background: #ffffff !important;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);

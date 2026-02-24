@@ -80,6 +80,7 @@ export default function Homepage() {
           overlayTitle="SPRING SUMMER '26"
           primaryButtonText="SHOP NOW"
           primaryButtonLink="/collections/spring-summer"
+          className="hero-ss26"
         />
 
         {/* Frame 2 - Signature Jacket */}
@@ -91,6 +92,7 @@ export default function Homepage() {
           overlayTitle="THE SIGNATURE JACKET"
           primaryButtonText="SHOP NOW"
           primaryButtonLink="/products/the-signature-jacket?Size=XS"
+          className="hero-signature-jacket"
         />
 
         {/* Collection Banners — driven by config array */}
@@ -101,6 +103,7 @@ export default function Homepage() {
             image={banner.image!}
             alt={banner.alt}
             showOverlay={false}
+            className={banner.linkLabel.toLowerCase().includes('originals') ? 'hero-originals' : 'hero-archive'}
           />
         ))}
 

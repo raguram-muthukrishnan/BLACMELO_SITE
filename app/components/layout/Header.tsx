@@ -130,6 +130,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           {/* MOBILE — OPEN (Menu or Cart): wishlist icon (3rd slot) */}
           {(isMobileMenuOpen || isCartOpen) && (
             <NavLink
+              reloadDocument
               prefetch="intent"
               to="/wishlist"
               className="blacmelo-header-icon mobile-only"
@@ -146,6 +147,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             onMouseEnter={() => handleTriggerEnter('shop')}
           >
             <NavLink
+              reloadDocument
               prefetch="intent"
               to="/collections/full-collection"
               className="blacmelo-header-link"
@@ -161,6 +163,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             onMouseEnter={() => handleTriggerEnter('blacmelo-club')}
           >
             <NavLink
+              reloadDocument
               prefetch="intent"
               to="/collections/full-collection"
               className="blacmelo-header-link"
@@ -172,6 +175,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
           {/* DESKTOP: Blacmelo Club */}
           <NavLink
+            reloadDocument
             prefetch="intent"
             to="/blacmelo-club"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
@@ -182,7 +186,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
         {/* ===== CENTER LOGO — hidden on mobile when menu/cart is open ===== */}
         {!(isMobileMenuOpen || isCartOpen) && (
-          <NavLink prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
+          <NavLink reloadDocument prefetch="intent" to="/" className="blacmelo-header-logo" aria-label="BLACMELO – home">
             <img src={logoImage} alt="BLACMELO" className="blacmelo-logo-image" />
           </NavLink>
         )}
@@ -193,6 +197,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           {/* MOBILE — OPEN: Man link on far right */}
           {(isMobileMenuOpen || isCartOpen) && (
             <NavLink
+              reloadDocument
               prefetch="intent"
               to="/collections/full-collection"
               className="blacmelo-header-link mobile-only mobile-man-link"
@@ -204,6 +209,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
           {/* DESKTOP: The Chamber */}
           <NavLink
+            reloadDocument
             prefetch="intent"
             to="/the-chamber"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
@@ -213,6 +219,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
           {/* DESKTOP: Private Access */}
           <NavLink
+            reloadDocument
             prefetch="intent"
             to="/the-private-access"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
@@ -222,16 +229,16 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
 
           {/* DESKTOP only: Search + Wishlist */}
-          <NavLink prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">
+          <NavLink reloadDocument prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">
             <Search size={20} />
           </NavLink>
-          <NavLink prefetch="intent" to="/wishlist" className="blacmelo-header-icon desktop-only" aria-label="Wishlist">
+          <NavLink reloadDocument prefetch="intent" to="/wishlist" className="blacmelo-header-icon desktop-only" aria-label="Wishlist">
             <Bookmark size={20} />
           </NavLink>
 
           {/* Account — visible on all screens but hidden on mobile when menu/cart is open */}
           {!(isMobileMenuOpen || isCartOpen) && (
-            <NavLink prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
+            <NavLink reloadDocument prefetch="intent" to="/account" className="blacmelo-header-icon" aria-label="Account">
               <User size={20} />
             </NavLink>
           )}

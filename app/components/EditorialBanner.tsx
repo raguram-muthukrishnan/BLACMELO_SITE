@@ -12,6 +12,7 @@ interface EditorialBannerProps {
   primaryButtonLink?: string;
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
+  className?: string;
 }
 
 export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(function EditorialBanner({
@@ -25,11 +26,12 @@ export const EditorialBanner = forwardRef<HTMLDivElement, EditorialBannerProps>(
   primaryButtonLink = '#',
   secondaryButtonText,
   secondaryButtonLink,
+  className = '',
 }, ref) {
   return (
     <section
       ref={ref}
-      className="editorial-banner"
+      className={`editorial-banner ${className}`}
     >
       <div className="editorial-banner-media">
         {/* Image Only */}

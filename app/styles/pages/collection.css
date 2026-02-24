@@ -285,11 +285,36 @@
 }
 
 .represent-hero-image.ss26-hero {
-  object-position: top;
+  object-position: center 20%;
 }
 
 .represent-hero-image.originals-hero {
-  object-position: top;
+  object-position: center 30%;
+}
+
+.represent-hero-image.archive-hero {
+  object-position: center 20%;
+}
+
+/* Fallback individual adjustments */
+.represent-hero-image.fallback-hero-2 {
+  /* the_signature_jacket_desktop */
+  object-position: top center;
+}
+
+.represent-hero-image.fallback-hero-3 {
+  /* bl_originals */
+  object-position: center 30%;
+}
+
+.represent-hero-image.fallback-hero-1 {
+  /* spring_summer.jpeg */
+  object-position: center 20%;
+}
+
+.represent-hero-image.fallback-hero-4 {
+  /* bl_archive.jpeg */
+  object-position: center 20%;
 }
 
 .represent-hero-video {

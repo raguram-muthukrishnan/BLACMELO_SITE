@@ -81,11 +81,12 @@ body {
 }
 
 /* Override reset.css main margin */
-body > main,
+body>main,
 main {
   margin: 0 !important;
   padding: 0 !important;
-  padding-top: 44px; /* Default header height */
+  padding-top: 44px;
+  /* Default header height */
   width: 100%;
   overflow-x: hidden;
 }
@@ -230,7 +231,8 @@ html .overlay.expanded[data-type="mobile"] aside {
 
 /* Adjust main content spacing when announcement bar is visible */
 body:has(.announcement-bar:not([hidden])) main {
-  padding-top: 80px !important; /* Announcement bar (36px) + Header (44px) */
+  padding-top: 80px !important;
+  /* Announcement bar (36px) + Header (44px) */
 }
 
 /* Remove padding for product pages - hero should touch top */
@@ -242,7 +244,7 @@ body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
   body:has(.announcement-bar:not([hidden])) main {
     padding-top: 80px !important;
   }
-  
+
   /* Remove padding for product pages on mobile too */
   body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
     padding-top: 0 !important;
@@ -358,13 +360,15 @@ body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
   letter-spacing: 0.05em;
   padding: 8px 0;
   display: inline-block;
-  padding-right: 100px; /* Space between loops */
+  padding-right: 100px;
+  /* Space between loops */
 }
 
 @keyframes ticker-scroll {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -372,7 +376,8 @@ body:has(.announcement-bar:not([hidden])) main:has(.hero-product) {
 
 /* Adjust for dynamic announcement bar */
 body:has(.dynamic-announcement-bar) main {
-  padding-top: 0 !important; /* Remove padding so banner touches top */
+  padding-top: 0 !important;
+  /* Remove padding so banner touches top */
 }
 
 body:has(.dynamic-announcement-bar) .blacmelo-header {
@@ -394,39 +399,67 @@ body:has(.dynamic-announcement-bar) main:has(.hero-product) {
   padding-top: 0 !important;
 }
 
-body:has(.dynamic-announcement-bar) .hero-product {
-  height: calc(100vh - 36px);
-  margin-top: 36px;
+/* Desktop only — hero-product full-height grid layout */
+@media (min-width: 1025px) {
+  body:has(.dynamic-announcement-bar) .hero-product {
+    height: calc(100vh - 36px);
+    margin-top: 36px;
+    grid-template-columns: 50.4% 49.6%;
+  }
+
+  body:has(.dynamic-announcement-bar) .hero-left {
+    height: calc(100vh - 36px);
+  }
+
+  body:has(.dynamic-announcement-bar) .hero-right {
+    height: calc(100vh - 36px);
+  }
 }
 
-body:has(.dynamic-announcement-bar) .hero-left {
-  height: calc(100vh - 36px);
-}
-
-body:has(.dynamic-announcement-bar) .hero-right {
-  height: calc(100vh - 36px);
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
+/* Mobile adjustments — match product-hero.css breakpoint of 1024px */
+@media (max-width: 1024px) {
   .announcement-ticker-content {
     font-size: 0.7rem;
   }
-  
+
   body:has(.dynamic-announcement-bar) main {
     padding-top: 80px !important;
   }
-  
+
   body:has(.dynamic-announcement-bar) main:has(.hero-product) {
     padding-top: 0 !important;
   }
-  
-  body:has(.dynamic-announcement-bar) .hero-product {
-    margin-top: 0;
+
+  /* Full reset of hero-product to single-column stacked layout on mobile */
+  body:has(.dynamic-announcement-bar) .hero-product,
+  body:has(.announcement-bar:not([hidden])) .hero-product {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: unset !important;
+    margin-top: 0 !important;
+    padding-top: 80px !important;
+    overflow: visible !important;
   }
-  
-  body:has(.dynamic-announcement-bar) .hero-left {
-    height: 100vh;
+
+  body:has(.dynamic-announcement-bar) .hero-left,
+  body:has(.announcement-bar:not([hidden])) .hero-left {
+    height: 60vh !important;
+    min-height: 60vh !important;
+    max-height: 60vh !important;
+    width: 100% !important;
+    overflow: hidden;
+  }
+
+  /* Critical: reset hero-right on mobile regardless of announcement bar */
+  body:has(.dynamic-announcement-bar) .hero-right,
+  body:has(.announcement-bar:not([hidden])) .hero-right {
+    height: auto !important;
+    min-height: unset !important;
+    max-height: unset !important;
+    overflow-y: visible !important;
+    position: static !important;
+    width: 100% !important;
   }
 }
 
@@ -443,8 +476,8 @@ body:has(.dynamic-announcement-bar) .hero-right {
   z-index: 100;
   margin: 0;
   padding: 0;
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Scrolled state - white background with black elements */
@@ -464,7 +497,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     background: transparent !important;
     box-shadow: none;
   }
-  
+
   /* Add white background only when menu items are hovered */
   .blacmelo-header.header-menu-active.header-menu-hovered {
     background: rgba(255, 255, 255, 1) !important;
@@ -600,13 +633,15 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   height: 24px;
   object-fit: contain;
   display: block;
-  filter: brightness(0) invert(1); /* Make logo white by default */
+  filter: brightness(0) invert(1);
+  /* Make logo white by default */
   transition: filter 0.3s ease;
 }
 
 /* Logo turns black when scrolled */
 .blacmelo-header.header-scrolled .blacmelo-logo-image {
-  filter: brightness(0) invert(0); /* Make logo black when scrolled */
+  filter: brightness(0) invert(0);
+  /* Make logo black when scrolled */
 }
 
 .blacmelo-header-link {
@@ -614,7 +649,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   font-size: 13px;
   font-weight: 400;
   line-height: normal;
-  color: #ffffff; /* White by default */
+  color: #ffffff;
+  /* White by default */
   text-decoration: none;
   transition: color 0.3s ease, opacity 0.3s ease;
   flex-shrink: 0;
@@ -639,7 +675,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   left: 0;
   width: 100%;
   height: 1px;
-  background: #ffffff; /* White underline by default */
+  background: #ffffff;
+  /* White underline by default */
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
@@ -673,7 +710,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   height: 100%;
   flex-shrink: 0;
   transition: color 0.3s ease, opacity 0.3s ease;
-  color: #ffffff; /* White by default */
+  color: #ffffff;
+  /* White by default */
   position: relative;
 }
 
@@ -690,7 +728,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   left: 0;
   width: 100%;
   height: 1px;
-  background: #ffffff; /* White underline by default */
+  background: #ffffff;
+  /* White underline by default */
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
@@ -729,7 +768,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   height: 100%;
   flex-shrink: 0;
   transition: color 0.3s ease, opacity 0.3s ease;
-  color: #ffffff; /* White by default */
+  color: #ffffff;
+  /* White by default */
   position: relative;
   background: none;
   border: none;
@@ -750,7 +790,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   left: 0;
   width: 100%;
   height: 1px;
-  background: #ffffff; /* White underline by default */
+  background: #ffffff;
+  /* White underline by default */
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
@@ -857,7 +898,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   border: none;
   padding: 0;
   cursor: pointer;
-  color: #ffffff; /* White by default */
+  color: #ffffff;
+  /* White by default */
   transition: color 0.3s ease, opacity 0.3s ease;
 }
 
@@ -900,13 +942,13 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     height: 44px;
     background: transparent !important;
   }
-  
+
   /* White background when scrolled on mobile */
   .blacmelo-header.header-scrolled {
     background: rgba(255, 255, 255, 1) !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   }
-  
+
   /* When both scrolled and menu active */
   .blacmelo-header.header-scrolled.header-menu-active {
     background: rgba(255, 255, 255, 1) !important;
@@ -924,25 +966,27 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     display: flex;
     width: 24px;
     height: 24px;
-    color: #ffffff; /* White by default */
+    color: #ffffff;
+    /* White by default */
   }
-  
+
   /* Mobile menu button turns black when scrolled */
   .blacmelo-header.header-scrolled .blacmelo-mobile-menu-btn {
     color: #666666;
   }
-  
+
   .blacmelo-mobile-menu-btn:hover {
     color: #ffffff;
   }
-  
+
   /* Hover color changes to black when scrolled */
   .blacmelo-header.header-scrolled .blacmelo-mobile-menu-btn:hover {
     color: #000000;
   }
 
   .blacmelo-mobile-search-btn {
-    display: none !important; /* Hide search button on mobile */
+    display: none !important;
+    /* Hide search button on mobile */
   }
 
   .blacmelo-mobile-menu-btn svg {
@@ -973,9 +1017,10 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     width: auto;
     height: 20px;
     max-width: 120px;
-    filter: brightness(0) invert(1); /* White logo by default on mobile */
+    filter: brightness(0) invert(1);
+    /* White logo by default on mobile */
   }
-  
+
   /* Logo turns black when scrolled on mobile */
   .blacmelo-header.header-scrolled .blacmelo-logo-image {
     filter: brightness(0) invert(0);
@@ -988,7 +1033,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
     justify-content: flex-end;
     width: auto;
   }
-  
+
   /* Ensure container uses space-between for proper centering */
   .blacmelo-header-container {
     position: relative;
@@ -997,19 +1042,20 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   .blacmelo-header-icon {
     width: 24px;
     height: 24px;
-    color: #ffffff; /* White by default on mobile */
+    color: #ffffff;
+    /* White by default on mobile */
     transition: color 0.3s ease;
   }
-  
+
   /* Icons turn black when scrolled on mobile */
   .blacmelo-header.header-scrolled .blacmelo-header-icon {
     color: #666666;
   }
-  
+
   .blacmelo-header-icon:hover {
     color: #ffffff;
   }
-  
+
   /* Hover color changes to black when scrolled */
   .blacmelo-header.header-scrolled .blacmelo-header-icon:hover {
     color: #000000;
@@ -1019,7 +1065,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   .blacmelo-cart-icon {
     width: 24px;
     height: 24px;
-    color: #ffffff; /* White by default on mobile */
+    color: #ffffff;
+    /* White by default on mobile */
   }
 
   .blacmelo-header.header-scrolled .blacmelo-cart-icon {
@@ -1372,7 +1419,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .editorial-banner {
-    height: 100svh; /* Small viewport height for mobile */
+    height: 100svh;
+    /* Small viewport height for mobile */
   }
 
   .editorial-banner-title {
@@ -1490,6 +1538,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
 }
 
 @media (max-width: 768px) {
+
   .hero-banner-wrapper,
   .banner-wrapper {
     height: 100vh;
@@ -1526,7 +1575,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   position: absolute;
   inset: 0;
   z-index: 60;
-  pointer-events: none; /* allow clicks only on inner links */
+  pointer-events: none;
+  /* allow clicks only on inner links */
 }
 
 /* Sticky anchor (scroll-linked like reference) */
@@ -1544,7 +1594,8 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2.75rem; /* ~gap-11 */
+  gap: 2.75rem;
+  /* ~gap-11 */
   text-align: center;
   text-transform: uppercase;
   padding-top: 79px;
@@ -2179,6 +2230,7 @@ body:has(.announcement-bar:not([hidden])) .blacmelo-header {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+
   .shop-page,
   .about-page,
   .faq-page,
@@ -2239,7 +2291,8 @@ header.blacmelo-header {
   height: 100%;
   display: flex;
   align-items: center;
-  padding: 0 16 px; /* Horizontal padding for text spacing */
+  padding: 0 16 px;
+  /* Horizontal padding for text spacing */
   text-decoration: none !important;
 }
 
@@ -2310,6 +2363,7 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -2355,14 +2409,17 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 }
 
 .hover-menu-list.bold-list {
-  gap: 0; /* Minimal spacing - no gap */
+  gap: 0;
+  /* Minimal spacing - no gap */
 }
 
 .hover-menu-item-link.bold-item {
   font-weight: 450;
   font-size: 0.95rem;
-  line-height: 1.1; /* Tight line height */
-  padding: 0.05rem 0; /* Minimal vertical padding */
+  line-height: 1.1;
+  /* Tight line height */
+  padding: 0.05rem 0;
+  /* Minimal vertical padding */
 }
 
 .hover-menu-list {
@@ -2701,22 +2758,27 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   .product-grid-small {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .product-grid-medium {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .product-grid-large {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 768px) {
+
   /* Mobile: small=1col, medium=2cols, large=3cols */
   .product-grid-small {
     grid-template-columns: 1fr;
   }
+
   .product-grid-medium {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .product-grid-large {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -2887,24 +2949,30 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   .product-grid-small .product-card:nth-child(3n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-small .product-card:nth-child(2n) {
     border-right: none;
   }
+
   .product-grid-medium .product-card:nth-child(4n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-medium .product-card:nth-child(3n) {
     border-right: none;
   }
+
   .product-grid-large .product-card:nth-child(6n) {
     border-right: 1px solid #f0f0f0;
   }
+
   .product-grid-large .product-card:nth-child(4n) {
     border-right: none;
   }
 }
 
 @media (max-width: 768px) {
+
   /* Remove all borders on mobile */
   .product-card {
     border-right: none;
@@ -3352,7 +3420,7 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 
 .breadcrumb-container {
   width: 100%;
-  padding: 20px ;
+  padding: 20px;
   background: #fff;
 }
 
@@ -3402,27 +3470,27 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 }
 
 @media (max-width: 1024px) {
-  .hero-product { 
-    grid-template-columns: 1fr; 
+  .hero-product {
+    grid-template-columns: 1fr;
     gap: 0;
     padding: 0;
     height: auto;
     margin-top: 0;
   }
-  
+
   body:has(.announcement-bar:not([hidden])) .hero-product {
     margin-top: 0;
   }
-  
+
   .hero-left {
     height: auto;
     min-height: 60vh;
   }
-  
+
   body:has(.announcement-bar:not([hidden])) .hero-left {
     height: auto;
   }
-  
+
   .hero-right {
     padding: 32px 20px 40px;
     height: auto;
@@ -3460,27 +3528,23 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   }
 
   .size-btn.disabled::before {
-    background: linear-gradient(
-      to top right,
-      transparent 0%,
-      transparent calc(50% - 0.5px),
-      #ccc calc(50% - 0.5px),
-      #ccc calc(50% + 0.5px),
-      transparent calc(50% + 0.5px),
-      transparent 100%
-    );
+    background: linear-gradient(to top right,
+        transparent 0%,
+        transparent calc(50% - 0.5px),
+        #ccc calc(50% - 0.5px),
+        #ccc calc(50% + 0.5px),
+        transparent calc(50% + 0.5px),
+        transparent 100%);
   }
 
   .size-btn.disabled::after {
-    background: linear-gradient(
-      to bottom right,
-      transparent 0%,
-      transparent calc(50% - 0.5px),
-      #ccc calc(50% - 0.5px),
-      #ccc calc(50% + 0.5px),
-      transparent calc(50% + 0.5px),
-      transparent 100%
-    );
+    background: linear-gradient(to bottom right,
+        transparent 0%,
+        transparent calc(50% - 0.5px),
+        #ccc calc(50% - 0.5px),
+        #ccc calc(50% + 0.5px),
+        transparent calc(50% + 0.5px),
+        transparent 100%);
   }
 
   /* Hero expandable sections moved to product.css */
@@ -3957,8 +4021,15 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 }
 
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Size Guide Modal */
@@ -4582,6 +4653,7 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -4969,8 +5041,8 @@ body:not(:has(.announcement-bar:not([hidden]))) .unified-hover-menu-overlay {
 }
 
 /* Make fallback notice more prominent */
-.about-section-content > p:last-child:has(strong),
-.contact-additional > p:last-child:has(strong) {
+.about-section-content>p:last-child:has(strong),
+.contact-additional>p:last-child:has(strong) {
   padding: 15px 20px;
   background: #f8f9fa;
   border-left: 4px solid #6c757d;

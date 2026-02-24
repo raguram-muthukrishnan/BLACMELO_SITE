@@ -7,6 +7,7 @@ import { SizeGuideInline } from './SizeGuideModal';
 import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
 import { ColorProductSwitcher } from './ColorProductSwitcher';
+import { sortSizeLabels } from '~/lib/sortSizes';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface ProductImage {
@@ -442,15 +443,24 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
                     <button className="size-guide-btn" onClick={() => toggleSection('sizechart')} type="button">Size Guide</button>
                   </div>
                   <div className="hero-sizes">
-                    {sizeOption.optionValues.map((value) => {
-                      const isSelected = currentOptions[sizeOption.name] === value.name;
-                      const available = isOptionAvailable(sizeOption.name, value.name);
-                      return (
-                        <button key={value.name} className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`} onClick={() => available && handleOptionChange(sizeOption.name, value.name)} disabled={!available}>
-                          {value.name === '2XL' ? 'XXL' : value.name}
-                        </button>
-                      );
-                    })}
+                    {(() => {
+                      const rawSizes = sizeOption.optionValues.map(v => ({ label: v.name }));
+                      const sortedSizes = sortSizeLabels(rawSizes);
+                      return sortedSizes.map((sizeEntry) => {
+                        const isSelected = currentOptions[sizeOption.name] === sizeEntry.label;
+                        const available = isOptionAvailable(sizeOption.name, sizeEntry.label);
+                        return (
+                          <button
+                            key={sizeEntry.label}
+                            className={`size-btn ${isSelected ? 'selected' : ''} ${!available ? 'disabled' : ''}`}
+                            onClick={() => available && handleOptionChange(sizeOption.name, sizeEntry.label)}
+                            disabled={!available}
+                          >
+                            {sizeEntry.label === '2XL' ? 'XXL' : sizeEntry.label}
+                          </button>
+                        );
+                      });
+                    })()}
                   </div>
                   <div className="hero-size-note"><a href="#">Size Not In Stock?</a></div>
 

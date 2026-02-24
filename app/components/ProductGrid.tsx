@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { Image, Money } from '@shopify/hydrogen';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
+import { sortSizeLabels } from '~/lib/sortSizes';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
 
 interface Product {
@@ -184,31 +185,37 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
                                         onMouseEnter={handleSizesHover}
                                         onMouseLeave={handleSizesLeave}
                                     >
-                                        {sizeOption?.optionValues.map((size) => {
-                                            const variant = product.variants?.nodes.find(v =>
-                                                v.selectedOptions?.some(opt =>
-                                                    opt.name.toLowerCase() === 'size' && opt.value === size.name
-                                                )
-                                            );
-                                            const available = variant?.availableForSale !== false;
+                                        {(() => {
+                                            // Sort sizes in correct order before rendering
+                                            const rawSizes = (sizeOption?.optionValues || []).map(s => ({ label: s.name }));
+                                            const sortedSizes = sortSizeLabels(rawSizes);
 
-                                            return (
-                                                <AddToCartButton
-                                                    key={size.name}
-                                                    lines={[{ merchandiseId: variant?.id || '', quantity: 1 }]}
-                                                    className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!available
-                                                        ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-white/70 backdrop-blur-md'
-                                                        : 'border-transparent bg-white/95 backdrop-blur-md text-gray-500 hover:text-black hover:border-black hover:bg-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
-                                                        }`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                    }}
-                                                    disabled={!available}
-                                                >
-                                                    {size.name}
-                                                </AddToCartButton>
-                                            );
-                                        })}
+                                            return sortedSizes.map((sizeEntry) => {
+                                                const variant = product.variants?.nodes.find(v =>
+                                                    v.selectedOptions?.some(opt =>
+                                                        opt.name.toLowerCase() === 'size' && opt.value === sizeEntry.label
+                                                    )
+                                                );
+                                                const available = variant?.availableForSale !== false;
+
+                                                return (
+                                                    <AddToCartButton
+                                                        key={sizeEntry.label}
+                                                        lines={[{ merchandiseId: variant?.id || '', quantity: 1 }]}
+                                                        className={`text-[10px] font-medium uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!available
+                                                            ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-white/70 backdrop-blur-md'
+                                                            : 'border-transparent bg-white/95 backdrop-blur-md text-gray-500 hover:text-black hover:border-black hover:bg-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
+                                                            }`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                        }}
+                                                        disabled={!available}
+                                                    >
+                                                        {sizeEntry.label === '2XL' ? 'XXL' : sizeEntry.label}
+                                                    </AddToCartButton>
+                                                );
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                                 <div className="card-info">

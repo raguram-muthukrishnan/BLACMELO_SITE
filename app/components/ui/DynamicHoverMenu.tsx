@@ -195,6 +195,7 @@ export function DynamicHoverMenu({
         }}
       >
         <NavLink
+          reloadDocument
           to={item.link}
           className={itemClass}
         >
@@ -313,6 +314,7 @@ export function DynamicHoverMenu({
                     {hoveredParent.children.map((child: any, childIdx: number) => (
                       <li key={childIdx}>
                         <NavLink
+                          reloadDocument
                           to={child.link}
                           className="nested-panel-item"
                         >

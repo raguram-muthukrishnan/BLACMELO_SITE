@@ -65,6 +65,14 @@
   transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Individual Banner Adjustments */
+.hero-ss26 .editorial-banner-image,
+.hero-signature-jacket .editorial-banner-image,
+.hero-originals .editorial-banner-image,
+.hero-archive .editorial-banner-image {
+  object-position: top center !important;
+}
+
 .editorial-banner-video {
   position: absolute;
   top: 0;

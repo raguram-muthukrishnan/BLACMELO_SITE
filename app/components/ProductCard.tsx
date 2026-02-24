@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { Image } from '@shopify/hydrogen';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
+import { sortSizeLabels } from '~/lib/sortSizes';
 
 export function ProductCard({ product }: { product: any }) {
   const variant = product.selectedOrFirstAvailableVariant?.nodes?.[0];
@@ -73,23 +74,30 @@ export function ProductCard({ product }: { product: any }) {
           `}
           onClick={(e) => e.stopPropagation()}
         >
-          {product.variants?.nodes?.map((v: any) => {
-            const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
-            if (!sizeOption) return null;
-            return (
+          {(() => {
+            // Build flat size list from all variants, deduplicate & sort
+            const rawSizes = (product.variants?.nodes || []).map((v: any) => {
+              const sizeOption = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
+              if (!sizeOption) return null;
+              return { label: sizeOption.value, available: v.availableForSale ?? true, variantId: v.id };
+            }).filter(Boolean) as Array<{ label: string; available: boolean; variantId: string }>;
+
+            const sortedSizes = sortSizeLabels(rawSizes);
+
+            return sortedSizes.map((sizeItem) => (
               <AddToCartButton
-                key={v.id}
-                disabled={!v.availableForSale}
-                lines={[{ merchandiseId: v.id, quantity: 1 }]}
-                className={`text-[10px] font-semibold uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!v.availableForSale
-                    ? 'border-white/30 text-black/30 cursor-not-allowed bg-white/50 backdrop-blur-sm'
-                    : 'border-white/60 bg-white/85 backdrop-blur-md text-black hover:bg-white hover:border-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
+                key={sizeItem.variantId}
+                disabled={!sizeItem.available}
+                lines={[{ merchandiseId: sizeItem.variantId, quantity: 1 }]}
+                className={`text-[10px] font-semibold uppercase min-w-[28px] px-1.5 py-1 text-center border transition-all duration-200 ${!sizeItem.available
+                  ? 'border-white/30 text-black/30 cursor-not-allowed bg-white/50 backdrop-blur-sm'
+                  : 'border-white/60 bg-white/85 backdrop-blur-md text-black hover:bg-white hover:border-white hover:scale-105 hover:font-bold cursor-pointer shadow-sm'
                   }`}
               >
-                {sizeOption.value === '2XL' ? 'XXL' : sizeOption.value}
+                {sizeItem.label === '2XL' ? 'XXL' : sizeItem.label}
               </AddToCartButton>
-            );
-          })}
+            ));
+          })()}
         </div>
       </div>
 
@@ -111,7 +119,7 @@ export function ProductCard({ product }: { product: any }) {
               (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
             );
             const colorFamily = colorFamilyMetafield?.value;
-            
+
             if (colorFamily) {
               return (
                 <p className="text-[10px] text-gray-500 font-medium whitespace-nowrap">

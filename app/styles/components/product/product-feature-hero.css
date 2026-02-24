@@ -100,8 +100,12 @@
 
   .product-feature-image {
     order: 1;
-    aspect-ratio: 4/3;
-    min-height: 400px;
+    aspect-ratio: 3/4;
+    min-height: 450px;
+  }
+
+  .product-feature-img {
+    object-position: center 40%;
   }
 
   .product-feature-img-container {
@@ -134,7 +138,11 @@
   }
 
   .product-feature-image {
-    min-height: 300px;
+    min-height: 350px;
+  }
+
+  .product-feature-img {
+    object-position: center 40%;
   }
 
   .product-feature-static-content {

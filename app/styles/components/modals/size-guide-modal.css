@@ -327,14 +327,14 @@
     padding: 8px 10px;
   }
 
-  /* Scroll hint — subtle right-fade for wide tables */
+  /* Scroll hint — REMOVED: gradient on right caused confusion on mobile */
   .size-guide-table-wrapper,
   .size-chart-table-wrapper {
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
-  /* Remove mask once scrolled */
+  /* Keep data-scrolled selector for backward compat but it's a no-op */
   .size-guide-table-wrapper:is([data-scrolled]),
   .size-chart-table-wrapper:is([data-scrolled]) {
     -webkit-mask-image: none;

@@ -1,14 +1,14 @@
-import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import type {CartLayout} from '~/components/CartMain';
-import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
-import {useState} from 'react';
+import type { CartApiQueryFragment } from 'storefrontapi.generated';
+import type { CartLayout } from '~/components/CartMain';
+import { CartForm, Money, type OptimisticCart } from '@shopify/hydrogen';
+import { useState } from 'react';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
   layout: CartLayout;
 };
 
-export function CartSummary({cart, layout}: CartSummaryProps) {
+export function CartSummary({ cart, layout }: CartSummaryProps) {
   const [shippingOpen, setShippingOpen] = useState(false);
   const className =
     layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
@@ -18,7 +18,16 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const shippingMetafield = firstProduct?.metafields?.find(
     (field) => field?.key === 'shipping_and_returns'
   );
-  const shippingInfo = shippingMetafield?.value || 'Free shipping on orders over $100. Returns accepted within 30 days.';
+  const shippingInfo = shippingMetafield?.value ? (
+    <>{shippingMetafield.value}</>
+  ) : (
+    <>
+      Free shipping. Returns accepted.{' '}
+      <a href="/policies/terms-of-service" style={{ textDecoration: 'underline', fontWeight: 'bold' }}>
+        Terms and conditions apply
+      </a>
+    </>
+  );
 
   // Check for discounts
   const hasDiscounts = cart?.discountCodes?.some((code) => code.applicable);
@@ -29,14 +38,14 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   return (
     <div aria-labelledby="cart-summary" className={className}>
       {/* Shipping & Returns Toggle */}
-      <button 
+      <button
         className="cart-shipping-toggle"
         onClick={() => setShippingOpen(!shippingOpen)}
       >
         <span>Shipping & Returns</span>
         <span className={`cart-shipping-arrow ${shippingOpen ? 'open' : ''}`}>›</span>
       </button>
-      
+
       {shippingOpen && (
         <div className="cart-shipping-content">
           <p>{shippingInfo}</p>
@@ -94,7 +103,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   );
 }
 
-function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
+function CartCheckoutActions({ checkoutUrl }: { checkoutUrl?: string }) {
   if (!checkoutUrl) return null;
 
   return (

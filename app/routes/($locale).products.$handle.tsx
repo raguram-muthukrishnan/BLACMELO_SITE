@@ -18,6 +18,7 @@ import { ProductGrid } from '~/components/ProductGrid';
 import { RecentlyViewed } from '~/components/RecentlyViewed';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { addToRecentlyViewed } from '~/lib/recentlyViewed';
+import { sortSizeLabels } from '~/lib/sortSizes';
 import productPageStyles from '~/styles/pages/product.css?url';
 import productHeroStyles from '~/styles/components/product/product-hero.css?url';
 import productHeroInfoStyles from '~/styles/components/product/product-hero-info.css?url';
@@ -196,8 +197,8 @@ export default function Product() {
       // Extract colorFamily from product metafields with fallback
       const colorFamilyField = Array.isArray(product.metafields)
         ? product.metafields.find(
-            (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
-          )
+          (m: any) => m && m.namespace === 'custom' && m.key === 'color_family'
+        )
         : null;
       const colorFamily = colorFamilyField?.value || null;
 
@@ -212,14 +213,16 @@ export default function Product() {
         )].length
         : 0;
 
-      // Build sizes list from variants
-      const sizes = (product.variants?.nodes || [])
+      // Build sizes list from variants — deduplicated and sorted
+      const rawSizes = (product.variants?.nodes || [])
         .map((v: any) => {
           const sizeOpt = v.selectedOptions?.find((o: any) => o.name.toLowerCase() === 'size');
           if (!sizeOpt) return null;
           return { label: sizeOpt.value, available: v.availableForSale ?? true };
         })
         .filter(Boolean) as Array<{ label: string; available: boolean }>;
+
+      const sizes = sortSizeLabels(rawSizes);
 
       addToRecentlyViewed({
         id: product.id,
