@@ -1,20 +1,20 @@
-import {useState} from 'react';
-import {Link} from 'react-router';
-import type {MetaFunction} from 'react-router';
-import banner1 from '~/assets/banner images/1.jpeg';
+import { useState } from 'react';
+import { Link } from 'react-router';
+import type { MetaFunction } from 'react-router';
+import banner1 from '~/assets/banner_images/1.jpeg';
 import productHeroStyles from '~/styles/components/product/product-hero.css?url';
 import productHeroInfoStyles from '~/styles/components/product/product-hero-info.css?url';
 import giftCardStyles from '~/styles/pages/gift-card.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: productHeroStyles},
-  {rel: 'stylesheet', href: productHeroInfoStyles},
-  {rel: 'stylesheet', href: giftCardStyles},
+  { rel: 'stylesheet', href: productHeroStyles },
+  { rel: 'stylesheet', href: productHeroInfoStyles },
+  { rel: 'stylesheet', href: giftCardStyles },
 ];
 
 export const meta: MetaFunction = () => {
   return [
-    {title: 'BLACMELO | Gift Card'},
+    { title: 'BLACMELO | Gift Card' },
     {
       name: 'description',
       content:
@@ -78,12 +78,12 @@ export default function GiftCard() {
             </div>
             <div className="hero-expanded-content">
               {openSection === 'how' && (
-                <div style={{whiteSpace: 'pre-line'}}>
+                <div style={{ whiteSpace: 'pre-line' }}>
                   {`1. Choose your desired gift card amount\n2. Enter the recipient's email address\n3. Add a personal message (optional)\n4. Complete checkout — the gift card is delivered instantly via email\n5. The recipient can redeem the gift card at checkout on any BLACMELO product`}
                 </div>
               )}
               {openSection === 'terms' && (
-                <div style={{whiteSpace: 'pre-line'}}>
+                <div style={{ whiteSpace: 'pre-line' }}>
                   {`Gift cards are non-refundable and cannot be exchanged for cash.\n\nGift cards never expire and have no additional fees.\n\nGift cards can be used across multiple orders until the balance is fully redeemed.\n\nLost or stolen gift cards cannot be replaced. Please treat them like cash.\n\nGift cards can only be redeemed on blacmelo.com.`}
                 </div>
               )}
@@ -106,7 +106,7 @@ export default function GiftCard() {
             </p>
 
             {/* Amount Selector */}
-            <div style={{marginBottom: '2rem'}}>
+            <div style={{ marginBottom: '2rem' }}>
               <div className="size-header">
                 <span>Select Amount</span>
               </div>
@@ -158,7 +158,7 @@ export default function GiftCard() {
             <div className="gc-field">
               <label className="gc-label" htmlFor="gc-message">
                 Personal Message{' '}
-                <span style={{fontWeight: 300, color: '#888'}}>(optional)</span>
+                <span style={{ fontWeight: 300, color: '#888' }}>(optional)</span>
               </label>
               <textarea
                 id="gc-message"
@@ -172,7 +172,7 @@ export default function GiftCard() {
 
             {/* Add to Cart CTA */}
             <div className="hero-cart-container">
-              <button type="button" style={{width: '100%', padding: 0, border: 'none', background: 'none', cursor: 'pointer'}}>
+              <button type="button" style={{ width: '100%', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}>
                 <div className="hero-cta">ADD TO CART — ${selectedAmount}.00</div>
               </button>
             </div>

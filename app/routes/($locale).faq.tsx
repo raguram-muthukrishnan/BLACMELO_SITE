@@ -1,15 +1,15 @@
-import {type MetaFunction} from 'react-router';
-import {useState} from 'react';
-import banner3 from '~/assets/banner images/3.jpeg';
+import { type MetaFunction } from 'react-router';
+import { useState } from 'react';
+import banner3 from '~/assets/banner_images/3.jpeg';
 import aboutContactStyles from '~/styles/pages/about-contact.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: aboutContactStyles},
+  { rel: 'stylesheet', href: aboutContactStyles },
 ];
 
 export const meta: MetaFunction = () => {
   return [
-    {title: 'BLACMELO | FAQ - Frequently Asked Questions'},
+    { title: 'BLACMELO | FAQ - Frequently Asked Questions' },
     {
       name: 'description',
       content: 'Find answers to frequently asked questions about BLACMELO products, shipping, returns, and more.',
@@ -134,7 +134,7 @@ export default function FAQ() {
                 {category.questions.map((faq, questionIndex) => {
                   const globalIndex = categoryIndex * 100 + questionIndex;
                   const isOpen = openIndex === globalIndex;
-                  
+
                   return (
                     <div key={questionIndex} className="faq-item">
                       <button

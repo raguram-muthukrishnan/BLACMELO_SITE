@@ -1,11 +1,11 @@
-import {useLayoutEffect, useRef, useState} from 'react';
-import {Link} from 'react-router';
-import {gsap} from 'gsap';
-import {ScrollTrigger} from 'gsap/ScrollTrigger';
-import banner1 from '~/assets/banner images/1.jpeg';
-import banner2 from '~/assets/banner images/2.jpeg';
-import banner3 from '~/assets/banner images/3.jpeg';
-import banner4 from '~/assets/banner images/4.png';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { Link } from 'react-router';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import banner1 from '~/assets/banner_images/1.jpeg';
+import banner2 from '~/assets/banner_images/2.jpeg';
+import banner3 from '~/assets/banner_images/3.jpeg';
+import banner4 from '~/assets/banner_images/4.jpeg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,11 +17,11 @@ interface Collection {
 }
 
 const collections: Collection[] = [
-  {id: 1, name: "Fall Winter '25", handle: 'fall-winter-25', image: banner2},
-  {id: 2, name: '247', handle: '247', image: banner3},
-  {id: 3, name: 'Initial', handle: 'initial', image: banner4},
-  {id: 4, name: 'Owners Club', handle: 'owners-club', image: banner2},
-  {id: 5, name: 'Woman', handle: 'woman', image: banner1},
+  { id: 1, name: "Fall Winter '25", handle: 'fall-winter-25', image: banner2 },
+  { id: 2, name: '247', handle: '247', image: banner3 },
+  { id: 3, name: 'Initial', handle: 'initial', image: banner4 },
+  { id: 4, name: 'Owners Club', handle: 'owners-club', image: banner2 },
+  { id: 5, name: 'Woman', handle: 'woman', image: banner1 },
 ];
 
 export function HeroParallax() {
@@ -33,7 +33,7 @@ export function HeroParallax() {
 
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray('.hero-parallax-item');
-      
+
       items.forEach((item: any, i: number) => {
         const img = item.querySelector('.hero-parallax-image');
         const content = item.querySelector('.hero-parallax-content');
@@ -63,11 +63,11 @@ export function HeroParallax() {
           }
         });
 
-        tl.fromTo(content, 
-          { opacity: 0, y: 50, force3D: true }, 
+        tl.fromTo(content,
+          { opacity: 0, y: 50, force3D: true },
           { opacity: 1, y: 0, duration: 1, force3D: true }
-        ).to(content, 
-          { opacity: 0, y: -50, duration: 1, force3D: true }, 
+        ).to(content,
+          { opacity: 0, y: -50, duration: 1, force3D: true },
           "+=0.5"
         );
       });
@@ -88,9 +88,8 @@ export function HeroParallax() {
             <Link
               key={col.id}
               to={`/collections/${col.handle}`}
-              className={`text-2xl font-bold uppercase transition-all duration-500 pointer-events-auto cursor-pointer ${
-                activeIndex === i ? 'text-white scale-110' : 'text-white/30'
-              }`}
+              className={`text-2xl font-bold uppercase transition-all duration-500 pointer-events-auto cursor-pointer ${activeIndex === i ? 'text-white scale-110' : 'text-white/30'
+                }`}
             >
               {col.name}
             </Link>
@@ -100,15 +99,15 @@ export function HeroParallax() {
 
       {/* Sections */}
       {collections.map((collection, index) => (
-        <section 
-          key={collection.id} 
+        <section
+          key={collection.id}
           className="hero-parallax-item relative h-screen w-full overflow-hidden m-0"
         >
           <div className="absolute inset-0 h-full w-full">
             <img
               src={collection.image}
               className="hero-parallax-image absolute top-0 left-0 w-full h-[120vh] object-cover object-center max-w-none"
-              style={{ 
+              style={{
                 willChange: 'transform'
               }}
               alt={collection.name}

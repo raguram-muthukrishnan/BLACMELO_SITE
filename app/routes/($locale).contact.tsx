@@ -1,16 +1,16 @@
-import {Form} from 'react-router';
-import type {LoaderFunctionArgs, MetaFunction} from 'react-router';
-import banner4 from '~/assets/banner images/4.png';
-import banner2 from '~/assets/banner images/2.jpeg';
+import { Form } from 'react-router';
+import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
+import banner4 from '~/assets/banner_images/4.jpeg';
+import banner2 from '~/assets/banner_images/2.jpeg';
 import aboutContactStyles from '~/styles/pages/about-contact.css?url';
 
 export const links = () => [
-  {rel: 'stylesheet', href: aboutContactStyles},
+  { rel: 'stylesheet', href: aboutContactStyles },
 ];
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    {title: `BLACMELO | Contact Us`},
+    { title: `BLACMELO | Contact Us` },
     {
       name: 'description',
       content: 'Get in touch with BLACMELO - we\'re here to help.',
@@ -18,7 +18,7 @@ export const meta: MetaFunction<typeof loader> = ({data}) => {
   ];
 };
 
-export async function loader({context, request}: LoaderFunctionArgs) {
+export async function loader({ context, request }: LoaderFunctionArgs) {
   return {};
 }
 
@@ -103,7 +103,7 @@ export default function Contact() {
           <div className="contact-info-image">
             <img src={banner4} alt="BLACMELO Store" />
           </div>
-          
+
           <div className="contact-info-details">
             <div className="contact-info-item">
               <h3 className="contact-info-title">EMAIL</h3>

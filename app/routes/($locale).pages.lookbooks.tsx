@@ -2,10 +2,10 @@ import { useState, useCallback, useEffect } from 'react';
 import type { MetaFunction } from 'react-router';
 import lookbooksStyles from '~/styles/pages/lookbooks.css?url';
 
-import banner1 from '~/assets/banner images/1.jpeg';
-import banner2 from '~/assets/banner images/2.jpeg';
-import banner3 from '~/assets/banner images/3.jpeg';
-import banner4 from '~/assets/banner images/4.jpeg';
+import banner1 from '~/assets/banner_images/1.jpeg';
+import banner2 from '~/assets/banner_images/2.jpeg';
+import banner3 from '~/assets/banner_images/3.jpeg';
+import banner4 from '~/assets/banner_images/4.jpeg';
 import menuMan from '~/assets/menu/menu_man.jpeg';
 import menuWoman from '~/assets/menu/menu_woman.jpeg';
 

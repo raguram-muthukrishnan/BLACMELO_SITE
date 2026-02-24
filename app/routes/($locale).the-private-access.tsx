@@ -1,6 +1,6 @@
 import type { MetaFunction } from 'react-router';
 import privateAccessStyles from '~/styles/pages/private-access.css?url';
-import bannerImage from '~/assets/banner images/2.jpeg';
+import bannerImage from '~/assets/banner_images/2.jpeg';
 
 export const links = () => [
     { rel: 'stylesheet', href: privateAccessStyles },

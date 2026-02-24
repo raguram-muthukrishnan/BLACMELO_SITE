@@ -1,6 +1,6 @@
 import type { MetaFunction } from 'react-router';
 import chamberStyles from '~/styles/pages/chamber.css?url';
-import bannerImage from '~/assets/banner images/3.jpeg';
+import bannerImage from '~/assets/banner_images/3.jpeg';
 
 export const links = () => [
     { rel: 'stylesheet', href: chamberStyles },
