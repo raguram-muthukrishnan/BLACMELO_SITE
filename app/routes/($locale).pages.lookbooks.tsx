@@ -1,19 +1,19 @@
-import {useState, useCallback, useEffect} from 'react';
-import type {MetaFunction} from 'react-router';
+import { useState, useCallback, useEffect } from 'react';
+import type { MetaFunction } from 'react-router';
 import lookbooksStyles from '~/styles/pages/lookbooks.css?url';
 
 import banner1 from '~/assets/banner images/1.jpeg';
 import banner2 from '~/assets/banner images/2.jpeg';
 import banner3 from '~/assets/banner images/3.jpeg';
-import banner4 from '~/assets/banner images/4.png';
+import banner4 from '~/assets/banner images/4.jpeg';
 import menuMan from '~/assets/menu/menu_man.jpeg';
 import menuWoman from '~/assets/menu/menu_woman.jpeg';
 
-export const links = () => [{rel: 'stylesheet', href: lookbooksStyles}];
+export const links = () => [{ rel: 'stylesheet', href: lookbooksStyles }];
 
 export const meta: MetaFunction = () => {
   return [
-    {title: 'BLACMELO | Lookbooks'},
+    { title: 'BLACMELO | Lookbooks' },
     {
       name: 'description',
       content: 'Browse the BLACMELO lookbook — editorial imagery from our collections.',
@@ -27,12 +27,12 @@ interface LookbookImage {
 }
 
 const IMAGES: LookbookImage[] = [
-  {src: banner1, alt: 'BLACMELO Collection Editorial 1'},
-  {src: banner2, alt: 'BLACMELO Collection Editorial 2'},
-  {src: menuMan, alt: 'BLACMELO Menswear'},
-  {src: banner3, alt: 'BLACMELO Collection Editorial 3'},
-  {src: menuWoman, alt: 'BLACMELO Womenswear'},
-  {src: banner4, alt: 'BLACMELO Collection Editorial 4'},
+  { src: banner1, alt: 'BLACMELO Collection Editorial 1' },
+  { src: banner2, alt: 'BLACMELO Collection Editorial 2' },
+  { src: menuMan, alt: 'BLACMELO Menswear' },
+  { src: banner3, alt: 'BLACMELO Collection Editorial 3' },
+  { src: menuWoman, alt: 'BLACMELO Womenswear' },
+  { src: banner4, alt: 'BLACMELO Collection Editorial 4' },
 ];
 
 export default function Lookbooks() {
