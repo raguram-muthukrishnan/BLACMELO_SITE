@@ -1,5 +1,4 @@
-import { Analytics, AnalyticsEvent, getShopAnalytics, useNonce, useAnalytics } from '@shopify/hydrogen';
-import { useEffect } from 'react';
+import { Analytics, getShopAnalytics, useNonce } from '@shopify/hydrogen';
 import { useJudgeme } from '@judgeme/shopify-hydrogen';
 import {
   Outlet,
@@ -11,7 +10,6 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
-  useLocation,
 } from 'react-router';
 import type { Route } from './+types/root';
 import favicon from '~/assets/icon_2.png';
@@ -142,7 +140,7 @@ export async function loader(args: Route.LoaderArgs) {
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN!,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN!,
-      withPrivacyBanner: false,
+      withPrivacyBanner: true,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
@@ -281,7 +279,6 @@ export default function App() {
       shop={data.shop}
       consent={data.consent}
     >
-      <PageViewTracker />
       <LenisProvider>
         <PageLayout
           header={data.header}
@@ -301,24 +298,6 @@ export default function App() {
   );
 }
 
-
-/**
- * Publishes a page_viewed event on every route change.
- * Must be rendered inside Analytics.Provider.
- */
-function PageViewTracker() {
-  const { publish, shop } = useAnalytics();
-  const location = useLocation();
-
-  useEffect(() => {
-    publish(AnalyticsEvent.PAGE_VIEWED, {
-      url: window.location.href,
-      shop,
-    });
-  }, [location.pathname, location.search, publish]);
-
-  return null;
-}
 
 export function ErrorBoundary() {
   const error = useRouteError();
