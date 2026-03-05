@@ -411,6 +411,18 @@ export function ProductPage({
                   },
                 ]}
                 disabled={!selectedVariant?.availableForSale}
+                analytics={{
+                  products: [{
+                    productGid: product.id,
+                    variantGid: selectedVariant?.id,
+                    name: product.title,
+                    variantName: selectedVariant?.title,
+                    brand: product.vendor,
+                    price: selectedVariant?.price.amount,
+                    quantity: 1,
+                  }],
+                  totalValue: parseFloat(selectedVariant?.price.amount || '0'),
+                }}
               >
                 <button className="product-cta-button">
                   {selectedVariant?.availableForSale ? 'SELECT A SIZE' : 'SOLD OUT'}
@@ -530,6 +542,18 @@ export function ProductPage({
                 },
               ]}
               disabled={!selectedVariant?.availableForSale}
+              analytics={{
+                products: [{
+                  productGid: product.id,
+                  variantGid: selectedVariant?.id,
+                  name: product.title,
+                  variantName: selectedVariant?.title,
+                  brand: product.vendor,
+                  price: selectedVariant?.price.amount,
+                  quantity: 1,
+                }],
+                totalValue: parseFloat(selectedVariant?.price.amount || '0'),
+              }}
             >
               <button className="mobile-bar-btn">
                 {selectedVariant?.availableForSale ? 'ADD TO CART' : 'SOLD OUT'}

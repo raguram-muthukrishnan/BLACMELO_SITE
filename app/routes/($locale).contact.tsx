@@ -1,4 +1,4 @@
-import { Form } from 'react-router';
+import { Form, useLoaderData } from 'react-router';
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import banner4 from '~/assets/banner_images/4.jpeg';
 import banner2 from '~/assets/banner_images/2.jpeg';
@@ -13,16 +13,40 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     { title: `BLACMELO | Contact Us` },
     {
       name: 'description',
-      content: 'Get in touch with BLACMELO - we\'re here to help.',
+      content: "Get in touch with BLACMELO - we're here to help.",
     },
   ];
 };
 
-export async function loader({ context, request }: LoaderFunctionArgs) {
-  return {};
+export async function loader({ context }: LoaderFunctionArgs) {
+  const { storefront } = context;
+
+  const { shop } = await storefront.query(SHOP_CONTACT_QUERY, {
+    cache: storefront.CacheLong(),
+  });
+
+  return {
+    shopName: shop?.name ?? 'BLACMELO',
+    shopContactEmail: shop?.contactEmail ?? null,
+  };
 }
 
+const SHOP_CONTACT_QUERY = `#graphql
+  query ShopContact {
+    shop {
+      name
+      contactEmail
+    }
+  }
+` as const;
+
 export default function Contact() {
+  const { shopContactEmail } = useLoaderData<typeof loader>();
+
+  // Primary email — always use the support address; fall back to Shopify contact email if set
+  const displayEmail = 'support@blacmelo.com';
+  const storeEmail = shopContactEmail && shopContactEmail !== displayEmail ? shopContactEmail : null;
+
   return (
     <div className="contact-page">
       {/* Hero Section */}
@@ -108,39 +132,38 @@ export default function Contact() {
             <div className="contact-info-item">
               <h3 className="contact-info-title">EMAIL</h3>
               <p className="contact-info-text">
-                <a href="mailto:hello@blacmelo.com">hello@blacmelo.com</a>
+                <a href={`mailto:${displayEmail}`}>{displayEmail}</a>
               </p>
-              <p className="contact-info-text">
-                <a href="mailto:support@blacmelo.com">support@blacmelo.com</a>
-              </p>
+              {storeEmail && (
+                <p className="contact-info-text">
+                  <a href={`mailto:${storeEmail}`}>{storeEmail}</a>
+                </p>
+              )}
             </div>
 
             <div className="contact-info-item">
               <h3 className="contact-info-title">PHONE</h3>
-              <p className="contact-info-text">+1 (555) 123-4567</p>
-              <p className="contact-info-subtext">Mon - Fri: 9:00 AM - 6:00 PM EST</p>
+              <p className="contact-info-text">
+                <a href="tel:+971525648367">+971 52 5648367</a>
+              </p>
             </div>
 
             <div className="contact-info-item">
               <h3 className="contact-info-title">ADDRESS</h3>
               <p className="contact-info-text">
-                BLACMELO Headquarters<br />
-                123 Fashion Street<br />
-                New York, NY 10001<br />
-                United States
+                Al Meydan Road, 6th Floor<br />
+                Meydan Grandstand<br />
+                Dubai, UAE
               </p>
             </div>
 
             <div className="contact-info-item">
               <h3 className="contact-info-title">FOLLOW US</h3>
               <div className="contact-social-links">
-                <a href="https://instagram.com/blacmelo" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.instagram.com/blacmelo/" target="_blank" rel="noopener noreferrer">
                   Instagram
                 </a>
-                <a href="https://twitter.com/blacmelo" target="_blank" rel="noopener noreferrer">
-                  Twitter
-                </a>
-                <a href="https://facebook.com/blacmelo" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.facebook.com/blacmelo" target="_blank" rel="noopener noreferrer">
                   Facebook
                 </a>
               </div>
