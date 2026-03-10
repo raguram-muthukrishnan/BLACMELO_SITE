@@ -27,6 +27,27 @@ export default async function handleRequest(
       "data:",
       "https://cdn.shopify.com",
     ],
+    // Fonts are embedded as base64 data URIs in CSS (Neue Haas Grotesk).
+    // Without "data:" here the browser blocks them via the default-src fallback.
+    fontSrc: [
+      "'self'",
+      "data:",
+    ],
+    // Judge.me widget fetches its preloader script from cdn.judge.me,
+    // then injects further scripts and styles from the same origin.
+    connectSrc: [
+      "https://cdn.judge.me",
+      "https://judge.me",
+    ],
+    scriptSrc: [
+      "'self'",
+      "https://cdn.judge.me",
+    ],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "https://cdn.judge.me",
+    ],
   });
 
   const body = await renderToReadableStream(
