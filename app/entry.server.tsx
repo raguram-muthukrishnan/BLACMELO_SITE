@@ -33,20 +33,10 @@ export default async function handleRequest(
       "'self'",
       "data:",
     ],
-    // Judge.me widget fetches its preloader script from cdn.judge.me,
-    // then injects further scripts and styles from the same origin.
+    // Judge.me widget fetches its preloader and widget scripts from cdn.judge.me.
     connectSrc: [
       "https://cdn.judge.me",
       "https://judge.me",
-    ],
-    scriptSrc: [
-      "'self'",
-      "https://cdn.judge.me",
-    ],
-    styleSrc: [
-      "'self'",
-      "'unsafe-inline'",
-      "https://cdn.judge.me",
     ],
   });
 
