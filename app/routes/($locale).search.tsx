@@ -223,7 +223,15 @@ export default function SearchPage() {
         </div>
       </div>
 
-      <Analytics.SearchView data={{ searchTerm, searchResults: { total: totalProducts } }} />
+      <Analytics.SearchView
+        data={{
+          searchTerm,
+          searchResults: {
+            nodes: products,
+            pageInfo: {hasNextPage: false, hasPreviousPage: false},
+          },
+        }}
+      />
     </div>
   );
 }
