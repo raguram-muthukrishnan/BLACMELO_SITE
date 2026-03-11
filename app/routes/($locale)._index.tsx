@@ -1,5 +1,6 @@
 import type { Route } from './+types/_index';
 import { useRef, useCallback } from 'react';
+import { Analytics } from '@shopify/hydrogen';
 import { EditorialBanner } from '~/components/EditorialBanner';
 import { ParallaxMenu } from '~/components/ParallaxMenu';
 import bannerSS26 from '~/assets/final_banners/spring_summer.jpeg';
@@ -110,6 +111,7 @@ export default function Homepage() {
         {/* Parallax Menu — auto-scales with COLLECTION_BANNERS */}
         <ParallaxMenu bannerRefs={bannerRefs} links={menuLinks} />
       </div>
+      <Analytics.PageView />
     </div>
   );
 }
