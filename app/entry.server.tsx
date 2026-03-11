@@ -27,11 +27,12 @@ export default async function handleRequest(
       "data:",
       "https://cdn.shopify.com",
     ],
-    // Fonts are embedded as base64 data URIs in CSS (Neue Haas Grotesk).
-    // Without "data:" here the browser blocks them via the default-src fallback.
+    // Fonts are served from Shopify CDN on Oxygen (oxygen-v2 path) and also
+    // embedded as base64 data URIs in CSS. Both sources must be allowed.
     fontSrc: [
       "'self'",
       "data:",
+      "https://cdn.shopify.com",
     ],
     // Judge.me widget fetches its preloader and widget scripts from cdn.judge.me.
     connectSrc: [
