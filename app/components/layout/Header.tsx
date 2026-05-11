@@ -153,7 +153,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
               className="blacmelo-header-link"
               end={false}
             >
-              Man
+              Men
             </NavLink>
           </div>
 

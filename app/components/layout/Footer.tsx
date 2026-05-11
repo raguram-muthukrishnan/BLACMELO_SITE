@@ -100,7 +100,7 @@ export function Footer({ }: FooterProps) {
             <h3 className="footer-heading">Contact</h3>
             <div className="footer-links">
               <a href="mailto:support@blacmelo.com">support@blacmelo.com</a>
-              <a href="tel:+971525648367">+971 52 5648367</a>
+              <a href="tel:+971525648367">UAE +971 52 5648367</a>
             </div>
           </div>
 
