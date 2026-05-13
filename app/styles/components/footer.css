@@ -1,0 +1,237 @@
+/* General Footer Styles */
+.footer {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 4rem 2rem 1rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Desktop Layout */
+  .footer-desktop {
+    display: none; /* Hidden on mobile */
+  }
+  
+  @media (min-width: 768px) {
+    .footer-desktop {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      align-items: start;
+    }
+  }
+  
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-brand {
+    grid-column: span 1;
+  }
+  
+  .footer-logo-image {
+    width: 150px;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-tagline {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .footer-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .footer-links a,
+  .footer-links .footer-support-hours {
+    color: #000000;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: #888;
+  }
+  
+  .footer-support-hours {
+    font-size: 14px;
+    font-weight: normal;
+  }
+  
+  .footer-newsletter {
+    grid-column: span 2;
+  }
+  
+  .newsletter-container {
+    margin-top: 1rem;
+  }
+  
+  .newsletter-form {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+  
+  .newsletter-input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 1rem;
+  }
+  
+  .newsletter-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .newsletter-button:hover {
+    background-color: #333;
+  }
+  
+  .newsletter-success,
+  .newsletter-error {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  
+  .newsletter-success {
+    color: green;
+  }
+  
+  .newsletter-error {
+    color: red;
+  }
+  
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .footer-social a {
+    color: #000;
+    transition: color 0.3s;
+  }
+  
+  .footer-social a:hover {
+    color: #888;
+  }
+  
+  .footer-social img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Mobile Layout */
+  .footer-mobile {
+    display: block;
+  }
+  
+  @media (min-width: 768px) {
+    .footer-mobile {
+      display: none;
+    }
+  }
+  
+  .footer-mobile-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-mobile-newsletter {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-mobile-newsletter-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-mobile-newsletter-subtitle {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-mobile-sections {
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .footer-mobile-section {
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .footer-mobile-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .footer-mobile-icon {
+    transition: transform 0.3s;
+  }
+  
+  .footer-mobile-icon.rotated {
+    transform: rotate(45deg);
+  }
+  
+  .footer-mobile-links {
+    padding: 0.5rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .footer-mobile-links a,
+  .footer-mobile-links .footer-support-hours {
+    color: #000;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  /* Footer Bottom */
+  .footer-bottom {
+    border-top: 1px solid #eaeaea;
+    padding-top: 1rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  .footer-copyright {
+    font-size: 0.8rem;
+    color: #555;
+  }
+  
