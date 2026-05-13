@@ -141,7 +141,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             </NavLink>
           )}
 
-          {/* DESKTOP: Man hover link */}
+          {/* DESKTOP: Men hover link */}
           <div
             className="hover-menu-trigger desktop-only"
             onMouseEnter={() => handleTriggerEnter('shop')}
@@ -149,7 +149,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             <NavLink
               reloadDocument
               prefetch="intent"
-              to="/collections/full-collection"
+              to="/collections/men"
               className="blacmelo-header-link"
               end={false}
             >
@@ -165,7 +165,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             <NavLink
               reloadDocument
               prefetch="intent"
-              to="/collections/full-collection"
+              to="/collections/women"
               className="blacmelo-header-link"
               end={false}
             >
@@ -194,12 +194,12 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
         {/* ===== RIGHT NAV ===== */}
         <nav className="blacmelo-header-right">
 
-          {/* MOBILE — OPEN: Man link on far right */}
+          {/* MOBILE — OPEN: Men link on far right */}
           {(isMobileMenuOpen || isCartOpen) && (
             <NavLink
               reloadDocument
               prefetch="intent"
-              to="/collections/full-collection"
+              to="/collections/men"
               className="blacmelo-header-link mobile-only mobile-man-link"
               onClick={closeAside}
             >
@@ -207,7 +207,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             </NavLink>
           )}
 
-          {/* DESKTOP: The Chamber */}
+          {/* DESKTOP: The Chamber (HIDDEN FOR NOW)
           <NavLink
             reloadDocument
             prefetch="intent"
@@ -216,6 +216,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           >
             The Chamber
           </NavLink>
+          */}
 
           {/* DESKTOP: Private Access */}
           <NavLink

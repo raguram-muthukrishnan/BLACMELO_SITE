@@ -47,8 +47,8 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     throw redirect('/collections');
   }
 
-  // DEVELOPMENT: Redirect all collections to 'unisex' for now
-  const devCollectionHandles = ['man', 'women', 'blacmelo +', 'blacmelo%20+'];
+  // DEVELOPMENT: Redirect specific collections if needed
+  const devCollectionHandles = ['blacmelo +', 'blacmelo%20+'];
   if (devCollectionHandles.includes(handle.toLowerCase())) {
     const url = new URL(request.url);
     throw redirect(`${url.pathname.replace(/\/collections\/[^/]+/, '/collections/unisex')}${url.search}`);

@@ -9,6 +9,7 @@ import type {
 import { Aside, useAside } from '~/components/Aside';
 import { Footer } from '~/components/layout/Footer';
 import { Header } from '~/components/layout/Header';
+import { WhatsAppFloatingIcon } from '~/components/WhatsAppFloatingIcon';
 import { DynamicAnnouncementBar } from '~/components/DynamicAnnouncementBar';
 import type { AnnouncementItem } from '~/components/DynamicAnnouncementBar';
 import type { DynamicMenuConfig } from '~/lib/dynamicHeaderMenu';
@@ -75,6 +76,7 @@ export function PageLayout({
           {(footerData) => footerData && <Footer footer={footerData} />}
         </Await>
       </Suspense>
+      <WhatsAppFloatingIcon />
     </Aside.Provider>
   );
 }
