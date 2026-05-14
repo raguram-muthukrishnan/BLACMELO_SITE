@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router';
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react';
 import { Await, useAsyncValue } from 'react-router';
-import { useOptimisticCart, useAnalytics, type CartViewPayload } from '@shopify/hydrogen';
+import { useOptimisticCart, useAnalytics, useNonce, type CartViewPayload } from '@shopify/hydrogen';
 import type { HeaderQuery, CartApiQueryFragment } from 'storefrontapi.generated';
 import { Menu, User, ShoppingBag, Search, Bookmark, X } from 'lucide-react';
 import { DynamicHoverMenu } from '~/components/ui/DynamicHoverMenu';
@@ -228,6 +228,16 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             Private Access
           </NavLink>
 
+
+          {/* Currency Switcher */}
+          <div className="desktop-only mr-4 flex items-center">
+            <div className="futureblink-currency-box"></div>
+            <div className="futureblink-currency-cart-notification"></div>
+          </div>
+
+          <script dangerouslySetInnerHTML={{
+            __html: `document.addEventListener('DOMContentLoaded', function() { if(window.Futureblink) { window.Futureblink.init(); } });`
+          }} nonce={useNonce()} />
 
           {/* DESKTOP only: Search + Wishlist */}
           <NavLink reloadDocument prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">

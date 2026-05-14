@@ -38,7 +38,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       },
     });
 
-    products = productConnection?.nodes || [];
+    products = (productConnection?.nodes || []).filter((product: any) => {
+        const isExclusive = product.tags?.some((tag: string) => 
+            tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
+        );
+        return !isExclusive;
+    });
     collectionsResult = collectionConnection?.nodes || [];
 
     console.log(`Fetched ${products.length} products from Shopify`);

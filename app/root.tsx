@@ -224,7 +224,17 @@ function loadDeferredData({ context }: Route.LoaderArgs) {
       cache: storefront.CacheShort(),
       variables: { first: 8 },
     })
-    .then((data: any) => data?.products?.nodes || [])
+    .then((data: any) => {
+      const newProductsConnection = data?.products;
+      // Filter out private and club exclusive products
+      const filteredNewProducts = (newProductsConnection?.nodes || []).filter((product: any) => {
+        const isExclusive = product.tags?.some((tag: string) => 
+            tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
+        );
+        return !isExclusive;
+      });
+      return filteredNewProducts;
+    })
     .catch((error: Error) => {
       console.error('Error fetching new products:', error);
       return [];
@@ -245,15 +255,34 @@ function loadDeferredData({ context }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children?: React.ReactNode }) {
+  const data = useRouteLoaderData<RootLoader>('root');
   const nonce = useNonce();
 
   return (
-    <html lang="en">
+    <html lang={data?.consent?.language?.toLowerCase() || 'en'}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        {/* Shopify Global Object for Apps */}
+        <script dangerouslySetInnerHTML={{
+          __html: `window.Shopify = window.Shopify || {}; window.Shopify.shop = "blacmelo.myshopify.com"; window.Shopify.currency = { active: "AED" };`
+        }} nonce={nonce} />
+        
+        {/* Futureblink (Hoppy) Multi Currency Converter Script */}
+        <script 
+          src="https://cdn.futureblink.com/currency-converter/main.js?shop=blacmelo.myshopify.com" 
+          async 
+          defer
+          nonce={nonce}
+        ></script>
+        <script 
+          src="https://cdn.futureblink.com/currency-converter/app.js?shop=blacmelo.myshopify.com" 
+          async 
+          defer
+          nonce={nonce}
+        ></script>
       </head>
       <body>
         {children}
@@ -271,7 +300,8 @@ export default function App() {
     return <Outlet />;
   }
 
-  useJudgeme(data.judgeme);
+  const nonce = useNonce();
+  useJudgeme({...data.judgeme, nonce} as any);
 
   return (
     <Analytics.Provider
@@ -338,6 +368,7 @@ const NEW_PRODUCTS_QUERY = `#graphql
             currencyCode
           }
         }
+        tags
         featuredImage {
           url
           altText

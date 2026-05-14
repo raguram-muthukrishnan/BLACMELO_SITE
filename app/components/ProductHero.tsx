@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { Image, Money } from '@shopify/hydrogen';
 import { useSearchParams, useLocation, useNavigate } from 'react-router';
 import { AddToCartButton } from './AddToCartButton';
-import { StarRating } from './StarRating';
+
 import { SizeGuideInline } from './SizeGuideModal';
-import { JudgemeAllReviewsRating, JudgemeAllReviewsCount } from '@judgeme/shopify-hydrogen';
+import { JudgemePreviewBadge } from '@judgeme/shopify-hydrogen';
 import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist';
 import { ColorProductSwitcher } from './ColorProductSwitcher';
 import { sortSizeLabels } from '~/lib/sortSizes';
@@ -110,39 +110,16 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
   // Check if product has reviews
   useEffect(() => {
     const checkReviews = () => {
-      const ratingElement = document.querySelector('.jdgm-all-reviews-rating');
-      const countElement = document.querySelector('.jdgm-all-reviews-count');
-
-      if (ratingElement && countElement) {
-        const countText = countElement.textContent || '0';
-        const reviewCount = parseInt(countText.replace(/\D/g, '')) || 0;
+      const badgeElement = document.querySelector('.jdgm-prev-badge');
+      if (badgeElement) {
+        const countText = badgeElement.getAttribute('data-number-of-reviews') || '0';
+        const reviewCount = parseInt(countText) || 0;
         setHasReviews(reviewCount > 0);
-      } else {
-        setHasReviews(false);
       }
     };
 
-    // Check immediately
-    checkReviews();
-
-    // Check after delays to allow Judge.me to load
-    const timer1 = setTimeout(checkReviews, 500);
-    const timer2 = setTimeout(checkReviews, 1500);
-    const timer3 = setTimeout(checkReviews, 3000);
-
-    // Watch for DOM changes
-    const observer = new MutationObserver(checkReviews);
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      observer.disconnect();
-    };
+    const timer = setTimeout(checkReviews, 1500);
+    return () => clearTimeout(timer);
   }, [product.id]);
 
   // Sync active image with selected variant
@@ -369,14 +346,11 @@ export function ProductHero({ product, selectedVariant, productOptions, relatedC
               </div>
 
               {/* Star Rating */}
-              {hasReviews && (
-                <div className="hero-rating">
-                  <div className="hero-rating-judgeme">
-                    <JudgemeAllReviewsRating />
-                    <JudgemeAllReviewsCount />
-                  </div>
+              <div className="hero-rating">
+                <div className="hero-rating-judgeme">
+                  <JudgemePreviewBadge id={product.id.split('/').pop()} />
                 </div>
-              )}
+              </div>
 
               {/* Color section logic */}
               {(() => {

@@ -62,9 +62,30 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
         title: 'All Products',
         description: 'Shop all our products',
         image: null,
-        products,
+        products: {
+          ...products,
+          nodes: products.nodes.filter(
+            (product: any) => {
+              const isExclusive = product.tags?.some((tag: string) => 
+                tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
+              );
+              return !isExclusive;
+            }
+          ),
+        },
       },
     };
+  }
+
+  if (collection) {
+    collection.products.nodes = collection.products.nodes.filter(
+      (product: any) => {
+        const isExclusive = product.tags?.some((tag: string) => 
+          tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
+        );
+        return !isExclusive;
+      }
+    );
   }
 
   return {collection};
@@ -113,6 +134,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       width
       height
     }
+    tags
     images(first: 2) {
       nodes {
         id

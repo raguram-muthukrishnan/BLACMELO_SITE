@@ -26,6 +26,11 @@ export default async function handleRequest(
       "'self'",
       "data:",
       "https://cdn.shopify.com",
+      "https://cdn.judge.me",
+      "https://judge.me",
+      "https://*.hoppyapps.com",
+      "https://*.hoppy.app",
+      "https://*.futureblink.com",
     ],
     // Fonts are served from Shopify CDN on Oxygen (oxygen-v2 path) and also
     // embedded as base64 data URIs in CSS. Both sources must be allowed.
@@ -34,11 +39,35 @@ export default async function handleRequest(
       "data:",
       "https://cdn.shopify.com",
     ],
+    // Judge.me widget scripts
+    scriptSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "'strict-dynamic'",
+      "https://cdn.judge.me",
+      "https://cdnwidget.judge.me",
+      "https://cache.judge.me",
+      "https://*.judge.me",
+      "https://shopify.com",
+      "https://*.shopify.com",
+      "https://*.hoppyapps.com",
+      "https://*.hoppy.app",
+      "https://*.futureblink.com",
+    ],
+
     // Judge.me widget fetches its preloader and widget scripts from cdn.judge.me.
     connectSrc: [
       "https://cdn.judge.me",
       "https://judge.me",
+      "https://cdnwidget.judge.me",
+      "https://cache.judge.me",
+      "https://*.judge.me",
+      "https://*.hoppyapps.com",
+      "https://*.hoppy.app",
+      "https://*.futureblink.com",
     ],
+
+
   });
 
   const body = await renderToReadableStream(

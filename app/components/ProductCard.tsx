@@ -4,6 +4,7 @@ import { Image } from '@shopify/hydrogen';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
 import { sortSizeLabels } from '~/lib/sortSizes';
+import { JudgemePreviewBadge } from '@judgeme/shopify-hydrogen';
 
 export function ProductCard({ product }: { product: any }) {
   const variant = product.selectedOrFirstAvailableVariant?.nodes?.[0];
@@ -106,6 +107,10 @@ export function ProductCard({ product }: { product: any }) {
         <h3 className="text-[10px] uppercase tracking-tighter font-semibold leading-tight text-black">
           {product.title}
         </h3>
+
+        <div className="product-card-judgeme">
+          <JudgemePreviewBadge id={product.id.split('/').pop()} />
+        </div>
 
         <div className="flex items-center gap-2">
           {price && (

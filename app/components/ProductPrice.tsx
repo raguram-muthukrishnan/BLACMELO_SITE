@@ -12,13 +12,13 @@ export function ProductPrice({
     <div className="product-price">
       {compareAtPrice ? (
         <div className="product-price-on-sale">
-          {price ? <Money data={price} /> : null}
+          {price ? <Money data={price} className="money" /> : null}
           <s>
-            <Money data={compareAtPrice} />
+            <Money data={compareAtPrice} className="money" />
           </s>
         </div>
       ) : price ? (
-        <Money data={price} />
+        <Money data={price} className="money" />
       ) : (
         <span>&nbsp;</span>
       )}

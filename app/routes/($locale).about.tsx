@@ -36,6 +36,38 @@ export default function About() {
         </div>
       </section>
 
+      {/* Our Story Section */}
+      <section className="about-story-section">
+        <div className="about-story-content">
+          <h2 className="about-section-title">THE STORY</h2>
+          <p className="about-section-text">
+            Founded in 2024, BLACMELO was born in the heart of Dubai, UAE—a city that defines the pinnacle of global luxury and innovation. Our journey began with a singular, personal quest: to find the 'missing piece' in the contemporary wardrobe. Our founder sought to bridge the gap between high-fashion artistry and the effortless minimalism required for modern life.
+          </p>
+          <p className="about-section-text">
+            The inspiration for BLACMELO came during a moment of reflection in the Dubai desert. The stark contrast between the vast, bold landscape and the serene silence of the dunes sparked a vision for a brand that didn't just follow trends but set a new standard for intuitive luxury.
+          </p>
+        </div>
+      </section>
+
+      {/* Meet the Founder Section */}
+      <section className="about-founder-section">
+        <div className="about-founder-image placeholder-bg">
+          <div className="placeholder-content">FOUNDER PORTRAIT</div>
+        </div>
+        <div className="about-founder-content">
+          <h2 className="about-section-title">MEET THE FOUNDER</h2>
+          <p className="about-section-text">
+            "We didn't just want to create clothes; we wanted to create a quiet rebellion against the predictable." 
+          </p>
+          <p className="about-section-text">
+            Our founder's vision is rooted in the belief that true luxury isn't about what has been, but about what's never been done before. By basing BLACMELO in the UAE, we draw from a rich heritage of excellence while looking forward to a future that is global, bold, and unapologetically luxurious. 
+          </p>
+          <p className="about-section-text">
+            Today, BLACMELO stands as a testament to the power of unexpected pairings—the fusion of boldness and minimalism that we call the 'BM' harmony.
+          </p>
+        </div>
+      </section>
+
       {/* Our Vision Section */}
       <section className="about-vision-section">
         <div className="about-vision-image">

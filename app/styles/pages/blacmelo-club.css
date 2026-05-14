@@ -25,53 +25,112 @@
   z-index: 2;
   text-align: center;
   padding: 40px 20px;
+  animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .club-hero-title {
   font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-size: 56px;
   font-weight: 500;
-  letter-spacing: 0.05em;
-  color: #ffffff;
-  text-transform: uppercase;
-  margin: 0;
-  line-height: 1.2;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-}
-
-.club-hero-subtitle {
-  font-family: 'Neue Haas Grotesk', sans-serif;
-  font-size: clamp(1.25rem, 3vw, 2rem);
-  font-weight: 300;
   letter-spacing: 0.1em;
   color: #ffffff;
   text-transform: uppercase;
-  margin: 20px 0 0 0;
-  line-height: 1.4;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  line-height: 1.1;
+  text-shadow: none;
+}
+
+/* Remove the active link underline from the header specifically for this page */
+:global(.blacmelo-header-link.active::after) {
+  display: none !important;
+}
+
+/* Fallback if :global doesn't work in this context or if we just want to be sure */
+.club-page ~ header .blacmelo-header-link.active::after,
+body:has(.club-page) .blacmelo-header-link.active::after {
+  display: none !important;
+}
+
+.club-auth-container {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInUp 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.4s;
+}
+
+.club-auth-container:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.auth-message {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 2rem;
+}
+
+.club-btn {
+  display: inline-block;
+  padding: 18px 48px;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.club-btn:hover {
+  background: transparent;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
+  text-decoration: none !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
-  .club-hero-banner {
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
   .club-hero-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
-  .club-hero-subtitle {
-    font-size: 1.25rem;
+  .club-auth-container {
+    padding: 40px 20px;
+    margin: 0 20px;
   }
-}
-
-@media (max-width: 480px) {
-  .club-hero-title {
-    font-size: 2rem;
-  }
-
-  .club-hero-subtitle {
-    font-size: 1rem;
+  
+  .club-btn {
+    width: 100%;
+    padding: 16px 20px;
+    text-align: center;
   }
 }

@@ -70,6 +70,17 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: collection });
 
+  if (collection) {
+    collection.products.nodes = collection.products.nodes.filter(
+      (product: any) => {
+        const isExclusive = product.tags?.some((tag: string) => 
+          tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
+        );
+        return !isExclusive;
+      }
+    );
+  }
+
   return {
     collection,
   };
@@ -120,6 +131,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       width
       height
     }
+    tags
     images(first: 2) {
       nodes {
         id

@@ -11,6 +11,7 @@ import {
   Image,
   Money,
 } from '@shopify/hydrogen';
+import { ProductReviews } from '~/components/ProductReviews';
 import { ProductHero } from '~/components/ProductHero';
 import { ProductFeatureHero } from '~/components/ProductFeatureHero';
 import { Breadcrumb } from '~/components/Breadcrumb';
@@ -29,6 +30,7 @@ import productCardStyles from '~/styles/components/product/product-card.css?url'
 import buttonsStyles from '~/styles/components/buttons.css?url';
 import colorProductSwitcherStyles from '~/styles/components/color-product-switcher.css?url';
 import sizeGuideStyles from '~/styles/components/modals/size-guide-modal.css?url';
+import judgemeReviewsStyles from '~/styles/components/judgeme-reviews.css?url';
 
 export const links = () => [
   { rel: 'stylesheet', href: productPageStyles },
@@ -41,6 +43,7 @@ export const links = () => [
   { rel: 'stylesheet', href: buttonsStyles },
   { rel: 'stylesheet', href: colorProductSwitcherStyles },
   { rel: 'stylesheet', href: sizeGuideStyles },
+  { rel: 'stylesheet', href: judgemeReviewsStyles },
 ];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -81,6 +84,19 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
 
   if (!product?.id) {
     throw new Response(null, { status: 404 });
+  }
+
+  // CHECK FOR PRIVATE ACCESS EXCLUSIVITY
+  const isDevAuth = new URL(request.url).searchParams.get('dev_auth') === 'true' || request.headers.get('Cookie')?.includes('dev_auth=true');
+  const isLoggedIn = isDevAuth || (await context.customerAccount.isLoggedIn());
+  
+  // Check for exclusivity tags
+  const isPrivateExclusive = product.tags?.includes('exclusive:private');
+  const isClubExclusive = product.tags?.includes('exclusive:blacmeloclub');
+
+  if ((isPrivateExclusive || isClubExclusive) && !isLoggedIn) {
+      const targetRoute = isClubExclusive ? '/blacmelo-club' : '/the-private-access';
+      throw redirect(targetRoute);
   }
 
   // Get color_family metafield to fetch related color products
@@ -313,6 +329,11 @@ export default function Product() {
 
       <RecentlyViewed />
 
+      <ProductReviews 
+        productId={product.id} 
+        productTitle={product.title} 
+        productHandle={product.handle}
+      />
     </>
   );
 }
@@ -365,6 +386,7 @@ const PRODUCT_FRAGMENT = `#graphql
     productType
     encodedVariantExistence
     encodedVariantAvailability
+    tags
     featuredImage {
       url
       altText

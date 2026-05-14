@@ -76,6 +76,8 @@ interface RepresentCollectionPageProps {
       };
     };
   };
+  hideHero?: boolean;
+  hideInfo?: boolean;
 }
 
 // Grid Icon
@@ -108,7 +110,11 @@ function FilterIcon() {
   );
 }
 
-export function RepresentCollectionPage({ collection }: RepresentCollectionPageProps) {
+export function RepresentCollectionPage({ 
+  collection, 
+  hideHero = false,
+  hideInfo = false
+}: RepresentCollectionPageProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -340,55 +346,59 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
   return (
     <div className="represent-collection-page">
       {/* 1. Clean Hero Banner with Video */}
-      <header className="represent-hero">
-        {isClient && (
-          (() => {
-            const handle = collection.handle.toLowerCase();
-            let displayImage = null;
+      {!hideHero && (
+        <header className="represent-hero">
+          {isClient && (
+            (() => {
+              const handle = collection.handle.toLowerCase();
+              let displayImage = null;
 
-            if (handle.includes('spring-summer')) {
-              displayImage = ss26Banner;
-            } else if (handle.includes('archive')) {
-              displayImage = archiveBanner;
-            } else if (handle.includes('originals')) {
-              displayImage = originalsBanner;
-            }
+              if (handle.includes('spring-summer')) {
+                displayImage = ss26Banner;
+              } else if (handle.includes('archive')) {
+                displayImage = archiveBanner;
+              } else if (handle.includes('originals')) {
+                displayImage = originalsBanner;
+              }
 
-            if (displayImage) {
-              const handleLower = handle.toLowerCase();
-              const heroClass = (handleLower.includes('spring-summer') || handleLower.includes('ss26')) ? 'ss26-hero' :
-                handleLower.includes('archive') ? 'archive-hero' :
-                  (handleLower.includes('blacmelo') || handleLower.includes('originals')) ? 'originals-hero' : '';
+              if (displayImage) {
+                const handleLower = handle.toLowerCase();
+                const heroClass = (handleLower.includes('spring-summer') || handleLower.includes('ss26')) ? 'ss26-hero' :
+                  handleLower.includes('archive') ? 'archive-hero' :
+                    (handleLower.includes('blacmelo') || handleLower.includes('originals')) ? 'originals-hero' : '';
+                return (
+                  <img
+                    src={displayImage}
+                    alt={collection.title}
+                    className={`represent-hero-image ${heroClass}`}
+                  />
+                );
+              }
+
+              // Fallback: Pick a stable "random" image from FALLBACK_BANNERS based on handle
+              const hash = handle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+              const fallbackIndex = hash % FALLBACK_BANNERS.length;
+              const fallbackImage = FALLBACK_BANNERS[fallbackIndex];
+
               return (
                 <img
-                  src={displayImage}
+                  src={fallbackImage}
                   alt={collection.title}
-                  className={`represent-hero-image ${heroClass}`}
+                  className={`represent-hero-image fallback-hero fallback-hero-${fallbackIndex + 1}`}
                 />
               );
-            }
-
-            // Fallback: Pick a stable "random" image from FALLBACK_BANNERS based on handle
-            const hash = handle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const fallbackIndex = hash % FALLBACK_BANNERS.length;
-            const fallbackImage = FALLBACK_BANNERS[fallbackIndex];
-
-            return (
-              <img
-                src={fallbackImage}
-                alt={collection.title}
-                className={`represent-hero-image fallback-hero fallback-hero-${fallbackIndex + 1}`}
-              />
-            );
-          })()
-        )}
-      </header>
+            })()
+          )}
+        </header>
+      )}
 
       {/* 2. Collection Info Bar */}
-      <div className="represent-collection-info">
-        <h1 className="represent-collection-title">{collection.title}</h1>
-        <span className="represent-product-count">{productCount}</span>
-      </div>
+      {!hideInfo && (
+        <div className="represent-collection-info">
+          <h1 className="represent-collection-title">{collection.title}</h1>
+          <span className="represent-product-count">{productCount}</span>
+        </div>
+      )}
 
       {/* 3. Controls Bar - View Toggle, Model Toggle, Filter */}
       <nav className="represent-controls-bar">
@@ -783,7 +793,7 @@ export function RepresentCollectionPage({ collection }: RepresentCollectionPageP
 }
 
 // Represent-style Product Card with Image Swap
-function RepresentProductCard({ product, viewMode }: { product: ProductCardProduct; viewMode: 'grid' | 'list' }) {
+export function RepresentProductCard({ product, viewMode }: { product: ProductCardProduct; viewMode: 'grid' | 'list' }) {
   const [showSizes, setShowSizes] = useState(false);
   const navigate = useNavigate();
 
@@ -911,7 +921,7 @@ function RepresentProductCard({ product, viewMode }: { product: ProductCardProdu
           <div className="represent-card-info-right">
             {product.priceRange?.minVariantPrice && (
               <span className="represent-card-price">
-                <Money data={product.priceRange.minVariantPrice} />
+                <Money data={product.priceRange.minVariantPrice} className="money" />
               </span>
             )}
           </div>
