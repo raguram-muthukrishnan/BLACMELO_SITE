@@ -1,6 +1,6 @@
 import type { MetaFunction, LoaderFunctionArgs } from 'react-router';
-import { useLoaderData, Form, NavLink } from 'react-router';
-import { Analytics, Pagination, getPaginationVariables } from '@shopify/hydrogen';
+import { useLoaderData, NavLink } from 'react-router';
+import { Analytics, getPaginationVariables } from '@shopify/hydrogen';
 import privateAccessStyles from '~/styles/pages/private-access.css?url';
 import collectionStyles from '~/styles/pages/collection.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
@@ -8,7 +8,7 @@ import productCardStyles from '~/styles/components/product/product-card.css?url'
 import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
 import overlayStyles from '~/styles/layout/overlay.css?url';
 import bannerImage from '~/assets/banner_images/2.jpeg';
-import { RepresentProductCard, RepresentCollectionPage } from '~/components/RepresentCollectionPage';
+import { RepresentCollectionPage } from '~/components/RepresentCollectionPage';
 
 export const links = () => [
     { rel: 'stylesheet', href: privateAccessStyles },
@@ -107,7 +107,6 @@ export default function BlacmeloClub() {
                 <div className="private-access-hero-overlay flex flex-col items-center justify-center text-center">
                     <h1 className="private-access-hero-title mb-8">BLACMELO CLUB</h1>
 
-                    {/* SHOPIFY AUTH SECTION */}
                     <div className="private-access-auth-container mt-4 flex flex-col items-center w-full max-w-lg px-6 py-10">
                         <div className="private-access-hero-actions flex gap-6">
                             <NavLink 
@@ -124,23 +123,81 @@ export default function BlacmeloClub() {
     );
 }
 
+const PRODUCT_ITEM_FRAGMENT = `#graphql
+  fragment MoneyProductItemClub on MoneyV2 {
+    amount
+    currencyCode
+  }
+  fragment ProductItemClub on Product {
+    id
+    handle
+    title
+    productType
+    vendor
+    featuredImage {
+      id
+      altText
+      url
+      width
+      height
+    }
+    images(first: 2) {
+      nodes {
+        id
+        altText
+        url
+        width
+        height
+      }
+    }
+    variants(first: 100) {
+      nodes {
+        id
+        availableForSale
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
+    priceRange {
+      minVariantPrice {
+        ...MoneyProductItemClub
+      }
+      maxVariantPrice {
+        ...MoneyProductItemClub
+      }
+    }
+    metafields(
+      identifiers: [
+        {namespace: "custom", key: "color_name"}
+        {namespace: "custom", key: "color"}
+        {namespace: "category", key: "color"}
+        {namespace: "category", key: "Color"}
+      ]
+    ) {
+      key
+      value
+      namespace
+    }
+  }
+` as const;
+
 const CLUB_COLLECTION_QUERY = `#graphql
+  ${PRODUCT_ITEM_FRAGMENT}
   query BlacmeloClubCollection(
     $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
     $first: Int
     $last: Int
     $startCursor: String
     $endCursor: String
-  ) {
+  ) @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
       id
       handle
       title
-      description
-      image {
-        url
-        altText
-      }
       products(
         first: $first,
         last: $last,
@@ -148,78 +205,15 @@ const CLUB_COLLECTION_QUERY = `#graphql
         after: $endCursor
       ) {
         nodes {
-          id
-          title
-          handle
-          vendor
-          productType
-          tags
-          featuredImage {
-            id
-            altText
-            url
-            width
-            height
-          }
-          images(first: 2) {
-            nodes {
-              id
-              altText
-              url
-              width
-              height
-            }
-          }
-          variants(first: 10) {
-            nodes {
-              id
-              title
-              availableForSale
-              price {
-                amount
-                currencyCode
-              }
-              compareAtPrice {
-                amount
-                currencyCode
-              }
-              selectedOptions {
-                name
-                value
-              }
-            }
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-            maxVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-          metafields(
-            identifiers: [
-              {namespace: "custom", key: "color_name"}
-              {namespace: "custom", key: "color"}
-              {namespace: "category", key: "color"}
-              {namespace: "category", key: "Color"}
-            ]
-          ) {
-            id
-            namespace
-            key
-            value
-          }
+          ...ProductItemClub
         }
         pageInfo {
           hasPreviousPage
           hasNextPage
-          startCursor
           endCursor
+          startCursor
         }
       }
     }
   }
-`;
+` as const;
