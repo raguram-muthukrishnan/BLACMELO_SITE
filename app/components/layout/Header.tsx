@@ -34,7 +34,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
 
   const menMenuConfig = providedMenMenuConfig || getFallbackDynamicMenu(menuManImage);
   const womenMenuConfig = providedWomenMenuConfig || getFallbackDynamicMenu(menuWomanImage);
-  const currentMenuConfig = activeMenu === 'blacmelo-club' ? womenMenuConfig : menMenuConfig;
+  const currentMenuConfig = activeMenu === 'women' ? womenMenuConfig : menMenuConfig;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -160,7 +160,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           {/* DESKTOP: Women hover link */}
           <div
             className="hover-menu-trigger desktop-only"
-            onMouseEnter={() => handleTriggerEnter('blacmelo-club')}
+            onMouseEnter={() => handleTriggerEnter('women')}
           >
             <NavLink
               reloadDocument
@@ -173,15 +173,17 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             </NavLink>
           </div>
 
-          {/* DESKTOP: Blacmelo Club */}
+          {/* DESKTOP: Blacmelo Club - Hidden for now */}
+          {/* 
           <NavLink
             reloadDocument
             prefetch="intent"
             to="/blacmelo-club"
-            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
+            className="blacmelo-header-link"
           >
             Blacmelo Club
           </NavLink>
+          */}
         </nav>
 
         {/* ===== CENTER LOGO — hidden on mobile when menu/cart is open ===== */}
