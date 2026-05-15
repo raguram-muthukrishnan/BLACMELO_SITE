@@ -47,7 +47,7 @@ export function PageLayout({
   const whiteHeaderPaths = ['/search', '/wishlist', '/faq', '/pages/', '/policies/', '/account'];
   const isWhiteHeaderPage = whiteHeaderPaths.some((p) =>
     location.pathname.includes(p)
-  ) && !location.pathname.includes('/pages/blacmelo-club');
+  ) && !location.pathname.includes('/blacmelo-club');
 
   return (
     <Aside.Provider>

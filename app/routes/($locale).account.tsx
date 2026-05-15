@@ -6,7 +6,7 @@ import {
   Outlet,
   useLoaderData,
 } from 'react-router';
-import type { Route } from './+types/account';
+import type { Route } from './+types/($locale).account';
 import { CUSTOMER_DETAILS_QUERY } from '~/graphql/customer-account/CustomerDetailsQuery';
 import accountStyles from '~/styles/pages/account.css?url';
 
@@ -198,7 +198,7 @@ function AccountMenu() {
       <div className="dashboard-nav-section">
         <h3 className="dashboard-nav-title">Membership</h3>
         <NavLink
-          to="/pages/blacmelo-club"
+          to="/blacmelo-club"
           className={({ isActive }) =>
             `dashboard-nav-link ${isActive ? 'active' : ''}`
           }

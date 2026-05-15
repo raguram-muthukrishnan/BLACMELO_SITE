@@ -45,7 +45,7 @@ export const categoryHardcodedLinks: Record<string, HardcodedLink[]> = {
     },
     {
       name: 'Blacmelo Club',
-      link: '/pages/blacmelo-club',
+      link: '/blacmelo-club',
       order: 3,
       itemType: 'dynamic',
     },

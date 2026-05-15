@@ -95,7 +95,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   const isClubExclusive = product.tags?.includes('exclusive:blacmeloclub');
 
   if ((isPrivateExclusive || isClubExclusive) && !isLoggedIn) {
-      const targetRoute = isClubExclusive ? '/pages/blacmelo-club' : '/the-private-access';
+      const targetRoute = isClubExclusive ? '/blacmelo-club' : '/the-private-access';
       throw redirect(targetRoute);
   }
 

@@ -176,7 +176,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           <NavLink
             reloadDocument
             prefetch="intent"
-            to="/pages/blacmelo-club"
+            to="/blacmelo-club"
             className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
             Blacmelo Club
