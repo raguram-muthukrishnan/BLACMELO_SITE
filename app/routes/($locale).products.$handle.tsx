@@ -95,7 +95,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   const isClubExclusive = product.tags?.includes('exclusive:blacmeloclub');
 
   if ((isPrivateExclusive || isClubExclusive) && !isLoggedIn) {
-      const targetRoute = isClubExclusive ? '/blacmelo-club' : '/the-private-access';
+      const targetRoute = isClubExclusive ? '/pages/blacmelo-club' : '/the-private-access';
       throw redirect(targetRoute);
   }
 
@@ -155,7 +155,6 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
       });
       if (result?.collection?.products?.nodes?.length) {
         newArrivalsCollection = result.collection;
-        console.log(`[New Arrivals] Found collection with handle: ${handle}, products:`, result.collection.products.nodes.length);
         break;
       }
     } catch (error) {
@@ -164,7 +163,7 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   }
 
   const newArrivals = newArrivalsCollection?.products?.nodes || [];
-  console.log('[New Arrivals] Final newArrivals array:', newArrivals.length, newArrivals);
+
 
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, { handle, data: product });

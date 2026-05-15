@@ -37,11 +37,13 @@ import hoverMenuStyles from '~/styles/components/menus/hover-menu.css?url';
 import mobileMenuStyles from '~/styles/components/menus/mobile-menu.css?url';
 import cartStyles from '~/styles/components/cart/cart.css?url';
 import recentlyViewedStyles from '~/styles/components/recently-viewed.css?url';
-
+import currencySwitcherStyles from '~/styles/components/currency-switcher.css?url';
 
 // Component-specific and page-specific styles are now imported in their respective components/routes
 import { PageLayout } from './components/PageLayout';
 import { LenisProvider } from '~/components/smooth-scroll/LenisProvider';
+import { CurrencySwitcher } from '~/components/CurrencySwitcher';
+import { CurrencyProvider } from '~/context/CurrencyContext';
 import { DYNAMIC_HEADER_MENU_QUERY } from '~/graphql/DynamicHeaderMenuQuery';
 import { ANNOUNCEMENT_BAR_QUERY } from '~/graphql/AnnouncementBarQuery';
 import { parseDynamicHeaderMenu } from '~/lib/dynamicHeaderMenu';
@@ -117,6 +119,7 @@ export function links() {
     { rel: 'stylesheet', href: mobileMenuStyles },
     { rel: 'stylesheet', href: cartStyles },
     { rel: 'stylesheet', href: recentlyViewedStyles },
+    { rel: 'stylesheet', href: currencySwitcherStyles },
   ];
 }
 
@@ -184,14 +187,13 @@ async function loadCriticalData({ context }: Route.LoaderArgs) {
   // Parse dynamic menu data
   const menMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuManImage, 'men');
   const womenMenuConfig = parseDynamicHeaderMenu(dynamicMenuData, menuWomanImage, 'women');
-  console.log('✅ Men menu config built with', menMenuConfig.sections.length, 'sections');
-  console.log('✅ Women menu config built with', womenMenuConfig.sections.length, 'sections');
+
 
   // Parse announcement data
   const announcements = announcementData
     ? parseAnnouncementBar(announcementData)
     : getFallbackAnnouncements();
-  console.log('📢 Announcements loaded:', announcements.length);
+
 
   return { header, menMenuConfig, womenMenuConfig, announcements };
 }
@@ -265,24 +267,10 @@ export function Layout({ children }: { children?: React.ReactNode }) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
-        {/* Shopify Global Object for Apps */}
+        {/* Shopify Global Object */}
         <script dangerouslySetInnerHTML={{
-          __html: `window.Shopify = window.Shopify || {}; window.Shopify.shop = "blacmelo.myshopify.com"; window.Shopify.currency = { active: "AED" };`
+          __html: `window.Shopify = window.Shopify || {}; window.Shopify.shop = "blacmelo.myshopify.com"; window.Shopify.currency = { active: "AED", rate: "1.0" };`
         }} nonce={nonce} />
-        
-        {/* Futureblink (Hoppy) Multi Currency Converter Script */}
-        <script 
-          src="https://cdn.futureblink.com/currency-converter/main.js?shop=blacmelo.myshopify.com" 
-          async 
-          defer
-          nonce={nonce}
-        ></script>
-        <script 
-          src="https://cdn.futureblink.com/currency-converter/app.js?shop=blacmelo.myshopify.com" 
-          async 
-          defer
-          nonce={nonce}
-        ></script>
       </head>
       <body>
         {children}
@@ -309,7 +297,8 @@ export default function App() {
       shop={data.shop}
       consent={data.consent}
     >
-      <LenisProvider>
+      <CurrencyProvider>
+        <LenisProvider>
         <PageLayout
           header={data.header}
           cart={data.cart}
@@ -323,7 +312,10 @@ export default function App() {
         >
           <Outlet />
         </PageLayout>
+        {/* Floating currency switcher – visible on all pages */}
+        <CurrencySwitcher />
       </LenisProvider>
+    </CurrencyProvider>
     </Analytics.Provider>
   );
 }
@@ -331,25 +323,46 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
+  let errorMessage = 'The page you are looking for might have been moved or doesn\'t exist.';
   let errorStatus = 500;
+  let errorStack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
+    errorMessage = error?.data?.message ?? error.data ?? errorMessage;
     errorStatus = error.status;
   } else if (error instanceof Error) {
     errorMessage = error.message;
+    errorStack = error.stack;
   }
 
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
-      {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
-      )}
+    <div className="route-error-container">
+      <div className="route-error-content">
+        <div className="route-error-status">{errorStatus}</div>
+        <h1 className="route-error-title">
+          {errorStatus === 404 ? 'Page Not Found' : 'Something went wrong'}
+        </h1>
+        <p className="route-error-message">{errorMessage}</p>
+
+        {errorStack && (
+          <div className="route-error-details">
+            <h3 className="route-error-details-title">Error Stack Trace</h3>
+            <pre className="route-error-stack">{errorStack}</pre>
+          </div>
+        )}
+
+        <div className="route-error-actions">
+          <a href="/" className="error-btn-primary">
+            Back to Home
+          </a>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="error-btn-secondary"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

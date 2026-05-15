@@ -203,3 +203,112 @@ header.blacmelo-header {
     display: none !important;
   }
 }
+
+/* Error Boundary Styles */
+.route-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.route-error-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.route-error-status {
+  font-size: 120px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 20px;
+  letter-spacing: -0.04em;
+  opacity: 0.1;
+}
+
+.route-error-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.route-error-message {
+  font-size: 16px;
+  color: #666666;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.route-error-details {
+  background: #f8f8f8;
+  padding: 24px;
+  text-align: left;
+  margin-bottom: 40px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.route-error-details-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: #999999;
+}
+
+.route-error-stack {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333333;
+  white-space: pre-wrap;
+}
+
+.route-error-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.error-btn-primary {
+  display: inline-block;
+  background: #000000;
+  color: #ffffff;
+  padding: 14px 32px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.error-btn-primary:hover {
+  background: #333333;
+  opacity: 1;
+}
+
+.error-btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: #000000;
+  border: 1px solid #000000;
+  padding: 14px 32px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.error-btn-secondary:hover {
+  background: #f0f0f0;
+  opacity: 1;
+}

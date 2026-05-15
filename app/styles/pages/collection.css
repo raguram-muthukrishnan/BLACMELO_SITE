@@ -317,6 +317,45 @@
   object-position: center 20%;
 }
 
+/* Private Access & Blacmelo Club heroes */
+.represent-hero-image.private-access-hero {
+  object-position: top center;
+}
+
+.represent-hero-image.blacmelo-club-hero {
+  object-position: center 30%;
+}
+
+/* Title overlay on hero images */
+.represent-hero-title-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 40px;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.represent-hero-overlay-text {
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .represent-hero-title-overlay {
+    padding: 24px 20px;
+  }
+}
+
+
 .represent-hero-video {
   width: 100%;
   height: 100%;

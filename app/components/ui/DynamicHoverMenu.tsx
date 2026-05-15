@@ -214,7 +214,7 @@ export function DynamicHoverMenu({
     return null;
   }
 
-  console.log('🎯 Hover Menu:', { isActive, sections: menuConfig.sections.length });
+
 
   // Overlay element - always rendered when mounted
   const overlayEl = (

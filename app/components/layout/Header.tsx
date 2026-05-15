@@ -173,17 +173,14 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
             </NavLink>
           </div>
 
-          {/* DESKTOP: Blacmelo Club - Hidden for now */}
-          {/* 
           <NavLink
             reloadDocument
             prefetch="intent"
-            to="/blacmelo-club"
-            className="blacmelo-header-link"
+            to="/pages/blacmelo-club"
+            className={({ isActive }) => `blacmelo-header-link desktop-only ${isActive ? 'active' : ''}`}
           >
             Blacmelo Club
           </NavLink>
-          */}
         </nav>
 
         {/* ===== CENTER LOGO — hidden on mobile when menu/cart is open ===== */}
@@ -231,15 +228,8 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
           </NavLink>
 
 
-          {/* Currency Switcher */}
-          <div className="desktop-only mr-4 flex items-center">
-            <div className="futureblink-currency-box"></div>
-            <div className="futureblink-currency-cart-notification"></div>
-          </div>
 
-          <script dangerouslySetInnerHTML={{
-            __html: `document.addEventListener('DOMContentLoaded', function() { if(window.Futureblink) { window.Futureblink.init(); } });`
-          }} nonce={useNonce()} />
+
 
           {/* DESKTOP only: Search + Wishlist */}
           <NavLink reloadDocument prefetch="intent" to="/search" className="blacmelo-header-icon desktop-only" aria-label="Search">

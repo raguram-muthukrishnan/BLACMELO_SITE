@@ -46,7 +46,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     });
     collectionsResult = collectionConnection?.nodes || [];
 
-    console.log(`Fetched ${products.length} products from Shopify`);
+
 
     // Apply search filter if search term exists
     if (searchTerm) {
@@ -75,7 +75,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
         return false;
       });
 
-      console.log(`Filtered to ${products.length} products matching "${searchTerm}"`);
+
     }
 
     // Apply collection filter
@@ -83,7 +83,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       products = products.filter((product: any) => {
         return product.collections?.nodes?.some((c: any) => c.handle === collectionHandle);
       });
-      console.log(`Filtered to ${products.length} products for collection: ${collectionHandle}`);
+
     }
 
     totalProducts = products.length;

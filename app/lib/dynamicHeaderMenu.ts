@@ -80,34 +80,12 @@ export function parseDynamicHeaderMenu(
   defaultImage?: string,
   gender?: 'men' | 'women'
 ): DynamicMenuConfig {
-  console.log('🔍 parseDynamicHeaderMenu called with:', {
-    hasData: !!data,
-    collectionsCount: data?.collections?.nodes?.length || 0,
-    defaultImage: defaultImage ? 'provided' : 'none',
-    gender: gender || 'all',
-  });
-
   const sections: DynamicMenuSection[] = [];
 
   // If no data, return empty sections
   if (!data?.collections?.nodes) {
-    console.warn('⚠️ No collections data found for dynamic menu');
     return { sections, image: defaultImage };
   }
-
-  console.log('📦 Processing collections:', data.collections.nodes.length);
-
-  // Log ALL collections to see their metafield values
-  console.log('🔍 All collections with their metafields:');
-  data.collections.nodes.forEach((collection, idx) => {
-    console.log(`  ${idx + 1}. ${collection.title} (${collection.handle}):`, {
-      menuEnabled: collection.menuEnabled?.value,
-      menuOrder: collection.menuOrder?.value,
-      menuCategory: collection.menuCategory?.value,
-      menuSectionType: collection.menuSectionType?.value,
-      menuItemType: collection.menuItemType?.value,
-    });
-  });
 
   // Filter collections that are enabled for menu
   const menuCollections = data.collections.nodes.filter(
@@ -124,22 +102,13 @@ export function parseDynamicHeaderMenu(
         const matchesGender = !collectionGender || collectionGender === gender || collectionGender === 'both' || collectionGender === 'all';
         
         if (!matchesGender) {
-          console.log(`✗ Collection "${collection.title}" is enabled but filtered out by gender (has: ${collectionGender}, need: ${gender})`);
           return false;
         }
-      }
-      
-      if (enabled) {
-        console.log(`✓ Collection "${collection.title}" is enabled for menu (value: ${collection.menuEnabled?.value})`);
-      } else if (collection.menuEnabled?.value) {
-        console.log(`✗ Collection "${collection.title}" has menu_enabled="${collection.menuEnabled?.value}" but not recognized as enabled`);
       }
       
       return enabled;
     }
   );
-
-  console.log(`📊 Found ${menuCollections.length} collections enabled for menu out of ${data.collections.nodes.length} total`);
 
   /**
    * Helper function to build nested collection structure
@@ -182,9 +151,6 @@ export function parseDynamicHeaderMenu(
           itemType: (childCollection.menuItemType?.value?.toLowerCase() as ItemType) || 'dynamic',
         };
         parent.children!.push(childItem);
-        console.log(`  🔗 Attached "${childItem.name}" as child of "${parent.name}"`);
-      } else {
-        console.warn(`⚠️ Child collection "${childCollection.title}" references non-existent parent "${parentHandle}"`);
       }
     });
     
@@ -200,7 +166,6 @@ export function parseDynamicHeaderMenu(
   
   // Build the nested collection tree
   const collectionTree = buildCollectionTree(menuCollections);
-  console.log(`🌳 Built collection tree with ${collectionTree.size} items`);
 
   // Include ALL collections for section grouping (allows items to appear in multiple places)
   const allCollections = menuCollections;
@@ -217,8 +182,6 @@ export function parseDynamicHeaderMenu(
       categoryCollections.push(collection);
     }
   });
-
-  console.log(`📂 Common items: ${commonCollections.length}, Category items: ${categoryCollections.length}`);
 
   // Process common section if exists
   if (commonCollections.length > 0) {
@@ -254,8 +217,6 @@ export function parseDynamicHeaderMenu(
       displayStyle: 'normal',
       order: 1,
     });
-
-    console.log(`➕ Added common section with ${commonItems.length} items`);
   }
 
   // Group category collections by category
@@ -268,8 +229,6 @@ export function parseDynamicHeaderMenu(
     }
     collectionsByCategory[category].push(collection);
   });
-
-  console.log('📂 Collections grouped by category:', Object.keys(collectionsByCategory));
 
   // Sort collections within each category by menu order
   Object.keys(collectionsByCategory).forEach((category) => {
@@ -327,7 +286,6 @@ export function parseDynamicHeaderMenu(
           itemType: link.itemType || 'dynamic',
         });
       });
-      console.log(`  🔗 Added ${hardcodedLinks.length} hardcoded link(s) to "${category}"`);
     }
 
     // Sort items by order (so hardcoded links appear in correct position)
@@ -343,8 +301,6 @@ export function parseDynamicHeaderMenu(
       displayStyle: 'title-with-items',
       order: categoryOrderIndex++,
     });
-
-    console.log(`➕ Added category "${category}" with ${items.length} items (${collections.length} collections + ${hardcodedLinks.length} hardcoded)`);
   });
 
   // Add any categories not in the predefined order
@@ -377,7 +333,6 @@ export function parseDynamicHeaderMenu(
             itemType: link.itemType || 'dynamic',
           });
         });
-        console.log(`  🔗 Added ${hardcodedLinks.length} hardcoded link(s) to "${category}"`);
       }
 
       // Sort items by order
@@ -392,15 +347,11 @@ export function parseDynamicHeaderMenu(
         displayStyle: 'title-with-items',
         order: categoryOrderIndex++,
       });
-
-      console.log(`➕ Added custom category "${category}" with ${items.length} items (${collections.length} collections + ${hardcodedLinks.length} hardcoded)`);
     }
   });
 
   // Sort sections by order
   sections.sort((a, b) => (a.order || 999) - (b.order || 999));
-
-  console.log(`✅ Built dynamic menu with ${sections.length} sections (1 permanent + ${commonCollections.length > 0 ? '1 common + ' : ''}${sections.length - (commonCollections.length > 0 ? 2 : 1)} category sections)`);
 
   return {
     sections,

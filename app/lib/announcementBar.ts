@@ -73,7 +73,7 @@ export function parseAnnouncementBar(
     });
   }
 
-  console.log(`📢 Parsed ${announcements.length} announcements, ${announcements.filter(a => a.enabled).length} enabled`);
+
 
   return announcements;
 }

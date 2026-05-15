@@ -28,9 +28,6 @@ export default async function handleRequest(
       "https://cdn.shopify.com",
       "https://cdn.judge.me",
       "https://judge.me",
-      "https://*.hoppyapps.com",
-      "https://*.hoppy.app",
-      "https://*.futureblink.com",
     ],
     // Fonts are served from Shopify CDN on Oxygen (oxygen-v2 path) and also
     // embedded as base64 data URIs in CSS. Both sources must be allowed.
@@ -50,21 +47,16 @@ export default async function handleRequest(
       "https://*.judge.me",
       "https://shopify.com",
       "https://*.shopify.com",
-      "https://*.hoppyapps.com",
-      "https://*.hoppy.app",
-      "https://*.futureblink.com",
     ],
 
-    // Judge.me widget fetches its preloader and widget scripts from cdn.judge.me.
+    // Exchange rate API + Judge.me
     connectSrc: [
       "https://cdn.judge.me",
       "https://judge.me",
       "https://cdnwidget.judge.me",
       "https://cache.judge.me",
       "https://*.judge.me",
-      "https://*.hoppyapps.com",
-      "https://*.hoppy.app",
-      "https://*.futureblink.com",
+      "https://api.exchangerate-api.com",
     ],
 
 

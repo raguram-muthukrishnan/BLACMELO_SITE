@@ -198,7 +198,7 @@ function AccountMenu() {
       <div className="dashboard-nav-section">
         <h3 className="dashboard-nav-title">Membership</h3>
         <NavLink
-          to="/blacmelo-club"
+          to="/pages/blacmelo-club"
           className={({ isActive }) =>
             `dashboard-nav-link ${isActive ? 'active' : ''}`
           }

@@ -46,8 +46,8 @@ export function PageLayout({
   // Pages that should render a white header with black text/icons
   const whiteHeaderPaths = ['/search', '/wishlist', '/faq', '/pages/', '/policies/', '/account'];
   const isWhiteHeaderPage = whiteHeaderPaths.some((p) =>
-    location.pathname.includes(p),
-  );
+    location.pathname.includes(p)
+  ) && !location.pathname.includes('/pages/blacmelo-club');
 
   return (
     <Aside.Provider>
@@ -216,7 +216,6 @@ function MobileMenuAside({
           <div className="mobile-menu-section">
             <h3 className="mobile-menu-section-title">EXPLORE</h3>
             <ul className="mobile-menu-list">
-              <li><a href="/the-chamber" className="mobile-menu-item">The Chamber</a></li>
               <li><a href="/the-private-access" className="mobile-menu-item">Private Access</a></li>
               <li><a href="/recently-viewed" className="mobile-menu-item">Recently Viewed</a></li>
               <li><a href="/products/gift-card" className="mobile-menu-item">Gift Card</a></li>

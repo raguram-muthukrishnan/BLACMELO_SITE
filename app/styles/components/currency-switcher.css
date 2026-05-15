@@ -1,0 +1,144 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Currency Switcher – Floating Bottom-Left (Hoppy-style)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Floating container – fixed to bottom-left like Hoppy */
+.currency-switcher-root {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 9999;
+  font-family: 'Neue Haas Grotesk', sans-serif;
+  font-size: 13px;
+}
+
+/* ── Trigger button ──────────────────────────────────────────────────────────── */
+.currency-switcher-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  min-width: 90px;
+  white-space: nowrap;
+}
+
+.currency-switcher-btn:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+  transform: translateY(-1px);
+}
+
+.currency-code {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #000000;
+}
+
+.currency-chevron {
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.currency-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown panel ──────────────────────────────────────────────────────────── */
+.currency-dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  min-width: 200px;
+  overflow: hidden;
+  animation: currencyDropIn 0.18s ease;
+}
+
+@keyframes currencyDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Option row ──────────────────────────────────────────────────────────────── */
+.currency-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: #000000;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.currency-option:hover {
+  background: #f7f7f7;
+}
+
+.currency-option.selected {
+  background: #f0f0f0;
+  font-weight: 600;
+}
+
+.currency-option-label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.currency-option-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.currency-option-name {
+  font-size: 11px;
+  color: #888888;
+  font-weight: 400;
+}
+
+.currency-check {
+  color: #000000;
+  flex-shrink: 0;
+}
+
+/* ── Mobile: move to bottom-left too but smaller ─────────────────────────────── */
+@media (max-width: 768px) {
+  .currency-switcher-root {
+    bottom: 80px; /* above the mobile sticky bar on product pages */
+    left: 16px;
+  }
+
+  .currency-switcher-btn {
+    padding: 7px 10px;
+    font-size: 12px;
+    min-width: 80px;
+  }
+}

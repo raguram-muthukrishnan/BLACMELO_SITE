@@ -8,6 +8,7 @@ import productCardStyles from '~/styles/components/product/product-card.css?url'
 import filterPanelStyles from '~/styles/components/filters/filter-panel.css?url';
 import overlayStyles from '~/styles/layout/overlay.css?url';
 import bannerImage from '~/assets/banner_images/2.jpeg';
+import heroBanner from '~/assets/final_banners/the_signature_jacket_desktop.jpeg';
 import { RepresentProductCard, RepresentCollectionPage } from '~/components/RepresentCollectionPage';
 
 export const links = () => [
@@ -74,16 +75,32 @@ export default function PrivateAccess() {
         return (
             <div className="represent-collection-page private-access-page authenticated">
                 <style dangerouslySetInnerHTML={{ __html: FORCE_VISIBLE_STYLE }} />
-                
-                <div className="private-access-header py-24 px-6 text-center bg-black text-white">
-                    <h1 className="text-[40px] md:text-[60px] font-bold tracking-[-0.04em] uppercase mb-0 leading-none">
-                        The Private Access
-                    </h1>
+
+                {/* Hero Banner — same structure as collection pages */}
+                <header className="represent-hero">
+                    <img
+                        src={heroBanner}
+                        alt="The Private Access"
+                        className="represent-hero-image private-access-hero"
+                    />
+                    <div className="represent-hero-title-overlay">
+                        <h1 className="represent-hero-overlay-text">The Private Access</h1>
+                    </div>
+                </header>
+
+                {/* Collection info bar */}
+                <div className="represent-collection-info">
+                    <span className="represent-collection-title">Private Access</span>
+                    {collection && (
+                        <span className="represent-product-count">
+                            {collection.products?.nodes?.length ?? 0}
+                        </span>
+                    )}
                 </div>
 
-                <RepresentCollectionPage 
-                    collection={collection} 
-                    hideHero={true} 
+                <RepresentCollectionPage
+                    collection={collection}
+                    hideHero={true}
                     hideInfo={true}
                 />
 
