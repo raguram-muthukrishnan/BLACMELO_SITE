@@ -37,22 +37,30 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ context, request }: LoaderFunctionArgs) {
     const { customerAccount, storefront } = context;
-    const isLoggedIn = await customerAccount.isLoggedIn();
     
+    let isLoggedIn = false;
     let collection: any = null;
-    if (isLoggedIn) {
-        const paginationVariables = getPaginationVariables(request, {
-            pageBy: 20,
-        });
+
+    try {
+        isLoggedIn = await customerAccount.isLoggedIn();
         
-        const { collection: clubCollection } = await storefront.query(CLUB_COLLECTION_QUERY, {
-            variables: {
-                handle: 'blacmelo-club',
-                ...paginationVariables,
-            },
-        });
-        
-        collection = clubCollection;
+        if (isLoggedIn) {
+            const paginationVariables = getPaginationVariables(request, {
+                pageBy: 20,
+            });
+            
+            const { collection: clubCollection } = await storefront.query(CLUB_COLLECTION_QUERY, {
+                variables: {
+                    handle: 'blacmelo-club',
+                    ...paginationVariables,
+                },
+            });
+            
+            collection = clubCollection;
+        }
+    } catch (error) {
+        console.error('Error in blacmelo-club loader:', error);
+        // Fail gracefully - user just sees the unauthenticated hero banner
     }
 
     return Response.json(

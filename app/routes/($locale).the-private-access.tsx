@@ -40,22 +40,30 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ context, request }: LoaderFunctionArgs) {
     const { customerAccount, storefront } = context;
-    const isLoggedIn = await customerAccount.isLoggedIn();
     
+    let isLoggedIn = false;
     let collection: any = null;
-    if (isLoggedIn) {
-        const paginationVariables = getPaginationVariables(request, {
-            pageBy: 20,
-        });
+
+    try {
+        isLoggedIn = await customerAccount.isLoggedIn();
         
-        const { collection: privateCollection } = await storefront.query(PRIVATE_COLLECTION_QUERY, {
-            variables: {
-                handle: 'private-access',
-                ...paginationVariables,
-            },
-        });
-        
-        collection = privateCollection;
+        if (isLoggedIn) {
+            const paginationVariables = getPaginationVariables(request, {
+                pageBy: 20,
+            });
+            
+            const { collection: privateCollection } = await storefront.query(PRIVATE_COLLECTION_QUERY, {
+                variables: {
+                    handle: 'private-access',
+                    ...paginationVariables,
+                },
+            });
+            
+            collection = privateCollection;
+        }
+    } catch (error) {
+        console.error('Error in private-access loader:', error);
+        // Fail gracefully
     }
 
     return Response.json(
