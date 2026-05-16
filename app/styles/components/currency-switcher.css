@@ -2,11 +2,12 @@
    Currency Switcher – Floating Bottom-Left (Hoppy-style)
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Floating container – fixed to bottom-left like Hoppy */
+/* Floating container – fixed to bottom-right above WhatsApp icon */
 .currency-switcher-root {
   position: fixed;
-  bottom: 32px;
-  left: 32px;
+  bottom: 92px; /* 32px (WhatsApp) + 44px (Icon) + 16px (Gap) */
+  right: 32px;
+  left: auto;
   z-index: 9999;
   font-family: 'Neue Haas Grotesk', sans-serif;
   font-size: 13px;
@@ -16,50 +17,47 @@
 .currency-switcher-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   background: #ffffff;
   color: #000000;
   border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
+  border-radius: 50%; /* Make button round */
+  padding: 0;
+  width: 44px; /* Match WhatsApp */
+  height: 44px;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  font-size: 13px;
-  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   font-family: inherit;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
-  min-width: 90px;
-  white-space: nowrap;
 }
 
 .currency-switcher-btn:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
-  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  transform: scale(1.1); /* Match WhatsApp hover effect */
 }
 
-.currency-code {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #000000;
+/* Flag SVG inside button */
+.currency-switcher-btn .flag-svg {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  object-fit: cover;
 }
 
-.currency-chevron {
-  margin-left: 2px;
-  transition: transform 0.2s ease;
-  color: #666;
-  flex-shrink: 0;
-}
-
-.currency-chevron.open {
-  transform: rotate(180deg);
+/* Flag SVG inside dropdown options */
+.currency-option .flag-svg {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px; /* Slightly rounded edges */
+  object-fit: cover;
 }
 
 /* ── Dropdown panel ──────────────────────────────────────────────────────────── */
 .currency-dropdown {
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 0;
+  right: 0; /* Align dropdown to the right */
+  left: auto;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
@@ -129,16 +127,16 @@
   flex-shrink: 0;
 }
 
-/* ── Mobile: move to bottom-left too but smaller ─────────────────────────────── */
+/* ── Mobile: move to bottom-right above WhatsApp ─────────────────────────────── */
 @media (max-width: 768px) {
   .currency-switcher-root {
-    bottom: 80px; /* above the mobile sticky bar on product pages */
-    left: 16px;
+    bottom: 84px; /* 24px (WhatsApp) + 44px (Icon) + 16px (Gap) */
+    right: 24px;
+    left: auto;
   }
 
   .currency-switcher-btn {
-    padding: 7px 10px;
-    font-size: 12px;
-    min-width: 80px;
+    width: 44px;
+    height: 44px;
   }
 }

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useCurrency } from '~/context/CurrencyContext';
 
 const FlagIN = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32" style={{borderRadius: '3px', flexShrink: 0}}>
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" className="flag-svg">
     <path fill="#fff" d="M1 11H31V21H1z"/>
     <path d="M5,4H27c2.208,0,4,1.792,4,4v4H1v-4c0-2.208,1.792-4,4-4Z" fill="#e06535"/>
     <path d="M5,20H27c2.208,0,4,1.792,4,4v4H1v-4c0-2.208,1.792-4,4-4Z" transform="rotate(180 16 24)" fill="#2c6837"/>
@@ -13,7 +13,7 @@ const FlagIN = () => (
 );
 
 const FlagAE = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32" style={{borderRadius: '3px', flexShrink: 0}}>
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" className="flag-svg">
     <path d="M5,4h6V28H5c-2.208,0-4-1.792-4-4V8c0-2.208,1.792-4,4-4Z" fill="#ea3323"/>
     <path d="M10,20v8H27c2.209,0,4-1.791,4-4v-4H10Z"/>
     <path fill="#fff" d="M10 11H31V21H10z"/>
@@ -24,7 +24,7 @@ const FlagAE = () => (
 );
 
 const FlagUS = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32" style={{borderRadius: '3px', flexShrink: 0}}>
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" className="flag-svg">
     <rect x="1" y="4" width="30" height="24" rx="4" ry="4" fill="#fff"/>
     <path d="M1.638,5.846H30.362c-.711-1.108-1.947-1.846-3.362-1.846H5c-1.414,0-2.65,.738-3.362,1.846Z" fill="#a62842"/>
     <path d="M2.03,7.692c-.008,.103-.03,.202-.03,.308v1.539H31v-1.539c0-.105-.022-.204-.03-.308H2.03Z" fill="#a62842"/>
@@ -89,13 +89,6 @@ export function CurrencySwitcher() {
         aria-label={`Currency: ${current.code}`}
       >
         <current.Flag />
-        <span className="currency-code">{current.code}</span>
-        <svg
-          className={`currency-chevron ${isOpen ? 'open' : ''}`}
-          width="10" height="6" viewBox="0 0 10 6" fill="none"
-        >
-          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
       </button>
 
       {isOpen && (
