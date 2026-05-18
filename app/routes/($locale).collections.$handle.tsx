@@ -54,9 +54,17 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     throw redirect(`${url.pathname.replace(/\/collections\/[^/]+/, '/collections/unisex')}${url.search}`);
   }
 
+  // ALIAS: w-tops -> tshirts
+  if (handle.toLowerCase() === 'w-tops') {
+    const url = new URL(request.url);
+    throw redirect(`${url.pathname.replace(/\/collections\/w-tops/i, '/collections/tshirts')}${url.search}`);
+  }
+
+  const queryHandle = handle.toLowerCase() === 'tshirts' ? 'w-tops' : handle;
+
   const [{ collection }] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: { handle, ...paginationVariables },
+      variables: { handle: queryHandle, ...paginationVariables },
       // Add other queries here, so that they are loaded in parallel
     }),
   ]);
@@ -65,6 +73,11 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
     throw new Response(`Collection ${handle} not found`, {
       status: 404,
     });
+  }
+
+  // Prevent redirect loop for aliases
+  if (handle.toLowerCase() === 'tshirts' && collection.handle === 'w-tops') {
+    collection.handle = 'tshirts';
   }
 
   // The API handle might be localized, so redirect to the localized handle

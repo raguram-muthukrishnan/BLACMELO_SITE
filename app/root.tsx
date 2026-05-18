@@ -44,6 +44,7 @@ import { PageLayout } from './components/PageLayout';
 import { LenisProvider } from '~/components/smooth-scroll/LenisProvider';
 import { CurrencySwitcher } from '~/components/CurrencySwitcher';
 import { CurrencyProvider } from '~/context/CurrencyContext';
+import { RegionSelectorModal } from '~/components/RegionSelectorModal';
 import { DYNAMIC_HEADER_MENU_QUERY } from '~/graphql/DynamicHeaderMenuQuery';
 import { ANNOUNCEMENT_BAR_QUERY } from '~/graphql/AnnouncementBarQuery';
 import { parseDynamicHeaderMenu } from '~/lib/dynamicHeaderMenu';
@@ -314,6 +315,7 @@ export default function App() {
         </PageLayout>
         {/* Floating currency switcher – visible on all pages */}
         <CurrencySwitcher />
+        <RegionSelectorModal />
       </LenisProvider>
     </CurrencyProvider>
     </Analytics.Provider>

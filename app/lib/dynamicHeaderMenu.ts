@@ -111,6 +111,14 @@ export function parseDynamicHeaderMenu(
   );
 
   /**
+   * Helper function to build collection links and handle aliases
+   */
+  function getCollectionLink(handle: string): string {
+    const finalHandle = handle === 'w-tops' ? 'tshirts' : handle;
+    return `/collections/${finalHandle}`;
+  }
+
+  /**
    * Helper function to build nested collection structure
    * Returns collections with their children nested
    * NOTE: Collections can appear BOTH as standalone items AND as nested children
@@ -123,7 +131,7 @@ export function parseDynamicHeaderMenu(
     collections.forEach((collection) => {
       const item: DynamicMenuItem = {
         name: collection.title,
-        link: `/collections/${collection.handle}`,
+        link: getCollectionLink(collection.handle),
         order: parseInt(collection.menuOrder?.value || '999', 10),
         itemType: (collection.menuItemType?.value?.toLowerCase() as ItemType) || 'dynamic',
         children: [],
@@ -146,7 +154,7 @@ export function parseDynamicHeaderMenu(
         const parent = collectionMap.get(parentHandle)!;
         const childItem: DynamicMenuItem = {
           name: childCollection.title,
-          link: `/collections/${childCollection.handle}`,
+          link: getCollectionLink(childCollection.handle),
           order: parseInt(childCollection.menuOrder?.value || '999', 10),
           itemType: (childCollection.menuItemType?.value?.toLowerCase() as ItemType) || 'dynamic',
         };
@@ -202,7 +210,7 @@ export function parseDynamicHeaderMenu(
       const itemType = collection.menuItemType?.value?.toLowerCase() as ItemType || 'dynamic';
       return {
         name: collection.title,
-        link: `/collections/${collection.handle}`,
+        link: getCollectionLink(collection.handle),
         order: parseInt(collection.menuOrder?.value || '999', 10),
         itemType,
       };
@@ -270,7 +278,7 @@ export function parseDynamicHeaderMenu(
       // Fallback if not in tree
       return {
         name: collection.title,
-        link: `/collections/${collection.handle}`,
+        link: getCollectionLink(collection.handle),
         order: parseInt(collection.menuOrder?.value || '999', 10),
         itemType: 'dynamic' as ItemType,
       };
@@ -316,7 +324,7 @@ export function parseDynamicHeaderMenu(
         // Fallback if not in tree
         return {
           name: collection.title,
-          link: `/collections/${collection.handle}`,
+          link: getCollectionLink(collection.handle),
           order: parseInt(collection.menuOrder?.value || '999', 10),
           itemType: 'dynamic' as ItemType,
         };

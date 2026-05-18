@@ -252,7 +252,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
       </div>
 
       {/* Desktop hover menu */}
-      {(activeMenu === 'shop' || activeMenu === 'blacmelo-club') && (
+      {(activeMenu === 'shop' || activeMenu === 'women' || activeMenu === 'blacmelo-club') && (
         <DynamicHoverMenu
           isActive={true}
           menuConfig={currentMenuConfig}
