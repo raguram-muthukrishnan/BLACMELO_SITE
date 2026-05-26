@@ -1,4 +1,4 @@
-import { redirect, useLoaderData, Link } from 'react-router';
+import { redirect, useLoaderData, Link, useSearchParams } from 'react-router';
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { useEffect, useMemo } from 'react';
 import {
@@ -20,6 +20,7 @@ import { RecentlyViewed } from '~/components/RecentlyViewed';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { addToRecentlyViewed } from '~/lib/recentlyViewed';
 import { sortSizeLabels } from '~/lib/sortSizes';
+import { isPrivateExclusive, isClubExclusive, getGenderImages, getGenderFeaturedImage, getGenderFilteredImages } from '~/lib/productExclusivity';
 import productPageStyles from '~/styles/pages/product.css?url';
 import productHeroStyles from '~/styles/components/product/product-hero.css?url';
 import productHeroInfoStyles from '~/styles/components/product/product-hero-info.css?url';
@@ -90,12 +91,12 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   const isDevAuth = new URL(request.url).searchParams.get('dev_auth') === 'true' || request.headers.get('Cookie')?.includes('dev_auth=true');
   const isLoggedIn = isDevAuth || (await context.customerAccount.isLoggedIn());
   
-  // Check for exclusivity tags
-  const isPrivateExclusive = product.tags?.includes('exclusive:private');
-  const isClubExclusive = product.tags?.includes('exclusive:blacmeloclub');
+  // Check for exclusivity tags/collections
+  const hasPrivateExclusive = isPrivateExclusive(product);
+  const hasClubExclusive = isClubExclusive(product);
 
-  if ((isPrivateExclusive || isClubExclusive) && !isLoggedIn) {
-      const targetRoute = isClubExclusive ? '/blacmelo-club' : '/the-private-access';
+  if ((hasPrivateExclusive || hasClubExclusive) && !isLoggedIn) {
+      const targetRoute = hasClubExclusive ? '/blacmelo-club' : '/the-private-access';
       throw redirect(targetRoute);
   }
 
@@ -189,6 +190,16 @@ function loadDeferredData({ context, params }: LoaderFunctionArgs) {
 
 export default function Product() {
   const { product, relatedColorProducts, newArrivals } = useLoaderData<typeof loader>();
+  const [params] = useSearchParams();
+
+  const genderContext = useMemo(() => {
+    const val = params.get('gender')?.toLowerCase();
+    return val === 'men' || val === 'women' ? (val as 'men' | 'women') : null;
+  }, [params]);
+
+  const reorderedImages = useMemo(() => {
+    return getGenderFilteredImages(product, genderContext);
+  }, [product, genderContext]);
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -247,13 +258,13 @@ export default function Product() {
           amount: selectedVariant.price.amount,
           currencyCode: selectedVariant.price.currencyCode,
         },
-        image: (product.featuredImage || product.images?.nodes[0]) as any,
+        image: getGenderFeaturedImage(product, genderContext) as any,
         sizes: sizes.length > 0 ? sizes : undefined,
         colorFamily: colorFamily || undefined,
         colorCount: colorCount > 0 ? colorCount : undefined,
       });
     }
-  }, [product, selectedVariant]);
+  }, [product, selectedVariant, genderContext]);
 
   // Determine the best collection for breadcrumbs
   const primaryCollection = useMemo(() => {
@@ -292,9 +303,9 @@ export default function Product() {
       />
 
       {/* Product Feature Hero - Second Image with Features */}
-      {product.images?.nodes?.[1] && (
+      {reorderedImages?.[1] && (
         <ProductFeatureHero
-          image={product.images.nodes[1]}
+          image={reorderedImages[1]}
           title={product.title}
           product={product}
         />

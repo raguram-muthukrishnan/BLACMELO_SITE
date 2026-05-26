@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Image, Money } from '@shopify/hydrogen';
+import { getGenderFeaturedImage } from '~/lib/productExclusivity';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
 import { sortSizeLabels } from '~/lib/sortSizes';
@@ -63,6 +64,8 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
     const [itemsToShow, setItemsToShow] = useState(8);
     const [isMobile, setIsMobile] = useState(false);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const activeGender = searchParams.get('gender');
 
     // Calculate which products to display
     const displayProducts = horizontalScroll
@@ -151,13 +154,13 @@ export function ProductGrid({ title, products, tabs, horizontalScroll = false, s
             <div className={`product-grid ${horizontalScroll ? 'horizontal-scroll' : ''}`}>
                 {displayProducts.map((product) => {
                     const price = product.variants?.nodes[0]?.price || product.priceRange?.minVariantPrice;
-                    const image = product.featuredImage || product.images?.nodes[0];
+                    const image = getGenderFeaturedImage(product, activeGender);
                     const sizeOption = product.options?.find(opt => opt.name.toLowerCase() === 'size');
                     const isQuickAddOpen = quickAddProduct === product.id;
 
                     return (
                         <div key={product.id} className="product-card">
-                            <div onClick={() => navigate(`/products/${product.handle}`)} className="card-link cursor-pointer">
+                            <div onClick={() => navigate(`/products/${product.handle}${activeGender ? `?gender=${activeGender}` : ''}`)} className="card-link cursor-pointer">
                                 <div className="card-image-wrapper group relative overflow-hidden">
                                     {image && (
                                         <Image

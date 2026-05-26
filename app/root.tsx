@@ -14,6 +14,7 @@ import {
 import type { Route } from './+types/root';
 import favicon from '~/assets/icon_2.png';
 import { FOOTER_QUERY, HEADER_QUERY } from '~/lib/fragments';
+import { isPrivateExclusive, isClubExclusive } from '~/lib/productExclusivity';
 // Core styles (loaded globally)
 import resetStyles from '~/styles/reset.css?url';
 import fontsStyles from '~/styles/core/fonts.css?url';
@@ -231,10 +232,7 @@ function loadDeferredData({ context }: Route.LoaderArgs) {
       const newProductsConnection = data?.products;
       // Filter out private and club exclusive products
       const filteredNewProducts = (newProductsConnection?.nodes || []).filter((product: any) => {
-        const isExclusive = product.tags?.some((tag: string) => 
-            tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
-        );
-        return !isExclusive;
+        return !isPrivateExclusive(product) && !isClubExclusive(product);
       });
       return filteredNewProducts;
     })
@@ -384,6 +382,11 @@ const NEW_PRODUCTS_QUERY = `#graphql
           }
         }
         tags
+        collections(first: 5) {
+          nodes {
+            handle
+          }
+        }
         featuredImage {
           url
           altText

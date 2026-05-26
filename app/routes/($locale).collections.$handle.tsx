@@ -1,8 +1,15 @@
-import { redirect, useLoaderData } from 'react-router';
+import { redirect, useLoaderData, useSearchParams } from 'react-router';
+import { useMemo } from 'react';
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { getPaginationVariables, Analytics } from '@shopify/hydrogen';
 import { redirectIfHandleIsLocalized } from '~/lib/redirect';
 import { RepresentCollectionPage } from '~/components/RepresentCollectionPage';
+import {
+  isPrivateExclusive,
+  isClubExclusive,
+  isMenProduct,
+  isWomenProduct
+} from '~/lib/productExclusivity';
 // import {CollectionPage} from '~/components/CollectionPage'; // Original style
 import collectionStyles from '~/styles/pages/collection.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
@@ -61,12 +68,17 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   }
 
   const queryHandle = handle.toLowerCase() === 'tshirts' ? 'w-tops' : handle;
+  const isGenderCollection = ['men', 'man', 'women', 'woman'].includes(queryHandle.toLowerCase());
 
-  const [{ collection }] = await Promise.all([
+  const [{ collection }, { collection: allCollection }] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
       variables: { handle: queryHandle, ...paginationVariables },
-      // Add other queries here, so that they are loaded in parallel
     }),
+    isGenderCollection
+      ? storefront.query(COLLECTION_QUERY, {
+          variables: { handle: 'all-products', first: 250 },
+        })
+      : Promise.resolve({ collection: null }),
   ]);
 
   if (!collection) {
@@ -84,14 +96,33 @@ async function loadCriticalData({ context, params, request }: LoaderFunctionArgs
   redirectIfHandleIsLocalized(request, { handle, data: collection });
 
   if (collection) {
-    collection.products.nodes = collection.products.nodes.filter(
-      (product: any) => {
-        const isExclusive = product.tags?.some((tag: string) => 
-          tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
-        );
-        return !isExclusive;
-      }
-    );
+    const url = new URL(request.url);
+    const urlGender = url.searchParams.get('gender')?.toLowerCase();
+    const genderQuery = urlGender === 'men' || urlGender === 'women' ? urlGender : null;
+
+    const activeGender = isGenderCollection
+      ? (queryHandle.toLowerCase() === 'men' || queryHandle.toLowerCase() === 'man' ? 'men' : 'women')
+      : genderQuery;
+
+    if (activeGender) {
+      const targetProducts = isGenderCollection
+        ? (allCollection?.products?.nodes || collection.products?.nodes || [])
+        : (collection.products?.nodes || []);
+      
+      collection.products.nodes = targetProducts.filter((product: any) => {
+        // Exclude all exclusive items from public collections
+        if (isPrivateExclusive(product) || isClubExclusive(product)) {
+          return false;
+        }
+        
+        // Filter by dynamic gender classification
+        return activeGender === 'men' ? isMenProduct(product) : isWomenProduct(product);
+      });
+    } else {
+      collection.products.nodes = collection.products.nodes.filter(
+        (product: any) => !isPrivateExclusive(product) && !isClubExclusive(product)
+      );
+    }
   }
 
   return {
@@ -110,10 +141,20 @@ function loadDeferredData({ context }: LoaderFunctionArgs) {
 
 export default function Collection() {
   const { collection } = useLoaderData<typeof loader>();
+  const [params] = useSearchParams();
+
+  const genderContext = useMemo(() => {
+    const handleLower = collection?.handle?.toLowerCase() || '';
+    if (handleLower === 'men' || handleLower === 'man') return 'men';
+    if (handleLower === 'women' || handleLower === 'woman') return 'women';
+
+    const val = params.get('gender')?.toLowerCase();
+    return val === 'men' || val === 'women' ? (val as 'men' | 'women') : null;
+  }, [collection, params]);
 
   return (
     <>
-      <RepresentCollectionPage collection={collection} />
+      <RepresentCollectionPage collection={collection} genderContext={genderContext} />
       <Analytics.CollectionView
         data={{
           collection: {
@@ -145,7 +186,12 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       height
     }
     tags
-    images(first: 2) {
+    collections(first: 5) {
+      nodes {
+        handle
+      }
+    }
+    images(first: 10) {
       nodes {
         id
         altText

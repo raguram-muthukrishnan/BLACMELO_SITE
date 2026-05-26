@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Image, Money, Pagination } from '@shopify/hydrogen';
+import { getGenderFeaturedImage, getGenderHoverImage } from '~/lib/productExclusivity';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { scrollToTop, getLenisInstance } from '~/lib/lenis';
@@ -78,6 +79,7 @@ interface RepresentCollectionPageProps {
   };
   hideHero?: boolean;
   hideInfo?: boolean;
+  genderContext?: 'men' | 'women' | null;
 }
 
 // Grid Icon
@@ -113,8 +115,19 @@ function FilterIcon() {
 export function RepresentCollectionPage({ 
   collection, 
   hideHero = false,
-  hideInfo = false
+  hideInfo = false,
+  genderContext = null
 }: RepresentCollectionPageProps) {
+  const [searchParams] = useSearchParams();
+  const activeGenderContext = useMemo(() => {
+    if (genderContext) return genderContext;
+    const urlGender = searchParams.get('gender')?.toLowerCase();
+    if (urlGender === 'men' || urlGender === 'women') {
+      return urlGender as 'men' | 'women';
+    }
+    return null;
+  }, [genderContext, searchParams]);
+
   const gridRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -767,7 +780,7 @@ export function RepresentCollectionPage({
               <main ref={gridRef} className={`represent-product-grid ${viewMode === 'list' ? 'list-view' : ''}`}>
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product) => (
-                    <RepresentProductCard key={product.id} product={product} viewMode={viewMode} />
+                    <RepresentProductCard key={product.id} product={product} viewMode={viewMode} genderContext={activeGenderContext} />
                   ))
                 ) : (
                   <div className="no-products-message">
@@ -793,13 +806,12 @@ export function RepresentCollectionPage({
 }
 
 // Represent-style Product Card with Image Swap
-export function RepresentProductCard({ product, viewMode }: { product: ProductCardProduct; viewMode: 'grid' | 'list' }) {
+export function RepresentProductCard({ product, viewMode, genderContext }: { product: ProductCardProduct; viewMode: 'grid' | 'list'; genderContext?: 'men' | 'women' | null }) {
   const [showSizes, setShowSizes] = useState(false);
   const navigate = useNavigate();
 
-  const images = product.images?.nodes || (product.featuredImage ? [product.featuredImage] : []);
-  const image1 = images[0] || product.featuredImage;
-  const image2 = images[1];
+  const image1 = getGenderFeaturedImage(product, genderContext);
+  const image2 = getGenderHoverImage(product, genderContext);
 
   // Get product variant info - extract color and size from options
   const firstVariant = product.variants?.nodes?.[0];
@@ -831,7 +843,7 @@ export function RepresentProductCard({ product, viewMode }: { product: ProductCa
 
   return (
     <div
-      onClick={() => navigate(`/products/${product.handle}`)}
+      onClick={() => navigate(`/products/${product.handle}${genderContext ? `?gender=${genderContext}` : ''}`)}
       className="represent-product-card group cursor-pointer"
       onMouseLeave={() => setShowSizes(false)}
     >

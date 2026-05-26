@@ -2,6 +2,7 @@ import type {Route} from './+types/collections.all';
 import {useLoaderData} from 'react-router';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {RepresentCollectionPage} from '~/components/RepresentCollectionPage';
+import { isPrivateExclusive, isClubExclusive } from '~/lib/productExclusivity';
 import collectionStyles from '~/styles/pages/collection.css?url';
 import productGridStyles from '~/styles/components/product/product-grid.css?url';
 import productCardStyles from '~/styles/components/product/product-card.css?url';
@@ -65,12 +66,7 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
         products: {
           ...products,
           nodes: products.nodes.filter(
-            (product: any) => {
-              const isExclusive = product.tags?.some((tag: string) => 
-                tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
-              );
-              return !isExclusive;
-            }
+            (product: any) => !isPrivateExclusive(product) && !isClubExclusive(product)
           ),
         },
       },
@@ -79,12 +75,7 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
 
   if (collection) {
     collection.products.nodes = collection.products.nodes.filter(
-      (product: any) => {
-        const isExclusive = product.tags?.some((tag: string) => 
-          tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
-        );
-        return !isExclusive;
-      }
+      (product: any) => !isPrivateExclusive(product) && !isClubExclusive(product)
     );
   }
 
@@ -135,7 +126,12 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       height
     }
     tags
-    images(first: 2) {
+    collections(first: 5) {
+      nodes {
+        handle
+      }
+    }
+    images(first: 10) {
       nodes {
         id
         altText

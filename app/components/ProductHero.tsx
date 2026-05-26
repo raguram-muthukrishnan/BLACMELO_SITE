@@ -9,6 +9,7 @@ import { toggleWishlist, isInWishlist, type WishlistItem } from '~/lib/wishlist'
 import { ColorProductSwitcher } from './ColorProductSwitcher';
 import { sortSizeLabels } from '~/lib/sortSizes';
 import type { CurrencyCode } from '@shopify/hydrogen/storefront-api-types';
+import { getGenderImages, getGenderFilteredImages } from '~/lib/productExclusivity';
 
 interface ProductImage {
   id?: string | null;
@@ -63,8 +64,37 @@ interface ProductHeroProps {
 }
 
 export function ProductHero({ product, selectedVariant, productOptions, relatedColorProducts = [] }: ProductHeroProps) {
-  const images = product.images?.nodes || [];
   const [params, setParams] = useSearchParams();
+
+  const genderContext = useMemo(() => {
+    const val = params.get('gender')?.toLowerCase();
+    return val === 'men' || val === 'women' ? (val as 'men' | 'women') : null;
+  }, [params]);
+
+  // Persist browsed gender preference
+  useEffect(() => {
+    if (genderContext) {
+      localStorage.setItem('blacmelo_gender_pref', genderContext);
+    }
+  }, [genderContext]);
+
+  // Restore browsed gender preference if not present in URL
+  useEffect(() => {
+    const urlGender = params.get('gender');
+    if (!urlGender) {
+      const savedGender = localStorage.getItem('blacmelo_gender_pref');
+      if (savedGender === 'men' || savedGender === 'women') {
+        const newParams = new URLSearchParams(params);
+        newParams.set('gender', savedGender);
+        setParams(newParams, { replace: true });
+      }
+    }
+  }, [params, setParams]);
+
+  const images = useMemo(() => {
+    return getGenderFilteredImages(product, genderContext);
+  }, [product, genderContext]);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreenGallery, setIsFullscreenGallery] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);

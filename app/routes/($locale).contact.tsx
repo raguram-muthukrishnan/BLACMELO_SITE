@@ -27,7 +27,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
 
   return {
     shopName: shop?.name ?? 'BLACMELO',
-    shopContactEmail: shop?.contactEmail ?? null,
+    shopContactEmail: null,
   };
 }
 
@@ -35,7 +35,6 @@ const SHOP_CONTACT_QUERY = `#graphql
   query ShopContact {
     shop {
       name
-      contactEmail
     }
   }
 ` as const;

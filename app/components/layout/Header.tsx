@@ -256,6 +256,7 @@ export function Header({ isProductPage = false, isWhiteHeaderPage = false, menMe
         <DynamicHoverMenu
           isActive={true}
           menuConfig={currentMenuConfig}
+          genderContext={activeMenu === 'women' ? 'women' : activeMenu === 'shop' ? 'men' : null}
           onMouseLeave={handleMenuLeave}
           onMenuItemHover={handleMenuItemHover}
         />

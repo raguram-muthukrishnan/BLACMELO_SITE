@@ -9,6 +9,7 @@ import type { Route } from './+types/search';
 import { Analytics, Image, Money } from '@shopify/hydrogen';
 import { Search as SearchIcon, Plus, X } from 'lucide-react';
 import searchStyles from '~/styles/pages/search.css?url';
+import { isPrivateExclusive, isClubExclusive } from '~/lib/productExclusivity';
 import { AddToCartButton } from '~/components/AddToCartButton';
 import { ProductCard } from '~/components/ProductCard';
 
@@ -39,10 +40,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     });
 
     products = (productConnection?.nodes || []).filter((product: any) => {
-        const isExclusive = product.tags?.some((tag: string) => 
-            tag === 'exclusive:private' || tag === 'exclusive:blacmeloclub'
-        );
-        return !isExclusive;
+        return !isPrivateExclusive(product) && !isClubExclusive(product);
     });
     collectionsResult = collectionConnection?.nodes || [];
 

@@ -19,6 +19,7 @@ import originalsBanner from '~/assets/final_banners/bl_originals.jpeg';
 interface DynamicHoverMenuProps {
   isActive: boolean;
   menuConfig: DynamicMenuConfig;
+  genderContext?: 'men' | 'women' | null;
   onMouseLeave: () => void;
   onMenuItemHover?: (isHovered: boolean) => void;
 }
@@ -26,12 +27,22 @@ interface DynamicHoverMenuProps {
 export function DynamicHoverMenu({
   isActive,
   menuConfig,
+  genderContext = null,
   onMouseLeave,
   onMenuItemHover,
 }: DynamicHoverMenuProps) {
   const [mounted, setMounted] = useState(false);
   const [hoveredParent, setHoveredParent] = useState<any>(null);
   const [hoveredItemMedia, setHoveredItemMedia] = useState<string | null>(null);
+
+  // Helper to append gender query parameter to links
+  const getGenderedLink = (link: string) => {
+    if (!genderContext) return link;
+    if (link.includes('?')) {
+      return `${link}&gender=${genderContext}`;
+    }
+    return `${link}?gender=${genderContext}`;
+  };
   const menuRef = useRef<HTMLDivElement>(null);
   const [overlayElement, setOverlayElement] = useState<HTMLDivElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -196,7 +207,7 @@ export function DynamicHoverMenu({
       >
         <NavLink
           reloadDocument
-          to={item.link}
+          to={getGenderedLink(item.link)}
           className={itemClass}
         >
           <span className="hover-menu-item-text">
@@ -315,7 +326,7 @@ export function DynamicHoverMenu({
                       <li key={childIdx}>
                         <NavLink
                           reloadDocument
-                          to={child.link}
+                          to={getGenderedLink(child.link)}
                           className="nested-panel-item"
                         >
                           {child.name}

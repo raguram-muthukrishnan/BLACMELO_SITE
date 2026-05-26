@@ -1,14 +1,22 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Image } from '@shopify/hydrogen';
+import { getGenderFeaturedImage } from '~/lib/productExclusivity';
 import { Plus } from 'lucide-react';
 import { AddToCartButton } from '~/components/AddToCartButton';
 import { sortSizeLabels } from '~/lib/sortSizes';
 import { JudgemePreviewBadge } from '@judgeme/shopify-hydrogen';
 
-export function ProductCard({ product }: { product: any }) {
+export function ProductCard({ product, genderContext = null }: { product: any; genderContext?: 'men' | 'women' | null }) {
+  const [searchParams] = useSearchParams();
+  const activeGender = useMemo(() => {
+    if (genderContext) return genderContext;
+    const urlGender = searchParams.get('gender')?.toLowerCase();
+    return urlGender === 'men' || urlGender === 'women' ? (urlGender as 'men' | 'women') : null;
+  }, [genderContext, searchParams]);
+
   const variant = product.selectedOrFirstAvailableVariant?.nodes?.[0];
-  const image = variant?.image || product.images?.nodes?.[0];
+  const image = getGenderFeaturedImage(product, activeGender);
   const price = variant?.price;
   const [showSizes, setShowSizes] = useState(false);
 
@@ -38,7 +46,7 @@ export function ProductCard({ product }: { product: any }) {
 
   return (
     <div
-      onClick={() => navigate(`/products/${product.handle}`)}
+      onClick={() => navigate(`/products/${product.handle}${activeGender ? `?gender=${activeGender}` : ''}`)}
       className="group block cursor-pointer"
       onMouseLeave={() => setShowSizes(false)}
     >
