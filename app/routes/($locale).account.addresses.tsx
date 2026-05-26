@@ -36,31 +36,13 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
-  const {session, customerAccount} = context;
-  const url = new URL(request.url);
-  const debugParam = url.searchParams.get('debug');
-
-  let isDebug = false;
-  if (debugParam === 'true') {
-    isDebug = true;
-    session.set('debug', 'true');
-  } else if (debugParam === 'false') {
-    isDebug = false;
-    session.unset('debug');
-  } else {
-    isDebug = session.get('debug') === 'true';
-  }
-
-  if (!isDebug) {
-    await customerAccount.handleAuthStatus();
-  }
-
+  const {customerAccount} = context;
+  await customerAccount.handleAuthStatus();
   return {};
 }
 
 export async function action({request, context}: Route.ActionArgs) {
-  const {customerAccount, session} = context;
-  const isDebug = session.get('debug') === 'true';
+  const {customerAccount} = context;
 
   try {
     const form = await request.formData();
@@ -70,149 +52,6 @@ export async function action({request, context}: Route.ActionArgs) {
       : null;
     if (!addressId) {
       throw new Error('You must provide an address id.');
-    }
-
-    if (isDebug) {
-      // Handle interactive mock address mutations inside session cookie
-      let mockAddresses = [
-        {
-          id: 'addr_mock_default',
-          formatted: ['123 Luxury Way', 'Penthouse A', 'New York, NY 10001', 'United States'],
-          firstName: 'Alex',
-          lastName: 'Melo',
-          company: 'Melo Studios',
-          address1: '123 Luxury Way',
-          address2: 'Penthouse A',
-          territoryCode: 'US',
-          zoneCode: 'NY',
-          city: 'New York',
-          zip: '10001',
-          phoneNumber: '+12125550199'
-        },
-        {
-          id: 'addr_mock_2',
-          formatted: ['456 Fashion Blvd', 'Suite 404', 'Los Angeles, CA 90015', 'United States'],
-          firstName: 'Alex',
-          lastName: 'Melo',
-          company: '',
-          address1: '456 Fashion Blvd',
-          address2: 'Suite 404',
-          territoryCode: 'US',
-          zoneCode: 'CA',
-          city: 'Los Angeles',
-          zip: '90015',
-          phoneNumber: '+13105550188'
-        }
-      ];
-
-      const sessionAddressesStr = session.get('mock_addresses');
-      if (sessionAddressesStr) {
-        try {
-          mockAddresses = JSON.parse(sessionAddressesStr) as typeof mockAddresses;
-        } catch (e) {}
-      }
-
-      const defaultAddressChecked = form.get('defaultAddress') === 'on';
-
-      switch (request.method) {
-        case 'POST': {
-          const newAddress = {
-            id: `addr_mock_${Date.now()}`,
-            firstName: form.get('firstName')?.toString() || '',
-            lastName: form.get('lastName')?.toString() || '',
-            company: form.get('company')?.toString() || '',
-            address1: form.get('address1')?.toString() || '',
-            address2: form.get('address2')?.toString() || '',
-            city: form.get('city')?.toString() || '',
-            zoneCode: form.get('zoneCode')?.toString() || '',
-            zip: form.get('zip')?.toString() || '',
-            territoryCode: form.get('territoryCode')?.toString() || '',
-            phoneNumber: form.get('phoneNumber')?.toString() || '',
-            formatted: [
-              form.get('firstName')?.toString() + ' ' + form.get('lastName')?.toString(),
-              form.get('company')?.toString() || '',
-              form.get('address1')?.toString() || '',
-              form.get('address2')?.toString() || '',
-              `${form.get('city')?.toString()}, ${form.get('zoneCode')?.toString()} ${form.get('zip')?.toString()}`,
-              form.get('territoryCode')?.toString() || ''
-            ].filter(Boolean) as string[]
-          };
-          mockAddresses.push(newAddress);
-          session.set('mock_addresses', JSON.stringify(mockAddresses));
-
-          if (defaultAddressChecked) {
-            session.set('mock_default_address_id', newAddress.id);
-          }
-
-          return {
-            error: null,
-            createdAddress: newAddress as any,
-            defaultAddress: defaultAddressChecked ? newAddress.id : null,
-          };
-        }
-
-        case 'PUT': {
-          const targetId = decodeURIComponent(addressId);
-          const idx = mockAddresses.findIndex((a: any) => a.id === targetId);
-          if (idx !== -1) {
-            mockAddresses[idx] = {
-              ...mockAddresses[idx],
-              firstName: form.get('firstName')?.toString() || '',
-              lastName: form.get('lastName')?.toString() || '',
-              company: form.get('company')?.toString() || '',
-              address1: form.get('address1')?.toString() || '',
-              address2: form.get('address2')?.toString() || '',
-              city: form.get('city')?.toString() || '',
-              zoneCode: form.get('zoneCode')?.toString() || '',
-              zip: form.get('zip')?.toString() || '',
-              territoryCode: form.get('territoryCode')?.toString() || '',
-              phoneNumber: form.get('phoneNumber')?.toString() || '',
-              formatted: [
-                form.get('firstName')?.toString() + ' ' + form.get('lastName')?.toString(),
-                form.get('company')?.toString() || '',
-                form.get('address1')?.toString() || '',
-                form.get('address2')?.toString() || '',
-                `${form.get('city')?.toString()}, ${form.get('zoneCode')?.toString()} ${form.get('zip')?.toString()}`,
-                form.get('territoryCode')?.toString() || ''
-              ].filter(Boolean) as string[]
-            };
-          }
-          session.set('mock_addresses', JSON.stringify(mockAddresses));
-
-          if (defaultAddressChecked) {
-            session.set('mock_default_address_id', targetId);
-          }
-
-          return {
-            error: null,
-            updatedAddress: mockAddresses[idx] as any,
-            defaultAddress: defaultAddressChecked ? targetId : null,
-          };
-        }
-
-        case 'DELETE': {
-          const targetId = decodeURIComponent(addressId);
-          mockAddresses = mockAddresses.filter((a: any) => a.id !== targetId);
-          session.set('mock_addresses', JSON.stringify(mockAddresses));
-
-          const currentDefault = session.get('mock_default_address_id');
-          if (currentDefault === targetId) {
-            session.set('mock_default_address_id', mockAddresses[0]?.id || null);
-          }
-
-          return {
-            error: null,
-            deletedAddress: targetId
-          };
-        }
-
-        default: {
-          return data(
-            {error: {[addressId]: 'Method not allowed'}},
-            {status: 405}
-          );
-        }
-      }
     }
 
     // Normal flow
