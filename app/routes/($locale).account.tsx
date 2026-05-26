@@ -67,8 +67,8 @@ export default function AccountLayout() {
             </p>
           </div>
           <div className="dashboard-header-actions">
-            {/* Connection fix: link to /shop instead of broken /collections/all-products */}
-            <Link to="/shop" className="dashboard-btn-primary">
+            {/* Redirect to home page per user request */}
+            <Link to="/" className="dashboard-btn-primary">
               CONTINUE SHOPPING
             </Link>
           </div>
