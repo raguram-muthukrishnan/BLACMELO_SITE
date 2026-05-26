@@ -11,12 +11,99 @@ export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Order ${data?.order?.name}`}];
 };
 
-export async function loader({params, context}: Route.LoaderArgs) {
-  const {customerAccount} = context;
+export async function loader({params, request, context}: Route.LoaderArgs) {
+  const {customerAccount, session} = context;
+  const url = new URL(request.url);
+  const debugParam = url.searchParams.get('debug');
+
+  let isDebug = false;
+  if (debugParam === 'true') {
+    isDebug = true;
+    session.set('debug', 'true');
+  } else if (debugParam === 'false') {
+    isDebug = false;
+    session.unset('debug');
+  } else {
+    isDebug = session.get('debug') === 'true';
+  }
+
   if (!params.id) {
     return redirect('/account/orders');
   }
 
+  if (isDebug) {
+    const id = atob(params.id);
+    let orderNum = 1084;
+    let totalAmt = '280.00';
+    let confirmationNum = 'CONF-9821-X';
+    let dateStr = '2026-05-20T10:30:00Z';
+    
+    if (id === 'ord_mock_2') {
+      orderNum = 1052;
+      totalAmt = '450.00';
+      confirmationNum = 'CONF-7712-Y';
+      dateStr = '2026-04-15T14:45:00Z';
+    } else if (id === 'ord_mock_3') {
+      orderNum = 1011;
+      totalAmt = '120.00';
+      confirmationNum = 'CONF-1104-Z';
+      dateStr = '2026-02-10T09:15:00Z';
+    }
+
+    const mockOrder = {
+      id: id,
+      name: `#${orderNum}`,
+      number: orderNum,
+      confirmationNumber: confirmationNum,
+      processedAt: dateStr,
+      statusPageUrl: 'https://blacmelo.com/track',
+      financialStatus: 'PAID',
+      subtotal: { amount: totalAmt, currencyCode: 'AED' },
+      totalTax: { amount: '0.00', currencyCode: 'AED' },
+      totalPrice: { amount: totalAmt, currencyCode: 'AED' },
+      discountApplications: {
+        nodes: []
+      },
+      fulfillments: {
+        nodes: [
+          { status: 'SUCCESS' }
+        ]
+      },
+      shippingAddress: {
+        name: 'Alex Melo',
+        formatted: ['123 Luxury Way', 'Penthouse A', 'New York, NY 10001', 'United States'],
+        formattedArea: 'New York, NY 10001, US'
+      },
+      lineItems: {
+        nodes: [
+          {
+            id: 'line_mock_1',
+            title: 'BLACMELO ORIGINAL TEE',
+            variantTitle: 'Jet Black / L',
+            quantity: 1,
+            price: { amount: totalAmt, currencyCode: 'AED' },
+            totalDiscount: { amount: '0.00', currencyCode: 'AED' },
+            image: {
+              url: 'https://cdn.shopify.com/s/files/1/0088/3130/files/Mock_Black_Tee.jpg?v=1',
+              altText: 'BLACMELO Original Tee',
+              width: 300,
+              height: 400
+            }
+          }
+        ]
+      }
+    };
+
+    return {
+      order: mockOrder as any,
+      lineItems: mockOrder.lineItems.nodes as any[],
+      discountValue: null,
+      discountPercentage: null,
+      fulfillmentStatus: 'SUCCESS',
+    };
+  }
+
+  // Normal flow
   const orderId = atob(params.id);
   const {data, errors}: {data: OrderQuery; errors?: Array<{message: string}>} =
     await customerAccount.query(CUSTOMER_ORDER_QUERY, {

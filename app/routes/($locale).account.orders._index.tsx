@@ -37,15 +37,109 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
-  const {customerAccount} = context;
+  const {customerAccount, session} = context;
+  const url = new URL(request.url);
+  const debugParam = url.searchParams.get('debug');
+
+  let isDebug = false;
+  if (debugParam === 'true') {
+    isDebug = true;
+    session.set('debug', 'true');
+  } else if (debugParam === 'false') {
+    isDebug = false;
+    session.unset('debug');
+  } else {
+    isDebug = session.get('debug') === 'true';
+  }
+
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 20,
   });
 
-  const url = new URL(request.url);
   const filters = parseOrderFilters(url.searchParams);
   const query = buildOrderSearchQuery(filters);
 
+  if (isDebug) {
+    // Return high-fidelity mock orders for debugging
+    let mockOrders = [
+      {
+        id: 'ord_mock_1',
+        number: 1084,
+        confirmationNumber: 'CONF-9821-X',
+        processedAt: '2026-05-20T10:30:00Z',
+        financialStatus: 'PAID',
+        fulfillmentStatus: 'FULFILLED',
+        fulfillments: {
+          nodes: [{ status: 'SUCCESS' }]
+        },
+        totalPrice: {
+          amount: '280.00',
+          currencyCode: 'AED'
+        }
+      },
+      {
+        id: 'ord_mock_2',
+        number: 1052,
+        confirmationNumber: 'CONF-7712-Y',
+        processedAt: '2026-04-15T14:45:00Z',
+        financialStatus: 'PAID',
+        fulfillmentStatus: 'FULFILLED',
+        fulfillments: {
+          nodes: [{ status: 'SUCCESS' }]
+        },
+        totalPrice: {
+          amount: '450.00',
+          currencyCode: 'AED'
+        }
+      },
+      {
+        id: 'ord_mock_3',
+        number: 1011,
+        confirmationNumber: 'CONF-1104-Z',
+        processedAt: '2026-02-10T09:15:00Z',
+        financialStatus: 'PAID',
+        fulfillmentStatus: 'FULFILLED',
+        fulfillments: {
+          nodes: [{ status: 'SUCCESS' }]
+        },
+        totalPrice: {
+          amount: '120.00',
+          currencyCode: 'AED'
+        }
+      }
+    ];
+
+    // Filter simulated orders
+    if (filters.name) {
+      mockOrders = mockOrders.filter(
+        (o) => o.number.toString().includes(filters.name!)
+      );
+    }
+    if (filters.confirmationNumber) {
+      mockOrders = mockOrders.filter(
+        (o) =>
+          o.confirmationNumber
+            .toLowerCase()
+            .includes(filters.confirmationNumber!.toLowerCase())
+      );
+    }
+
+    const mockCustomer = {
+      orders: {
+        nodes: mockOrders as any[],
+        pageInfo: {
+          hasPreviousPage: false,
+          hasNextPage: false,
+          endCursor: 'mock_cursor_end',
+          startCursor: 'mock_cursor_start'
+        }
+      }
+    };
+
+    return { customer: mockCustomer, filters };
+  }
+
+  // Normal flow
   const {data, errors} = await customerAccount.query(CUSTOMER_ORDERS_QUERY, {
     variables: {
       ...paginationVariables,

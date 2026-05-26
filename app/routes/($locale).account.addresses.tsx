@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import type {CustomerAddressInput} from '@shopify/hydrogen/customer-account-api-types';
 import type {
   AddressFragment,
@@ -34,14 +35,32 @@ export const meta: Route.MetaFunction = () => {
   return [{title: 'Addresses'}];
 };
 
-export async function loader({context}: Route.LoaderArgs) {
-  context.customerAccount.handleAuthStatus();
+export async function loader({request, context}: Route.LoaderArgs) {
+  const {session, customerAccount} = context;
+  const url = new URL(request.url);
+  const debugParam = url.searchParams.get('debug');
+
+  let isDebug = false;
+  if (debugParam === 'true') {
+    isDebug = true;
+    session.set('debug', 'true');
+  } else if (debugParam === 'false') {
+    isDebug = false;
+    session.unset('debug');
+  } else {
+    isDebug = session.get('debug') === 'true';
+  }
+
+  if (!isDebug) {
+    await customerAccount.handleAuthStatus();
+  }
 
   return {};
 }
 
 export async function action({request, context}: Route.ActionArgs) {
-  const {customerAccount} = context;
+  const {customerAccount, session} = context;
+  const isDebug = session.get('debug') === 'true';
 
   try {
     const form = await request.formData();
@@ -53,7 +72,150 @@ export async function action({request, context}: Route.ActionArgs) {
       throw new Error('You must provide an address id.');
     }
 
-    // this will ensure redirecting to login never happen for mutatation
+    if (isDebug) {
+      // Handle interactive mock address mutations inside session cookie
+      let mockAddresses = [
+        {
+          id: 'addr_mock_default',
+          formatted: ['123 Luxury Way', 'Penthouse A', 'New York, NY 10001', 'United States'],
+          firstName: 'Alex',
+          lastName: 'Melo',
+          company: 'Melo Studios',
+          address1: '123 Luxury Way',
+          address2: 'Penthouse A',
+          territoryCode: 'US',
+          zoneCode: 'NY',
+          city: 'New York',
+          zip: '10001',
+          phoneNumber: '+12125550199'
+        },
+        {
+          id: 'addr_mock_2',
+          formatted: ['456 Fashion Blvd', 'Suite 404', 'Los Angeles, CA 90015', 'United States'],
+          firstName: 'Alex',
+          lastName: 'Melo',
+          company: '',
+          address1: '456 Fashion Blvd',
+          address2: 'Suite 404',
+          territoryCode: 'US',
+          zoneCode: 'CA',
+          city: 'Los Angeles',
+          zip: '90015',
+          phoneNumber: '+13105550188'
+        }
+      ];
+
+      const sessionAddressesStr = session.get('mock_addresses');
+      if (sessionAddressesStr) {
+        try {
+          mockAddresses = JSON.parse(sessionAddressesStr) as typeof mockAddresses;
+        } catch (e) {}
+      }
+
+      const defaultAddressChecked = form.get('defaultAddress') === 'on';
+
+      switch (request.method) {
+        case 'POST': {
+          const newAddress = {
+            id: `addr_mock_${Date.now()}`,
+            firstName: form.get('firstName')?.toString() || '',
+            lastName: form.get('lastName')?.toString() || '',
+            company: form.get('company')?.toString() || '',
+            address1: form.get('address1')?.toString() || '',
+            address2: form.get('address2')?.toString() || '',
+            city: form.get('city')?.toString() || '',
+            zoneCode: form.get('zoneCode')?.toString() || '',
+            zip: form.get('zip')?.toString() || '',
+            territoryCode: form.get('territoryCode')?.toString() || '',
+            phoneNumber: form.get('phoneNumber')?.toString() || '',
+            formatted: [
+              form.get('firstName')?.toString() + ' ' + form.get('lastName')?.toString(),
+              form.get('company')?.toString() || '',
+              form.get('address1')?.toString() || '',
+              form.get('address2')?.toString() || '',
+              `${form.get('city')?.toString()}, ${form.get('zoneCode')?.toString()} ${form.get('zip')?.toString()}`,
+              form.get('territoryCode')?.toString() || ''
+            ].filter(Boolean) as string[]
+          };
+          mockAddresses.push(newAddress);
+          session.set('mock_addresses', JSON.stringify(mockAddresses));
+
+          if (defaultAddressChecked) {
+            session.set('mock_default_address_id', newAddress.id);
+          }
+
+          return {
+            error: null,
+            createdAddress: newAddress as any,
+            defaultAddress: defaultAddressChecked ? newAddress.id : null,
+          };
+        }
+
+        case 'PUT': {
+          const targetId = decodeURIComponent(addressId);
+          const idx = mockAddresses.findIndex((a: any) => a.id === targetId);
+          if (idx !== -1) {
+            mockAddresses[idx] = {
+              ...mockAddresses[idx],
+              firstName: form.get('firstName')?.toString() || '',
+              lastName: form.get('lastName')?.toString() || '',
+              company: form.get('company')?.toString() || '',
+              address1: form.get('address1')?.toString() || '',
+              address2: form.get('address2')?.toString() || '',
+              city: form.get('city')?.toString() || '',
+              zoneCode: form.get('zoneCode')?.toString() || '',
+              zip: form.get('zip')?.toString() || '',
+              territoryCode: form.get('territoryCode')?.toString() || '',
+              phoneNumber: form.get('phoneNumber')?.toString() || '',
+              formatted: [
+                form.get('firstName')?.toString() + ' ' + form.get('lastName')?.toString(),
+                form.get('company')?.toString() || '',
+                form.get('address1')?.toString() || '',
+                form.get('address2')?.toString() || '',
+                `${form.get('city')?.toString()}, ${form.get('zoneCode')?.toString()} ${form.get('zip')?.toString()}`,
+                form.get('territoryCode')?.toString() || ''
+              ].filter(Boolean) as string[]
+            };
+          }
+          session.set('mock_addresses', JSON.stringify(mockAddresses));
+
+          if (defaultAddressChecked) {
+            session.set('mock_default_address_id', targetId);
+          }
+
+          return {
+            error: null,
+            updatedAddress: mockAddresses[idx] as any,
+            defaultAddress: defaultAddressChecked ? targetId : null,
+          };
+        }
+
+        case 'DELETE': {
+          const targetId = decodeURIComponent(addressId);
+          mockAddresses = mockAddresses.filter((a: any) => a.id !== targetId);
+          session.set('mock_addresses', JSON.stringify(mockAddresses));
+
+          const currentDefault = session.get('mock_default_address_id');
+          if (currentDefault === targetId) {
+            session.set('mock_default_address_id', mockAddresses[0]?.id || null);
+          }
+
+          return {
+            error: null,
+            deletedAddress: targetId
+          };
+        }
+
+        default: {
+          return data(
+            {error: {[addressId]: 'Method not allowed'}},
+            {status: 405}
+          );
+        }
+      }
+    }
+
+    // Normal flow
     const isLoggedIn = await customerAccount.isLoggedIn();
     if (!isLoggedIn) {
       return data(
@@ -280,7 +442,7 @@ export default function Addresses() {
       {addresses.nodes.length > 0 && (
         <>
           <div className="account-section-header" style={{marginTop: '40px'}}>
-            <h3 className="account-section-title" style={{fontSize: '1.25rem'}}>
+            <h3 className="account-section-title" style={{fontSize: '14px', letterSpacing: '0.05em'}}>
               Saved Addresses
             </h3>
           </div>
@@ -341,15 +503,14 @@ function NewAddressForm() {
       defaultAddress={null}
     >
       {({stateForMethod}) => (
-        <div>
-          <button
-            disabled={stateForMethod('POST') !== 'idle'}
-            formMethod="POST"
-            type="submit"
-          >
-            {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
-          </button>
-        </div>
+        <button
+          disabled={stateForMethod('POST') !== 'idle'}
+          formMethod="POST"
+          type="submit"
+          className="form-submit"
+        >
+          {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
+        </button>
       )}
     </AddressForm>
   );
@@ -359,37 +520,94 @@ function ExistingAddresses({
   addresses,
   defaultAddress,
 }: Pick<CustomerFragment, 'addresses' | 'defaultAddress'>) {
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+
   return (
-    <div>
-      <legend>Existing addresses</legend>
-      {addresses.nodes.map((address) => (
-        <AddressForm
-          key={address.id}
-          addressId={address.id}
-          address={address}
-          defaultAddress={defaultAddress}
-        >
-          {({stateForMethod}) => (
-            <div>
-              <button
-                disabled={stateForMethod('PUT') !== 'idle'}
-                formMethod="PUT"
-                type="submit"
+    <>
+      {addresses.nodes.map((address) => {
+        const isEditing = editingAddressId === address.id;
+        const isDefault = defaultAddress?.id === address.id;
+
+        if (isEditing) {
+          return (
+            <div key={address.id} className="address-card-edit-wrapper">
+              <AddressForm
+                addressId={address.id}
+                address={address}
+                defaultAddress={defaultAddress}
               >
-                {stateForMethod('PUT') !== 'idle' ? 'Saving' : 'Save'}
-              </button>
-              <button
-                disabled={stateForMethod('DELETE') !== 'idle'}
-                formMethod="DELETE"
-                type="submit"
-              >
-                {stateForMethod('DELETE') !== 'idle' ? 'Deleting' : 'Delete'}
-              </button>
+                {({stateForMethod}) => (
+                  <>
+                    <button
+                      disabled={stateForMethod('PUT') !== 'idle'}
+                      formMethod="PUT"
+                      type="submit"
+                      className="address-btn address-btn-edit"
+                    >
+                      {stateForMethod('PUT') !== 'idle' ? 'Saving' : 'Save'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingAddressId(null)}
+                      className="address-btn address-btn-delete"
+                      style={{ borderColor: '#888888', color: '#888888' }}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </AddressForm>
             </div>
-          )}
-        </AddressForm>
-      ))}
-    </div>
+          );
+        }
+
+        return (
+          <div key={address.id} className="address-card-static">
+            <div className="address-card-header">
+              <span className="address-card-title">SHIPPING ADDRESS</span>
+              {isDefault && <span className="address-default-badge">Default</span>}
+            </div>
+            
+            <div className="address-content">
+              <p className="address-name" style={{ fontWeight: 500, margin: '0 0 4px 0' }}>
+                {address.firstName} {address.lastName}
+              </p>
+              {address.company && <p className="address-company" style={{ margin: '0 0 4px 0', opacity: 0.8 }}>{address.company}</p>}
+              <p className="address-line" style={{ margin: '0 0 4px 0' }}>{address.address1}</p>
+              {address.address2 && <p className="address-line2" style={{ margin: '0 0 4px 0' }}>{address.address2}</p>}
+              <p className="address-city-state" style={{ margin: '0 0 4px 0' }}>
+                {address.city}, {address.zoneCode} {address.zip}
+              </p>
+              <p className="address-country" style={{ margin: '0 0 12px 0' }}>{address.territoryCode}</p>
+              {address.phoneNumber && (
+                <p className="address-phone" style={{ fontSize: '10px', color: '#888888', margin: 0 }}>
+                  Phone: {address.phoneNumber}
+                </p>
+              )}
+            </div>
+
+            <div className="address-actions" style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setEditingAddressId(address.id)}
+                className="address-btn address-btn-edit"
+              >
+                Edit
+              </button>
+              <Form method="DELETE" action="/account/addresses" style={{ flex: 1, display: 'flex' }}>
+                <input type="hidden" name="addressId" value={address.id} />
+                <button
+                  type="submit"
+                  className="address-btn address-btn-delete"
+                >
+                  Delete
+                </button>
+              </Form>
+            </div>
+          </div>
+        );
+      })}
+    </>
   );
 }
 
@@ -410,140 +628,190 @@ export function AddressForm({
   const action = useActionData<ActionResponse>();
   const error = action?.error?.[addressId];
   const isDefaultAddress = defaultAddress?.id === addressId;
+
   return (
-    <Form id={addressId}>
+    <Form id={addressId} className="addresses-form-layout">
       <fieldset>
         <input type="hidden" name="addressId" defaultValue={addressId} />
-        <label htmlFor="firstName">First name*</label>
-        <input
-          aria-label="First name"
-          autoComplete="given-name"
-          defaultValue={address?.firstName ?? ''}
-          id="firstName"
-          name="firstName"
-          placeholder="First name"
-          required
-          type="text"
-        />
-        <label htmlFor="lastName">Last name*</label>
-        <input
-          aria-label="Last name"
-          autoComplete="family-name"
-          defaultValue={address?.lastName ?? ''}
-          id="lastName"
-          name="lastName"
-          placeholder="Last name"
-          required
-          type="text"
-        />
-        <label htmlFor="company">Company</label>
-        <input
-          aria-label="Company"
-          autoComplete="organization"
-          defaultValue={address?.company ?? ''}
-          id="company"
-          name="company"
-          placeholder="Company"
-          type="text"
-        />
-        <label htmlFor="address1">Address line*</label>
-        <input
-          aria-label="Address line 1"
-          autoComplete="address-line1"
-          defaultValue={address?.address1 ?? ''}
-          id="address1"
-          name="address1"
-          placeholder="Address line 1*"
-          required
-          type="text"
-        />
-        <label htmlFor="address2">Address line 2</label>
-        <input
-          aria-label="Address line 2"
-          autoComplete="address-line2"
-          defaultValue={address?.address2 ?? ''}
-          id="address2"
-          name="address2"
-          placeholder="Address line 2"
-          type="text"
-        />
-        <label htmlFor="city">City*</label>
-        <input
-          aria-label="City"
-          autoComplete="address-level2"
-          defaultValue={address?.city ?? ''}
-          id="city"
-          name="city"
-          placeholder="City"
-          required
-          type="text"
-        />
-        <label htmlFor="zoneCode">State / Province*</label>
-        <input
-          aria-label="State/Province"
-          autoComplete="address-level1"
-          defaultValue={address?.zoneCode ?? ''}
-          id="zoneCode"
-          name="zoneCode"
-          placeholder="State / Province"
-          required
-          type="text"
-        />
-        <label htmlFor="zip">Zip / Postal Code*</label>
-        <input
-          aria-label="Zip"
-          autoComplete="postal-code"
-          defaultValue={address?.zip ?? ''}
-          id="zip"
-          name="zip"
-          placeholder="Zip / Postal Code"
-          required
-          type="text"
-        />
-        <label htmlFor="territoryCode">Country Code*</label>
-        <input
-          aria-label="territoryCode"
-          autoComplete="country"
-          defaultValue={address?.territoryCode ?? ''}
-          id="territoryCode"
-          name="territoryCode"
-          placeholder="Country"
-          required
-          type="text"
-          maxLength={2}
-        />
-        <label htmlFor="phoneNumber">Phone</label>
-        <input
-          aria-label="Phone Number"
-          autoComplete="tel"
-          defaultValue={address?.phoneNumber ?? ''}
-          id="phoneNumber"
-          name="phoneNumber"
-          placeholder="+16135551111"
-          pattern="^\+?[1-9]\d{3,14}$"
-          type="tel"
-        />
-        <div>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="firstName" className="form-label">First name*</label>
+            <input
+              aria-label="First name"
+              autoComplete="given-name"
+              defaultValue={address?.firstName ?? ''}
+              id="firstName"
+              name="firstName"
+              placeholder="First name"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="lastName" className="form-label">Last name*</label>
+            <input
+              aria-label="Last name"
+              autoComplete="family-name"
+              defaultValue={address?.lastName ?? ''}
+              id="lastName"
+              name="lastName"
+              placeholder="Last name"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="company" className="form-label">Company</label>
+            <input
+              aria-label="Company"
+              autoComplete="organization"
+              defaultValue={address?.company ?? ''}
+              id="company"
+              name="company"
+              placeholder="Company"
+              type="text"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phoneNumber" className="form-label">Phone</label>
+            <input
+              aria-label="Phone Number"
+              autoComplete="tel"
+              defaultValue={address?.phoneNumber ?? ''}
+              id="phoneNumber"
+              name="phoneNumber"
+              placeholder="+16135551111"
+              pattern="^\+?[1-9]\d{3,14}$"
+              type="tel"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="address1" className="form-label">Address line 1*</label>
+            <input
+              aria-label="Address line 1"
+              autoComplete="address-line1"
+              defaultValue={address?.address1 ?? ''}
+              id="address1"
+              name="address1"
+              placeholder="Address line 1*"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="address2" className="form-label">Address line 2</label>
+            <input
+              aria-label="Address line 2"
+              autoComplete="address-line2"
+              defaultValue={address?.address2 ?? ''}
+              id="address2"
+              name="address2"
+              placeholder="Address line 2"
+              type="text"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="city" className="form-label">City*</label>
+            <input
+              aria-label="City"
+              autoComplete="address-level2"
+              defaultValue={address?.city ?? ''}
+              id="city"
+              name="city"
+              placeholder="City"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="zoneCode" className="form-label">State / Province*</label>
+            <input
+              aria-label="State/Province"
+              autoComplete="address-level1"
+              defaultValue={address?.zoneCode ?? ''}
+              id="zoneCode"
+              name="zoneCode"
+              placeholder="State / Province"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="zip" className="form-label">Zip / Postal Code*</label>
+            <input
+              aria-label="Zip"
+              autoComplete="postal-code"
+              defaultValue={address?.zip ?? ''}
+              id="zip"
+              name="zip"
+              placeholder="Zip / Postal Code"
+              required
+              type="text"
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="territoryCode" className="form-label">Country Code*</label>
+            <input
+              aria-label="territoryCode"
+              autoComplete="country"
+              defaultValue={address?.territoryCode ?? ''}
+              id="territoryCode"
+              name="territoryCode"
+              placeholder="Country"
+              required
+              type="text"
+              maxLength={2}
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="checkbox-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px' }}>
           <input
             defaultChecked={isDefaultAddress}
             id="defaultAddress"
             name="defaultAddress"
             type="checkbox"
+            style={{ cursor: 'pointer', accentColor: '#000000' }}
           />
-          <label htmlFor="defaultAddress">Set as default address</label>
+          <label htmlFor="defaultAddress" className="form-label" style={{ cursor: 'pointer', color: '#555555' }}>
+            Set as default address
+          </label>
         </div>
-        {error ? (
-          <p>
-            <mark>
-              <small>{error}</small>
-            </mark>
-          </p>
-        ) : (
-          <br />
+
+        {error && (
+          <div className="form-error" style={{ marginTop: '12px' }}>
+            <mark>{error}</mark>
+          </div>
         )}
-        {children({
-          stateForMethod: (method) => (formMethod === method ? state : 'idle'),
-        })}
+
+        <div className="actions-wrapper" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          {children({
+            stateForMethod: (method) => (formMethod === method ? state : 'idle'),
+          })}
+        </div>
       </fieldset>
     </Form>
   );

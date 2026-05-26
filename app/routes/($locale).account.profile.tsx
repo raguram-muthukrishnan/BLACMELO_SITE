@@ -22,20 +22,67 @@ export const meta: Route.MetaFunction = () => {
   return [{title: 'Profile'}];
 };
 
-export async function loader({context}: Route.LoaderArgs) {
-  context.customerAccount.handleAuthStatus();
+export async function loader({request, context}: Route.LoaderArgs) {
+  const {session, customerAccount} = context;
+  const url = new URL(request.url);
+  const debugParam = url.searchParams.get('debug');
+
+  let isDebug = false;
+  if (debugParam === 'true') {
+    isDebug = true;
+    session.set('debug', 'true');
+  } else if (debugParam === 'false') {
+    isDebug = false;
+    session.unset('debug');
+  } else {
+    isDebug = session.get('debug') === 'true';
+  }
+
+  if (!isDebug) {
+    await customerAccount.handleAuthStatus();
+  }
 
   return {};
 }
 
 export async function action({request, context}: Route.ActionArgs) {
-  const {customerAccount} = context;
+  const {customerAccount, session} = context;
+  const isDebug = session.get('debug') === 'true';
 
   if (request.method !== 'PUT') {
     return data({error: 'Method not allowed'}, {status: 405});
   }
 
   const form = await request.formData();
+
+  if (isDebug) {
+    const firstName = form.get('firstName')?.toString().trim();
+    const lastName = form.get('lastName')?.toString().trim();
+
+    if (!firstName || !lastName) {
+      return data(
+        {error: 'First name and last name are required', customer: null},
+        {status: 400}
+      );
+    }
+
+    const updatedProfile = { firstName, lastName };
+    session.set('mock_profile', JSON.stringify(updatedProfile));
+
+    // Form updated customer profile data to return to client
+    const customer = {
+      id: 'c_mock_123',
+      firstName,
+      lastName,
+      defaultAddress: null,
+      addresses: { nodes: [] }
+    };
+
+    return {
+      error: null,
+      customer: customer as any,
+    };
+  }
 
   try {
     const customer: CustomerUpdateInput = {};

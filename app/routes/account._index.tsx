@@ -1,5 +1,6 @@
-import {redirect} from 'react-router';
+import {redirect, type LoaderFunctionArgs} from 'react-router';
 
-export async function loader() {
-  return redirect('/account/orders');
+export async function loader({request}: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  return redirect(`/account/orders${url.search}`);
 }
